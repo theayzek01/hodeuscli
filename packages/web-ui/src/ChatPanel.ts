@@ -1,4 +1,4 @@
-import { Badge } from "@mariozechner/mini-lit/dist/Badge.js";
+import { Badge } from "./vendor/mini-lit/dist/Badge.js";
 import { html, LitElement } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import "./components/AgentInterface.js";

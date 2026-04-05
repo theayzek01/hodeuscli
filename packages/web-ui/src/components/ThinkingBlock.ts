@@ -1,4 +1,4 @@
-import { icon } from "@mariozechner/mini-lit";
+﻿import { icon } from "../vendor/mini-lit/dist/index.js";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { ChevronRight } from "lucide";
@@ -41,3 +41,4 @@ export class ThinkingBlock extends LitElement {
 		`;
 	}
 }
+

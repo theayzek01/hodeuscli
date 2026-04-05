@@ -1,9 +1,9 @@
-import "@mariozechner/mini-lit/dist/CodeBlock.js";
+import "../../vendor/mini-lit/dist/CodeBlock.js";
 import type { ToolResultMessage } from "@games-coder/hodeuscli-ai";
 import { createRef, ref } from "lit/directives/ref.js";
 import { FileCode2 } from "lucide";
 import "../../components/ConsoleBlock.js";
-import { Diff } from "@mariozechner/mini-lit/dist/Diff.js";
+import { Diff } from "../../vendor/mini-lit/dist/Diff.js";
 import { html, type TemplateResult } from "lit";
 import { i18n } from "../../utils/i18n.js";
 import { renderCollapsibleHeader, renderHeader } from "../renderer-registry.js";

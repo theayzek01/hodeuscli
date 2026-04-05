@@ -1,4 +1,4 @@
-import { icon } from "@mariozechner/mini-lit";
+﻿import { icon } from "../vendor/mini-lit/dist/index.js";
 import { LitElement } from "lit";
 import { property, state } from "lit/decorators.js";
 import { html } from "lit/html.js";
@@ -70,3 +70,4 @@ ${this.content || ""}</pre
 if (!customElements.get("console-block")) {
 	customElements.define("console-block", ConsoleBlock);
 }
+

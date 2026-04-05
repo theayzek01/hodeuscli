@@ -1,4 +1,4 @@
-import hljs from "highlight.js";
+﻿import hljs from "highlight.js";
 import { html } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";
@@ -12,11 +12,11 @@ import "../../components/SandboxedIframe.js";
 import { ArtifactElement } from "./ArtifactElement.js";
 import type { Console } from "./Console.js";
 import "./Console.js";
-import { icon } from "@mariozechner/mini-lit";
-import { Button } from "@mariozechner/mini-lit/dist/Button.js";
-import { CopyButton } from "@mariozechner/mini-lit/dist/CopyButton.js";
-import { DownloadButton } from "@mariozechner/mini-lit/dist/DownloadButton.js";
-import { PreviewCodeToggle } from "@mariozechner/mini-lit/dist/PreviewCodeToggle.js";
+import { icon } from "../../vendor/mini-lit/dist/index.js";
+import { Button } from "../../vendor/mini-lit/dist/Button.js";
+import { CopyButton } from "../../vendor/mini-lit/dist/CopyButton.js";
+import { DownloadButton } from "../../vendor/mini-lit/dist/DownloadButton.js";
+import { PreviewCodeToggle } from "../../vendor/mini-lit/dist/PreviewCodeToggle.js";
 
 @customElement("html-artifact")
 export class HtmlArtifact extends ArtifactElement {
@@ -193,3 +193,4 @@ export class HtmlArtifact extends ArtifactElement {
 		`;
 	}
 }
+

@@ -12,8 +12,9 @@
 </p>
 
 <p align="center">
-  <a href="https://discord.com/invite/3cU7Bz4UPx"><img alt="Discord" src="https://img.shields.io/badge/discord-community-5865F2?style=flat-square&logo=discord&logoColor=white" /></a>
-  <a href="https://github.com/games-coder/hodeuscli/actions/workflows/ci.yml"><img alt="Build status" src="https://img.shields.io/github/actions/workflow/status/games-coder/hodeuscli/ci.yml?style=flat-square&branch=main" /></a>
+  <a href="https://www.hodeusstudio.com/"><img src="https://img.shields.io/badge/Website-Hodeus%20Studio-blue?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Website" /></a>
+  <a href="https://discord.gg/sp6Yhj3u"><img src="https://img.shields.io/badge/Discord-Join%20Us-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" /></a>
+  <a href="https://www.instagram.com/themoonzeky/"><img src="https://img.shields.io/badge/Instagram-Follow-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>
 </p>
 
 ---
@@ -59,7 +60,13 @@ Hodeuscli, performans ve estetik mükemmellik için tasarlanmış, dünyanın en
 | **[@games-coder/hodeuscli-web-ui](packages/web-ui)** | Modern AI sohbet arayüzleri için Web bileşenleri |
 | **[@games-coder/hodeuscli-pods](packages/pods)** | GPU pod'larında vLLM dağıtımlarını yönetmek için CLI |
 
-### 🛠️ Hızlı Başlangıç
+### 🛠️ Quick Start / Hızlı Başlangıç
+
+<p align="center">
+  <a href="https://www.hodeusstudio.com/"><img src="https://img.shields.io/badge/Web%20Sitesi-Hodeus%20Studio-blue?style=for-the-badge&logo=google-chrome&logoColor=white" alt="Web Sitesi" /></a>
+  <a href="https://discord.gg/sp6Yhj3u"><img src="https://img.shields.io/badge/Discord-Katıl-7289DA?style=for-the-badge&logo=discord&logoColor=white" alt="Discord" /></a>
+  <a href="https://www.instagram.com/themoonzeky/"><img src="https://img.shields.io/badge/Instagram-Takip%20Et-E4405F?style=for-the-badge&logo=instagram&logoColor=white" alt="Instagram" /></a>
+</p>
 
 ```bash
 npm install          # Tüm bağımlılıkları yükle

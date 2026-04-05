@@ -1,5 +1,5 @@
-import { i18n } from "@mariozechner/mini-lit";
-import { Select } from "@mariozechner/mini-lit/dist/Select.js";
+﻿import { i18n } from "../vendor/mini-lit/dist/index.js";
+import { Select } from "../vendor/mini-lit/dist/Select.js";
 import { getProviders } from "@games-coder/hodeuscli-ai";
 import { html, type TemplateResult } from "lit";
 import { customElement, state } from "lit/decorators.js";
@@ -210,3 +210,4 @@ export class ProvidersModelsTab extends SettingsTab {
 		`;
 	}
 }
+

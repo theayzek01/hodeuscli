@@ -1,6 +1,6 @@
-import { icon } from "@mariozechner/mini-lit";
-import "@mariozechner/mini-lit/dist/MarkdownBlock.js";
-import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+﻿import { icon } from "../../vendor/mini-lit/dist/index.js";
+import "../../vendor/mini-lit/dist/MarkdownBlock.js";
+import { Button } from "../../vendor/mini-lit/dist/Button.js";
 import type { Agent, AgentMessage, AgentTool } from "@games-coder/hodeuscli-agent-core";
 import { StringEnum, type ToolCall } from "@games-coder/hodeuscli-ai";
 import { type Static, Type } from "@sinclair/typebox";
@@ -711,3 +711,4 @@ declare global {
 		"artifacts-panel": ArtifactsPanel;
 	}
 }
+

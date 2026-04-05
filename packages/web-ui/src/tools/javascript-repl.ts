@@ -1,4 +1,4 @@
-import { i18n } from "@mariozechner/mini-lit";
+﻿import { i18n } from "../vendor/mini-lit/dist/index.js";
 import type { AgentTool } from "@games-coder/hodeuscli-agent-core";
 import type { ToolResultMessage } from "@games-coder/hodeuscli-ai";
 import { type Static, Type } from "@sinclair/typebox";
@@ -291,3 +291,4 @@ export const javascriptReplRenderer: ToolRenderer<JavaScriptReplParams, JavaScri
 
 // Auto-register the renderer
 registerToolRenderer(javascriptReplTool.name, javascriptReplRenderer);
+

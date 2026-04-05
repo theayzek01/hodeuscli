@@ -1,6 +1,6 @@
-import { icon } from "@mariozechner/mini-lit";
-import { Button } from "@mariozechner/mini-lit/dist/Button.js";
-import { Select, type SelectOption } from "@mariozechner/mini-lit/dist/Select.js";
+﻿import { icon } from "../vendor/mini-lit/dist/index.js";
+import { Button } from "../vendor/mini-lit/dist/Button.js";
+import { Select, type SelectOption } from "../vendor/mini-lit/dist/Select.js";
 import type { Model } from "@games-coder/hodeuscli-ai";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
@@ -400,3 +400,4 @@ export class MessageEditor extends LitElement {
 		`;
 	}
 }
+

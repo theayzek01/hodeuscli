@@ -1,5 +1,5 @@
-import { icon } from "@mariozechner/mini-lit";
-import "@mariozechner/mini-lit/dist/CopyButton.js";
+import { icon } from "../../vendor/mini-lit/dist/index.js";
+import "../../vendor/mini-lit/dist/CopyButton.js";
 import { html, LitElement, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { createRef, type Ref, ref } from "lit/directives/ref.js";

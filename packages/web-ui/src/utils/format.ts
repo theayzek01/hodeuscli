@@ -1,4 +1,4 @@
-import { i18n } from "@mariozechner/mini-lit";
+import { i18n } from "../vendor/mini-lit/dist/index.js";
 import type { Usage } from "@games-coder/hodeuscli-ai";
 
 export function formatCost(cost: number): string {

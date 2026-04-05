@@ -1,8 +1,8 @@
-import { i18n } from "@mariozechner/mini-lit";
-import { Dialog, DialogContent, DialogHeader } from "@mariozechner/mini-lit/dist/Dialog.js";
-import { Input } from "@mariozechner/mini-lit/dist/Input.js";
-import { Label } from "@mariozechner/mini-lit/dist/Label.js";
-import { Switch } from "@mariozechner/mini-lit/dist/Switch.js";
+﻿import { i18n } from "../vendor/mini-lit/dist/index.js";
+import { Dialog, DialogContent, DialogHeader } from "../vendor/mini-lit/dist/Dialog.js";
+import { Input } from "../vendor/mini-lit/dist/Input.js";
+import { Label } from "../vendor/mini-lit/dist/Label.js";
+import { Switch } from "../vendor/mini-lit/dist/Switch.js";
 import { getProviders } from "@games-coder/hodeuscli-ai";
 import { html, LitElement, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
@@ -216,3 +216,4 @@ export class SettingsDialog extends LitElement {
 		});
 	}
 }
+

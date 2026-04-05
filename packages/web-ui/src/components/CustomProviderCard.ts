@@ -1,5 +1,5 @@
-import { i18n } from "@mariozechner/mini-lit";
-import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+﻿import { i18n } from "../vendor/mini-lit/dist/index.js";
+import { Button } from "../vendor/mini-lit/dist/Button.js";
 import { html, LitElement, type TemplateResult } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import type { CustomProvider } from "../storage/stores/custom-providers-store.js";
@@ -30,10 +30,10 @@ export class CustomProviderCard extends LitElement {
 
 		const statusIcon =
 			this.status.status === "connected"
-				? html`<span class="text-green-500">●</span>`
+				? html`<span class="text-green-500">â—</span>`
 				: this.status.status === "checking"
-					? html`<span class="text-yellow-500">●</span>`
-					: html`<span class="text-red-500">●</span>`;
+					? html`<span class="text-yellow-500">â—</span>`
+					: html`<span class="text-red-500">â—</span>`;
 
 		const statusText =
 			this.status.status === "connected"
@@ -98,3 +98,4 @@ export class CustomProviderCard extends LitElement {
 		`;
 	}
 }
+

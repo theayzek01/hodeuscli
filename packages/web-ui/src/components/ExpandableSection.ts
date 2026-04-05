@@ -1,4 +1,4 @@
-import { icon } from "@mariozechner/mini-lit";
+﻿import { icon } from "../vendor/mini-lit/dist/index.js";
 import { html, LitElement, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { ChevronDown, ChevronRight } from "lucide";
@@ -44,3 +44,4 @@ export class ExpandableSection extends LitElement {
 		`;
 	}
 }
+

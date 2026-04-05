@@ -1,4 +1,4 @@
-import { type BaseComponentProps, fc } from "@mariozechner/mini-lit/dist/mini.js";
+import { type BaseComponentProps, fc } from "../vendor/mini-lit/dist/mini.js";
 import { html } from "lit";
 import { type Ref, ref } from "lit/directives/ref.js";
 import { i18n } from "../utils/i18n.js";

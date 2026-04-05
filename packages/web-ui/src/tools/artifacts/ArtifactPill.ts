@@ -1,4 +1,4 @@
-import { icon } from "@mariozechner/mini-lit";
+﻿import { icon } from "../../vendor/mini-lit/dist/index.js";
 import { html, type TemplateResult } from "lit";
 import { FileCode2 } from "lucide";
 import type { ArtifactsPanel } from "./artifacts.js";
@@ -24,3 +24,4 @@ export function ArtifactPill(filename: string, artifactsPanel?: ArtifactsPanel):
 		</span>
 	`;
 }
+

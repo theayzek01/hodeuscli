@@ -1,6 +1,6 @@
-import { i18n } from "@mariozechner/mini-lit";
-import { Badge } from "@mariozechner/mini-lit/dist/Badge.js";
-import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+﻿import { i18n } from "../vendor/mini-lit/dist/index.js";
+import { Badge } from "../vendor/mini-lit/dist/Badge.js";
+import { Button } from "../vendor/mini-lit/dist/Button.js";
 import { type Context, complete, getModel } from "@games-coder/hodeuscli-ai";
 import { html, LitElement } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
@@ -151,3 +151,4 @@ export class ProviderKeyInput extends LitElement {
 		`;
 	}
 }
+

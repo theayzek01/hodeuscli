@@ -1,4 +1,4 @@
-import { icon } from "@mariozechner/mini-lit";
+import { icon } from "../vendor/mini-lit/dist/index.js";
 import { html, type TemplateResult } from "lit";
 import type { Ref } from "lit/directives/ref.js";
 import { ref } from "lit/directives/ref.js";

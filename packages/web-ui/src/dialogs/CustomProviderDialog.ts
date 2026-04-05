@@ -1,9 +1,9 @@
-import { i18n } from "@mariozechner/mini-lit";
-import { Button } from "@mariozechner/mini-lit/dist/Button.js";
-import { DialogBase } from "@mariozechner/mini-lit/dist/DialogBase.js";
-import { Input } from "@mariozechner/mini-lit/dist/Input.js";
-import { Label } from "@mariozechner/mini-lit/dist/Label.js";
-import { Select } from "@mariozechner/mini-lit/dist/Select.js";
+﻿import { i18n } from "../vendor/mini-lit/dist/index.js";
+import { Button } from "../vendor/mini-lit/dist/Button.js";
+import { DialogBase } from "../vendor/mini-lit/dist/DialogBase.js";
+import { Input } from "../vendor/mini-lit/dist/Input.js";
+import { Label } from "../vendor/mini-lit/dist/Label.js";
+import { Select } from "../vendor/mini-lit/dist/Select.js";
 import type { Model } from "@games-coder/hodeuscli-ai";
 import { html, type TemplateResult } from "lit";
 import { state } from "lit/decorators.js";
@@ -272,3 +272,4 @@ export class CustomProviderDialog extends DialogBase {
 }
 
 customElements.define("custom-provider-dialog", CustomProviderDialog);
+

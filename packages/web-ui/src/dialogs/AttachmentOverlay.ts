@@ -1,6 +1,6 @@
-import "@mariozechner/mini-lit/dist/ModeToggle.js";
-import { icon } from "@mariozechner/mini-lit";
-import { Button } from "@mariozechner/mini-lit/dist/Button.js";
+﻿import "../vendor/mini-lit/dist/ModeToggle.js";
+import { icon } from "../vendor/mini-lit/dist/index.js";
+import { Button } from "../vendor/mini-lit/dist/Button.js";
 import { renderAsync } from "docx-preview";
 import { html, LitElement } from "lit";
 import { state } from "lit/decorators.js";
@@ -634,3 +634,4 @@ export class AttachmentOverlay extends LitElement {
 if (!customElements.get("attachment-overlay")) {
 	customElements.define("attachment-overlay", AttachmentOverlay);
 }
+
