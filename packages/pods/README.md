@@ -22,7 +22,7 @@ npm install -g @mariozechner/hodeuscli
 ```bash
 # Set required environment variables
 export HF_TOKEN=your_huggingface_token      # Get from https://huggingface.co/settings/tokens
-export PI_API_KEY=your_ahodeuscli_key              # Any string you want for API authentication
+export PI_API_KEY=your_api_key              # Any string you want for API authentication
 
 # Setup a DataCrunch pod with NFS storage (models path auto-extracted)
 hodeuscli pods setup dc1 "ssh root@1.2.3.4" \
@@ -122,7 +122,7 @@ hodeuscli agent <name> -i -c                     # Continue previous session
 
 # Standalone OpenAI-compatible agent (works with any API)
 hodeuscli-agent --base-url http://localhost:8000/v1 --model llama-3.1 "Hello"
-hodeuscli-agent --ahodeuscli-key sk-... "What is 2+2?"  # Uses OpenAI by default
+hodeuscli-agent --api-key sk-... "What is 2+2?"  # Uses OpenAI by default
 hodeuscli-agent --json "What is 2+2?"            # Output event stream as JSONL
 hodeuscli-agent -i                                # Interactive mode
 ```
@@ -279,7 +279,7 @@ from openai import OpenAI
 
 client = OpenAI(
     base_url="http://your-pod-ip:8001/v1",
-    ahodeuscli_key="your-hodeuscli-ahodeuscli-key"
+    api_key="your-hodeuscli-api-key"
 )
 
 # Chat completion with tool calling
@@ -315,12 +315,12 @@ response = client.chat.completions.create(
 npm install -g @mariozechner/hodeuscli
 
 # Use with OpenAI
-hodeuscli-agent --ahodeuscli-key sk-... "What is machine learning?"
+hodeuscli-agent --api-key sk-... "What is machine learning?"
 
 # Use with local vLLM
 hodeuscli-agent --base-url http://localhost:8000/v1 \
          --model meta-llama/Llama-3.1-8B-Instruct \
-         --ahodeuscli-key dummy \
+         --api-key dummy \
          "Explain quantum computing"
 
 # Interactive mode
@@ -333,7 +333,7 @@ hodeuscli-agent --continue "Follow up question"
 hodeuscli-agent --system-prompt "You are a Python expert" "Write a web scraper"
 
 # Use responses API (for GPT-OSS models)
-hodeuscli-agent --ahodeuscli responses --model openai/gpt-oss-20b "Hello"
+hodeuscli-agent --api responses --model openai/gpt-oss-20b "Hello"
 ```
 
 The agent supports:
@@ -411,7 +411,7 @@ Events are automatically converted to the appropriate API format (Chat Completio
 
 Use `--json` flag to output the event stream as JSONL (JSON Lines) for programmatic consumption:
 ```bash
-hodeuscli-agent --ahodeuscli-key sk-... --json "What is 2+2?"
+hodeuscli-agent --api-key sk-... --json "What is 2+2?"
 ```
 
 Each line is a complete JSON object representing an event:
@@ -504,7 +504,7 @@ ls -la ~/.hodeuscli/sessions/
 - `HF_TOKEN` - HuggingFace token for model downloads
 - `PI_API_KEY` - API key for vLLM endpoints
 - `PI_CONFIG_DIR` - Config directory (default: `~/.hodeuscli`)
-- `OPENAI_API_KEY` - Used by `hodeuscli-agent` when no `--ahodeuscli-key` provided
+- `OPENAI_API_KEY` - Used by `hodeuscli-agent` when no `--api-key` provided
 
 ## License
 

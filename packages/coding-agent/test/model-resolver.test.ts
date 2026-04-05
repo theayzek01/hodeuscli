@@ -1,4 +1,4 @@
-import type { Model } from "@mariozechner/pi-ai";
+import type { Model } from "@games-coder/hodeuscli-ai";
 import { describe, expect, test } from "vitest";
 import {
 	defaultModelPerProvider,

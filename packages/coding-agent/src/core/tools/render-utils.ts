@@ -1,6 +1,6 @@
 import * as os from "node:os";
-import type { ImageContent, TextContent } from "@mariozechner/pi-ai";
-import { getCapabilities, getImageDimensions, imageFallback } from "@mariozechner/pi-tui";
+import type { ImageContent, TextContent } from "@games-coder/hodeuscli-ai";
+import { getCapabilities, getImageDimensions, imageFallback } from "@games-coder/hodeuscli-tui";
 import stripAnsi from "strip-ansi";
 import { sanitizeBinaryOutput } from "../../utils/shell.js";
 

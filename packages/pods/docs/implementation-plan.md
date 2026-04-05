@@ -37,7 +37,7 @@ Local JSON state management
 
 - [ ] `src/config/types.ts` - TypeScript interfaces
   - [ ] Pod interface (ssh, gpus, models, mount)
-  - [ ] Model interface (model, port, gpu, hodeusclid)
+  - [ ] Model interface (model, port, gpu, pid)
   - [ ] GPU interface (id, name, memory)
 
 - [ ] `src/config/store.ts` - Read/write ~/.hodeuscli/pods.json

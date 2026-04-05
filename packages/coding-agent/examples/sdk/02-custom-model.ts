@@ -4,8 +4,8 @@
  * Shows how to select a specific model and thinking level.
  */
 
-import { getModel } from "@mariozechner/pi-ai";
-import { AuthStorage, createAgentSession, ModelRegistry } from "@mariozechner/pi-coding-agent";
+import { getModel } from "@games-coder/hodeuscli-ai";
+import { AuthStorage, createAgentSession, ModelRegistry } from "@games-coder/hodeuscli-coding-agent";
 
 // Set up auth storage and model registry
 const authStorage = AuthStorage.create();

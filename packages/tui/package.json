@@ -1,7 +1,7 @@
 {
-	"name": "@mariozechner/pi-tui",
+	"name": "@games-coder/hodeuscli-tui",
 	"version": "0.65.0",
-	"description": "Terminal User Interface library with differential rendering for efficient text-based applications",
+	"description": "Premium Terminal UI library with high-perf differential rendering",
 	"type": "module",
 	"main": "dist/index.js",
 	"scripts": {
@@ -24,11 +24,11 @@
 		"typescript",
 		"cli"
 	],
-	"author": "Mario Zechner",
+	"author": "Games-coder",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/badlogic/pi-mono.git",
+		"url": "git+https://github.com/games-coder/hodeuscli.git",
 		"directory": "packages/tui"
 	},
 	"engines": {

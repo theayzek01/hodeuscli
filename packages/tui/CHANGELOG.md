@@ -25,7 +25,7 @@
 
 ### Added
 
-- Added support for `PI_TUI_WRITE_LOG` directory paths, creating a unique log file (`tui-<timestamp>-<hodeusclid>.log`) per instance for easier debugging of multiple hodeuscli sessions ([#2508](https://github.com/badlogic/hodeuscli-mono/pull/2508) by [@mrexodia](https://github.com/mrexodia))
+- Added support for `PI_TUI_WRITE_LOG` directory paths, creating a unique log file (`tui-<timestamp>-<pid>.log`) per instance for easier debugging of multiple hodeuscli sessions ([#2508](https://github.com/badlogic/hodeuscli-mono/pull/2508) by [@mrexodia](https://github.com/mrexodia))
 
 ### Fixed
 

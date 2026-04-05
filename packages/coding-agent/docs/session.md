@@ -81,7 +81,7 @@ interface UserMessage {
 interface AssistantMessage {
   role: "assistant";
   content: (TextContent | ThinkingContent | ToolCall)[];
-  ahodeuscli: string;
+  api: string;
   provider: string;
   model: string;
   usage: Usage;

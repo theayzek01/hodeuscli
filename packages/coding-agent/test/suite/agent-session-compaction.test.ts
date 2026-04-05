@@ -1,4 +1,4 @@
-import { type AssistantMessage, fauxAssistantMessage, type Model } from "@mariozechner/pi-ai";
+import { type AssistantMessage, fauxAssistantMessage, type Model } from "@games-coder/hodeuscli-ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createHarness, type Harness } from "./harness.js";
 
@@ -55,7 +55,7 @@ describe("AgentSession compaction characterization", () => {
 	it("manually compacts using an extension-provided summary", async () => {
 		const harness = await createHarness({
 			extensionFactories: [
-				(pi) => {
+				(Hodeuscli) => {
 					pi.on("session_before_compact", async (event) => ({
 						compaction: {
 							summary: "summary from extension",
@@ -98,7 +98,7 @@ describe("AgentSession compaction characterization", () => {
 	it("cancels in-progress manual compaction when abortCompaction is called", async () => {
 		const harness = await createHarness({
 			extensionFactories: [
-				(pi) => {
+				(Hodeuscli) => {
 					pi.on("session_before_compact", async (event) => {
 						return await new Promise<{ cancel: true }>((resolve) => {
 							event.signal.addEventListener("abort", () => resolve({ cancel: true }), { once: true });
@@ -124,7 +124,7 @@ describe("AgentSession compaction characterization", () => {
 		const harness = await createHarness({
 			settings: { compaction: { keepRecentTokens: 1 } },
 			extensionFactories: [
-				(pi) => {
+				(Hodeuscli) => {
 					pi.on("session_before_compact", async (event) => ({
 						compaction: {
 							summary: "auto compacted",

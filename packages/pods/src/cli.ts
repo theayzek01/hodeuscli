@@ -19,38 +19,38 @@ function printHelp() {
 	console.log(`pi v${packageJson.version} - Manage vLLM deployments on GPU pods
 
 Pod Management:
-  pi pods setup <name> "<ssh>" --mount "<mount>"    Setup pod with mount command
+  Hodeuscli pods setup <name> "<ssh>" --mount "<mount>"    Setup pod with mount command
     Options:
       --vllm release    Install latest vLLM release >=0.10.0 (default)
       --vllm nightly    Install vLLM nightly build (latest features)
       --vllm gpt-oss    Install vLLM 0.10.1+gptoss with PyTorch nightly (GPT-OSS only)
-  pi pods                                           List all pods (* = active)
-  pi pods active <name>                             Switch active pod
-  pi pods remove <name>                             Remove pod from local config
-  pi shell [<name>]                                 Open shell on pod (active or specified)
-  pi ssh [<name>] "<command>"                       Run SSH command on pod
+  Hodeuscli pods                                           List all pods (* = active)
+  Hodeuscli pods active <name>                             Switch active pod
+  Hodeuscli pods remove <name>                             Remove pod from local config
+  Hodeuscli shell [<name>]                                 Open shell on pod (active or specified)
+  Hodeuscli ssh [<name>] "<command>"                       Run SSH command on pod
 
 Model Management:
-  pi start <model> --name <name> [options]          Start a model
+  Hodeuscli start <model> --name <name> [options]          Start a model
     --memory <percent>   GPU memory allocation (30%, 50%, 90%)
     --context <size>     Context window (4k, 8k, 16k, 32k, 64k, 128k)
     --gpus <count>       Number of GPUs to use (predefined models only)
     --vllm <args...>     Pass remaining args to vLLM (ignores other options)
-  pi stop [<name>]                                  Stop model (or all if no name)
-  pi list                                           List running models
-  pi logs <name>                                    Stream model logs
-  pi agent <name> ["<message>"...] [options]        Chat with model using agent & tools
-  pi agent <name> [options]                         Interactive chat mode
+  Hodeuscli stop [<name>]                                  Stop model (or all if no name)
+  Hodeuscli list                                           List running models
+  Hodeuscli logs <name>                                    Stream model logs
+  Hodeuscli agent <name> ["<message>"...] [options]        Chat with model using agent & tools
+  Hodeuscli agent <name> [options]                         Interactive chat mode
     --continue, -c       Continue previous session
     --json              Output as JSONL
-    (All pi-agent options are supported)
+    (All hodeuscli-agent options are supported)
 
   All model commands support --pod <name> to override the active pod.
 
 Environment:
   HF_TOKEN         HuggingFace token for model downloads
   PI_API_KEY     API key for vLLM endpoints
-  PI_CONFIG_DIR    Config directory (default: ~/.pi)`);
+  PI_CONFIG_DIR    Config directory (default: ~/.hodeuscli)`);
 }
 
 // Parse command line arguments
@@ -74,16 +74,16 @@ try {
 	// Handle "pi pods" commands
 	if (command === "pods") {
 		if (!subcommand) {
-			// pi pods - list all pods
+			// Hodeuscli pods - list all pods
 			listPods();
 		} else if (subcommand === "setup") {
-			// pi pods setup <name> "<ssh>" [--mount "<mount>"] [--models-path <path>] [--vllm release|nightly|gpt-oss]
+			// Hodeuscli pods setup <name> "<ssh>" [--mount "<mount>"] [--models-path <path>] [--vllm release|nightly|gpt-oss]
 			const name = args[2];
 			const sshCmd = args[3];
 
 			if (!name || !sshCmd) {
 				console.error(
-					'Usage: pi pods setup <name> "<ssh>" [--mount "<mount>"] [--models-path <path>] [--vllm release|nightly|gpt-oss]',
+					'Usage: Hodeuscli pods setup <name> "<ssh>" [--mount "<mount>"] [--models-path <path>] [--vllm release|nightly|gpt-oss]',
 				);
 				process.exit(1);
 			}
@@ -122,18 +122,18 @@ try {
 
 			await setupPod(name, sshCmd, options);
 		} else if (subcommand === "active") {
-			// pi pods active <name>
+			// Hodeuscli pods active <name>
 			const name = args[2];
 			if (!name) {
-				console.error("Usage: pi pods active <name>");
+				console.error("Usage: Hodeuscli pods active <name>");
 				process.exit(1);
 			}
 			switchActivePod(name);
 		} else if (subcommand === "remove") {
-			// pi pods remove <name>
+			// Hodeuscli pods remove <name>
 			const name = args[2];
 			if (!name) {
-				console.error("Usage: pi pods remove <name>");
+				console.error("Usage: Hodeuscli pods remove <name>");
 				process.exit(1);
 			}
 			removePodCommand(name);
@@ -154,7 +154,7 @@ try {
 		// Handle SSH/shell commands and model commands
 		switch (command) {
 			case "shell": {
-				// pi shell [<name>] - open interactive shell
+				// Hodeuscli shell [<name>] - open interactive shell
 				const podName = args[1];
 				let podInfo: { name: string; pod: import("./types.js").Pod } | null = null;
 
@@ -192,19 +192,19 @@ try {
 				break;
 			}
 			case "ssh": {
-				// pi ssh [<name>] "<command>" - run command via SSH
+				// Hodeuscli ssh [<name>] "<command>" - run command via SSH
 				let podName: string | undefined;
 				let sshCommand: string;
 
 				if (args.length === 2) {
-					// pi ssh "<command>" - use active pod
+					// Hodeuscli ssh "<command>" - use active pod
 					sshCommand = args[1];
 				} else if (args.length === 3) {
-					// pi ssh <name> "<command>"
+					// Hodeuscli ssh <name> "<command>"
 					podName = args[1];
 					sshCommand = args[2];
 				} else {
-					console.error('Usage: pi ssh [<name>] "<command>"');
+					console.error('Usage: Hodeuscli ssh [<name>] "<command>"');
 					process.exit(1);
 				}
 
@@ -237,7 +237,7 @@ try {
 				break;
 			}
 			case "start": {
-				// pi start <model> --name <name> [options]
+				// Hodeuscli start <model> --name <name> [options]
 				const modelId = args[1];
 				if (!modelId) {
 					// Show available models
@@ -301,7 +301,7 @@ try {
 				break;
 			}
 			case "stop": {
-				// pi stop [name] - stop specific model or all models
+				// Hodeuscli stop [name] - stop specific model or all models
 				const name = args[1];
 				if (!name) {
 					// Stop all models on the active pod
@@ -312,24 +312,24 @@ try {
 				break;
 			}
 			case "list":
-				// pi list
+				// Hodeuscli list
 				await listModels({ pod: podOverride });
 				break;
 			case "logs": {
-				// pi logs <name>
+				// Hodeuscli logs <name>
 				const name = args[1];
 				if (!name) {
-					console.error("Usage: pi logs <name>");
+					console.error("Usage: Hodeuscli logs <name>");
 					process.exit(1);
 				}
 				await viewLogs(name, { pod: podOverride });
 				break;
 			}
 			case "agent": {
-				// pi agent <name> [messages...] [options]
+				// Hodeuscli agent <name> [messages...] [options]
 				const name = args[1];
 				if (!name) {
-					console.error("Usage: pi agent <name> [messages...] [options]");
+					console.error("Usage: Hodeuscli agent <name> [messages...] [options]");
 					process.exit(1);
 				}
 

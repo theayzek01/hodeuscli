@@ -1,6 +1,6 @@
-import type { OAuthProviderInterface } from "@mariozechner/pi-ai";
-import { getOAuthProviders } from "@mariozechner/pi-ai/oauth";
-import { Container, getKeybindings, Spacer, TruncatedText } from "@mariozechner/pi-tui";
+import type { OAuthProviderInterface } from "@games-coder/hodeuscli-ai";
+import { getOAuthProviders } from "@games-coder/hodeuscli-ai/oauth";
+import { Container, getKeybindings, Spacer, TruncatedText } from "@games-coder/hodeuscli-tui";
 import type { AuthStorage } from "../../../core/auth-storage.js";
 import { theme } from "../theme/theme.js";
 import { DynamicBorder } from "./dynamic-border.js";

@@ -12,7 +12,7 @@ import type {
 	StreamOptions,
 } from "./types.js";
 
-export { getEnvApiKey } from "./env-api-keys.js";
+
 
 function resolveApiProvider(api: Api) {
 	const provider = getApiProvider(api);

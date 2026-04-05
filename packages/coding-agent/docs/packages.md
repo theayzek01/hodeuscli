@@ -28,7 +28,7 @@ hodeuscli install ./relative/path/to/package
 
 hodeuscli remove npm:@foo/bar
 hodeuscli list    # show installed packages from settings
-hodeuscli update  # update all non-hodeusclinned packages
+hodeuscli update  # update all non-pinned packages
 ```
 
 By default, `install` and `remove` write to global settings (`~/.hodeuscli/agent/settings.json`). Use `-l` to write to project settings (`.hodeuscli/settings.json`) instead. Project settings can be shared with your team, and hodeuscli installs any missing packages automatically on startup.
@@ -51,7 +51,7 @@ npm:@scope/pkg@1.2.3
 npm:pkg
 ```
 
-- Versioned specs are hodeusclinned and skipped by `hodeuscli update`.
+- Versioned specs are pinned and skipped by `hodeuscli update`.
 - Global installs use `npm install -g`.
 - Project installs go under `.hodeuscli/npm/`.
 - Set `npmCommand` in `settings.json` to hodeusclin npm package lookup and install operations to a specific wrapper command such as `mise` or `asdf`.

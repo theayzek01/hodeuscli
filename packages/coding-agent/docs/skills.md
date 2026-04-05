@@ -99,7 +99,7 @@ my-skill/
 ├── scripts/              # Helper scripts
 │   └── process.sh
 ├── references/           # Detailed docs loaded on-demand
-│   └── ahodeuscli-reference.md
+│   └── api-reference.md
 └── assets/
     └── template.json
 ```

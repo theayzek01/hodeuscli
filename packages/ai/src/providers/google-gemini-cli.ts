@@ -68,7 +68,7 @@ const ANTIGRAVITY_ENDPOINT_FALLBACKS = [
 // Headers for Gemini CLI (prod endpoint)
 const GEMINI_CLI_HEADERS = {
 	"User-Agent": "google-cloud-sdk vscode_cloudshelleditor/0.1",
-	"X-Goog-Api-Client": "gl-node/22.17.0",
+	"X-Goog-Ahodeuscli-Client": "gl-node/22.17.0",
 	"Client-Metadata": JSON.stringify({
 		ideType: "IDE_UNSPECIFIED",
 		platform: "PLATFORM_UNSPECIFIED",
@@ -941,7 +941,7 @@ export function buildRequest(
 		model: model.id,
 		request,
 		...(isAntigravity ? { requestType: "agent" } : {}),
-		userAgent: isAntigravity ? "antigravity" : "pi-coding-agent",
+		userAgent: isAntigravity ? "antigravity" : "hodeuscli-coding-agent",
 		requestId: `${isAntigravity ? "agent" : "pi"}-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`,
 	};
 }

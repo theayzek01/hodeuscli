@@ -4,11 +4,11 @@
  * Adjusts command, cwd, and env before execution.
  *
  * Usage:
- *   pi -e ./bash-spawn-hook.ts
+ *   Hodeuscli -e ./bash-spawn-hook.ts
  */
 
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { createBashTool } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@games-coder/hodeuscli-coding-agent";
+import { createBashTool } from "@games-coder/hodeuscli-coding-agent";
 
 export default function (pi: ExtensionAPI) {
 	const cwd = process.cwd();

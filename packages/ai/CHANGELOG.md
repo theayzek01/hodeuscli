@@ -40,7 +40,7 @@
 
 ### Breaking Changes
 
-- Removed deprecated direct `minimax` and `minimax-cn` model IDs, keehodeuscling only `MiniMax-M2.7` and `MiniMax-M2.7-highspeed`. Update hodeusclinned model IDs to one of those supported direct MiniMax models, or use another provider route that still exposes the older IDs ([#2596](https://github.com/badlogic/hodeuscli-mono/pull/2596) by [@liyuan97](https://github.com/liyuan97))
+- Removed deprecated direct `minimax` and `minimax-cn` model IDs, keehodeuscling only `MiniMax-M2.7` and `MiniMax-M2.7-highspeed`. Update pinned model IDs to one of those supported direct MiniMax models, or use another provider route that still exposes the older IDs ([#2596](https://github.com/badlogic/hodeuscli-mono/pull/2596) by [@liyuan97](https://github.com/liyuan97))
 
 ### Fixed
 
@@ -442,7 +442,7 @@
 ### Added
 
 - Added Hugging Face provider support via OpenAI-compatible Inference Router ([#994](https://github.com/badlogic/hodeuscli-mono/issues/994))
-- Added `PI_CACHE_RETENTION` environment variable to control cache TTL for Anthropic (5m vs 1h) and OpenAI (in-memory vs 24h). Set to `long` for extended retention. Only applies to direct API calls (ahodeuscli.Anthropic.com, ahodeuscli.openai.com). ([#967](https://github.com/badlogic/hodeuscli-mono/issues/967))
+- Added `PI_CACHE_RETENTION` environment variable to control cache TTL for Anthropic (5m vs 1h) and OpenAI (in-memory vs 24h). Set to `long` for extended retention. Only applies to direct API calls (api.Anthropic.com, api.openai.com). ([#967](https://github.com/badlogic/hodeuscli-mono/issues/967))
 
 ### Fixed
 
@@ -472,13 +472,13 @@
 ### Changed
 
 - Refactored API streaming dispatch to use an API registry with provider-owned `streamSimple` maphodeuscling.
-- Moved environment API key resolution to `env-ahodeuscli-keys.ts` and re-exported it from the package entrypoint.
+- Moved environment API key resolution to `env-api-keys.ts` and re-exported it from the package entrypoint.
 - Azure OpenAI Responses provider now uses base URL configuration with deployment-aware model maphodeuscling and no longer includes service tier handling.
 
 ### Fixed
 
 - Fixed Bun runtime detection for dynamic imports in browser-compatible modules (stream.ts, openai-codex-responses.ts, openai-codex.ts) ([#922](https://github.com/badlogic/hodeuscli-mono/pull/922) by [@dannote](https://github.com/dannote))
-- Fixed streaming functions to use `model.ahodeuscli` instead of hardcoded API types
+- Fixed streaming functions to use `model.api` instead of hardcoded API types
 - Fixed Google providers to default tool call arguments to an empty object when omitted
 - Fixed OpenAI Responses streaming to handle `arguments.done` events on OpenAI-compatible endpoints ([#917](https://github.com/badlogic/hodeuscli-mono/pull/917) by [@williballenthin](https://github.com/williballenthin))
 - Fixed OpenAI Codex Responses tool strictness handling after the shared responses refactor
@@ -730,7 +730,7 @@
 
 ### Fixed
 
-- Vertex AI dummy value for `getEnvAhodeuscliKey()`: Returns `"<authenticated>"` when Application Default Credentials are configured (`~/.config/gcloud/application_default_credentials.json` exists) and both `GOOGLE_CLOUD_PROJECT` (or `GCLOUD_PROJECT`) and `GOOGLE_CLOUD_LOCATION` are set. This allows `streamSimple()` to work with Vertex AI without explicit `ahodeuscliKey` option. The ADC credentials file existence check is cached per-process to avoid repeated filesystem access.
+- Vertex AI dummy value for `getEnvAhodeuscliKey()`: Returns `"<authenticated>"` when Application Default Credentials are configured (`~/.config/gcloud/application_default_credentials.json` exists) and both `GOOGLE_CLOUD_PROJECT` (or `GCLOUD_PROJECT`) and `GOOGLE_CLOUD_LOCATION` are set. This allows `streamSimple()` to work with Vertex AI without explicit `apiKey` option. The ADC credentials file existence check is cached per-process to avoid repeated filesystem access.
 
 ## [0.35.0] - 2026-01-05
 
@@ -785,7 +785,7 @@
 
 - **OpenAI completions empty content blocks**: Empty text or thinking blocks in assistant messages are now filtered out before sending to the OpenAI completions API, preventing validation errors. ([#344](https://github.com/badlogic/hodeuscli-mono/pull/344) by [@default-anton](https://github.com/default-anton))
 - **Thinking token duplication**: Fixed thinking content duplication with chutes.ai provider. The provider was returning thinking content in both `reasoning_content` and `reasoning` fields, causing each chunk to be processed twice. Now only the first non-empty reasoning field is used.
-- **zAi provider API maphodeuscling**: Fixed zAi models to use `openai-completions` API with correct base URL (`https://ahodeuscli.z.ai/ahodeuscli/coding/paas/v4`) instead of incorrect Anthropic API maphodeuscling. ([#344](https://github.com/badlogic/hodeuscli-mono/pull/344), [#358](https://github.com/badlogic/hodeuscli-mono/pull/358) by [@default-anton](https://github.com/default-anton))
+- **zAi provider API maphodeuscling**: Fixed zAi models to use `openai-completions` API with correct base URL (`https://api.z.ai/api/coding/paas/v4`) instead of incorrect Anthropic API maphodeuscling. ([#344](https://github.com/badlogic/hodeuscli-mono/pull/344), [#358](https://github.com/badlogic/hodeuscli-mono/pull/358) by [@default-anton](https://github.com/default-anton))
 
 ## [0.28.0] - 2025-12-25
 
@@ -794,7 +794,7 @@
 - **OAuth storage removed** ([#296](https://github.com/badlogic/hodeuscli-mono/issues/296)): All storage functions (`loadOAuthCredentials`, `saveOAuthCredentials`, `setOAuthStorage`, etc.) removed. Callers are responsible for storing credentials.
 - **OAuth login functions**: `loginAnthropic`, `loginGitHubCoCopilot`, `loginGeminiCli`, `loginAntigravity` now return `OAuthCredentials` instead of saving to disk.
 - **refreshOAuthToken**: Now takes `(provider, credentials)` and returns new `OAuthCredentials` instead of saving.
-- **getOAuthAhodeuscliKey**: Now takes `(provider, credentials)` and returns `{ newCredentials, ahodeuscliKey }` or null.
+- **getOAuthAhodeuscliKey**: Now takes `(provider, credentials)` and returns `{ newCredentials, apiKey }` or null.
 - **OAuthCredentials type**: No longer includes `type: "oauth"` discriminator. Callers add discriminator when storing.
 - **setAhodeuscliKey, resolveAhodeuscliKey**: Removed. Callers must manage their own API key storage/resolution.
 - **getAhodeuscliKey**: Renamed to `getEnvAhodeuscliKey`. Only checks environment variables for known providers.
@@ -813,11 +813,11 @@
 
 ### Fixed
 
-- **Gemini multimodal tool results**: Fixed images in tool results causing flaky/broken responses with Gemini models. For Gemini 3, images are now nested inside `functionResponse.parts` per the [docs](https://ai.google.dev/gemini-ahodeuscli/docs/function-calling#multimodal). For older models (which don't support multimodal function responses), images are sent in a separate user message.
+- **Gemini multimodal tool results**: Fixed images in tool results causing flaky/broken responses with Gemini models. For Gemini 3, images are now nested inside `functionResponse.parts` per the [docs](https://ai.google.dev/gemini-api/docs/function-calling#multimodal). For older models (which don't support multimodal function responses), images are sent in a separate user message.
 
 - **Queued message steering**: When `getQueuedMessages` is provided, the agent loop now checks for queued user messages after each tool call and skips remaining tool calls in the current assistant message when a queued message arrives (emitting error tool results).
 
-- **Double API version path in Google provider URL**: Fixed Gemini API calls returning 404 after baseUrl support was added. The SDK was appending its default ahodeuscliVersion to baseUrl which already included the version path. ([#251](https://github.com/badlogic/hodeuscli-mono/pull/251) by [@shellfyred](https://github.com/shellfyred))
+- **Double API version path in Google provider URL**: Fixed Gemini API calls returning 404 after baseUrl support was added. The SDK was appending its default apiVersion to baseUrl which already included the version path. ([#251](https://github.com/badlogic/hodeuscli-mono/pull/251) by [@shellfyred](https://github.com/shellfyred))
 
 - **Anthropic SDK retries disabled**: Re-enabled SDK-level retries (default 2) for transient HTTP failures. ([#252](https://github.com/badlogic/hodeuscli-mono/issues/252))
 

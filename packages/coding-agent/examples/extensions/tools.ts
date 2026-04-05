@@ -5,13 +5,13 @@
  * Tool selection persists across session reloads and respects branch navigation.
  *
  * Usage:
- * 1. Copy this file to ~/.pi/agent/extensions/ or your project's .pi/extensions/
+ * 1. Copy this file to ~/.hodeuscli/agent/extensions/ or your project's .hodeuscli/extensions/
  * 2. Use /tools to open the tool selector
  */
 
-import type { ExtensionAPI, ExtensionContext, ToolInfo } from "@mariozechner/pi-coding-agent";
-import { getSettingsListTheme } from "@mariozechner/pi-coding-agent";
-import { Container, type SettingItem, SettingsList } from "@mariozechner/pi-tui";
+import type { ExtensionAPI, ExtensionContext, ToolInfo } from "@games-coder/hodeuscli-coding-agent";
+import { getSettingsListTheme } from "@games-coder/hodeuscli-coding-agent";
+import { Container, type SettingItem, SettingsList } from "@games-coder/hodeuscli-tui";
 
 // State persisted to session
 interface ToolsState {

@@ -5,7 +5,7 @@ Pi supports subscription-based providers via OAuth and API key providers via env
 ## Table of Contents
 
 - [Subscriptions](#subscriptions)
-- [API Keys](#ahodeuscli-keys)
+- [API Keys](#api-keys)
 - [Auth File](#auth-file)
 - [Cloud Providers](#cloud-providers)
 - [Custom Providers](#custom-providers)
@@ -71,7 +71,7 @@ hodeuscli
 | MiniMax | `MINIMAX_API_KEY` | `minimax` |
 | MiniMax (China) | `MINIMAX_CN_API_KEY` | `minimax-cn` |
 
-Reference for environment variables and `auth.json` keys: [`const envMap`](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/env-ahodeuscli-keys.ts) in [`packages/ai/src/env-ahodeuscli-keys.ts`](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/env-ahodeuscli-keys.ts).
+Reference for environment variables and `auth.json` keys: [`const envMap`](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/env-api-keys.ts) in [`packages/ai/src/env-api-keys.ts`](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/env-api-keys.ts).
 
 #### Auth File
 
@@ -79,11 +79,11 @@ Store credentials in `~/.hodeuscli/agent/auth.json`:
 
 ```json
 {
-  "Anthropic": { "type": "ahodeuscli_key", "key": "sk-ant-..." },
-  "openai": { "type": "ahodeuscli_key", "key": "sk-..." },
-  "google": { "type": "ahodeuscli_key", "key": "..." },
-  "opencode": { "type": "ahodeuscli_key", "key": "..." },
-  "opencode-go": { "type": "ahodeuscli_key", "key": "..." }
+  "Anthropic": { "type": "api_key", "key": "sk-ant-..." },
+  "openai": { "type": "api_key", "key": "sk-..." },
+  "google": { "type": "api_key", "key": "..." },
+  "opencode": { "type": "api_key", "key": "..." },
+  "opencode-go": { "type": "api_key", "key": "..." }
 }
 ```
 
@@ -95,16 +95,16 @@ The `key` field supports three formats:
 
 - **Shell command:** `"!command"` executes and uses stdout (cached for process lifetime)
   ```json
-  { "type": "ahodeuscli_key", "key": "!security find-generic-password -ws 'Anthropic'" }
-  { "type": "ahodeuscli_key", "key": "!op read 'op://vault/item/credential'" }
+  { "type": "api_key", "key": "!security find-generic-password -ws 'Anthropic'" }
+  { "type": "api_key", "key": "!op read 'op://vault/item/credential'" }
   ```
 - **Environment variable:** Uses the value of the named variable
   ```json
-  { "type": "ahodeuscli_key", "key": "MY_ANTHROPIC_KEY" }
+  { "type": "api_key", "key": "MY_ANTHROPIC_KEY" }
   ```
 - **Literal value:** Used directly
   ```json
-  { "type": "ahodeuscli_key", "key": "sk-ant-..." }
+  { "type": "api_key", "key": "sk-ant-..." }
   ```
 
 OAuth credentials are also stored here after `/login` and managed automatically.
@@ -189,7 +189,7 @@ Or set `GOOGLE_APPLICATION_CREDENTIALS` to a service account key file.
 
 When resolving credentials for a provider:
 
-1. CLI `--ahodeuscli-key` flag
+1. CLI `--api-key` flag
 2. `auth.json` entry (API key or OAuth token)
 3. Environment variable
 4. Custom provider keys from `models.json`

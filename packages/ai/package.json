@@ -1,7 +1,7 @@
 {
-	"name": "@mariozechner/pi-ai",
+	"name": "@games-coder/hodeuscli-ai",
 	"version": "0.65.0",
-	"description": "Unified LLM API with automatic model discovery and provider configuration",
+	"description": "Unified Hodeuscli LLM API with automatic model discovery and provider configuration",
 	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -56,7 +56,7 @@
 		}
 	},
 	"bin": {
-		"pi-ai": "./dist/cli.js"
+		"hodeuscli-ai": "./dist/cli.js"
 	},
 	"files": [
 		"dist",
@@ -96,11 +96,11 @@
 		"unified",
 		"api"
 	],
-	"author": "Mario Zechner",
+	"author": "Games-coder",
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/badlogic/pi-mono.git",
+		"url": "git+https://github.com/games-coder/hodeuscli.git",
 		"directory": "packages/ai"
 	},
 	"engines": {

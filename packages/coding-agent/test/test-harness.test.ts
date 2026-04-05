@@ -3,8 +3,8 @@
  * Validates that the faux provider and session factory work correctly.
  */
 
-import type { AgentTool } from "@mariozechner/pi-agent-core";
-import type { AssistantMessage } from "@mariozechner/pi-ai";
+import type { AgentTool } from "@games-coder/hodeuscli-agent-core";
+import type { AssistantMessage } from "@games-coder/hodeuscli-ai";
 import { Type } from "@sinclair/typebox";
 import { afterEach, describe, expect, it } from "vitest";
 import { createHarness, createHarnessWithExtensions, type Harness } from "./test-harness.js";
@@ -264,7 +264,7 @@ describe("test harness", () => {
 			extensionFactories: [
 				{
 					path: "<alpha>",
-					factory: (pi) => {
+					factory: (Hodeuscli) => {
 						pi.registerCommand("shared-cmd", {
 							description: "Alpha command",
 							handler: async (args) => {
@@ -275,7 +275,7 @@ describe("test harness", () => {
 				},
 				{
 					path: "<beta>",
-					factory: (pi) => {
+					factory: (Hodeuscli) => {
 						pi.registerCommand("shared-cmd", {
 							description: "Beta command",
 							handler: async (args) => {

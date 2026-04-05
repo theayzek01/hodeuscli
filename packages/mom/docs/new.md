@@ -723,7 +723,7 @@ export interface MomCustomTool<TParams extends TSchema = TSchema, TDetails = any
 }
 
 /** Factory function for tools that need async initialization */
-export type MomCustomToolFactory = (ahodeuscli: ToolAPI) => MomCustomTool | Promise<MomCustomTool>;
+export type MomCustomToolFactory = (api: ToolAPI) => MomCustomTool | Promise<MomCustomTool>;
 
 export interface ToolAPI {
   /** Path to mom's data directory */
@@ -894,10 +894,10 @@ import { StringEnum } from "@mariozechner/hodeuscli-ai";
 import Imap from "imap";
 import nodemailer from "nodemailer";
 
-export default async function(ahodeuscli: ToolAPI): Promise<MomCustomTool> {
+export default async function(api: ToolAPI): Promise<MomCustomTool> {
   // Load credentials from data directory
-  const credsPath = path.join(ahodeuscli.dataDir, "tools", "gmail", "credentials.json");
-  const creds = JSON.parse(await ahodeuscli.readFile(credsPath));
+  const credsPath = path.join(api.dataDir, "tools", "gmail", "credentials.json");
+  const creds = JSON.parse(await api.readFile(credsPath));
   
   return {
     name: "gmail",

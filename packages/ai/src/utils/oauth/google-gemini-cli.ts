@@ -229,7 +229,7 @@ async function discoverProject(accessToken: string, onProgress?: (message: strin
 		Authorization: `Bearer ${accessToken}`,
 		"Content-Type": "application/json",
 		"User-Agent": "google-api-nodejs-client/9.15.1",
-		"X-Goog-Api-Client": "gl-node/22.17.0",
+		"X-Goog-Ahodeuscli-Client": "gl-node/22.17.0",
 	};
 
 	// Try to load existing project via loadCodeAssist

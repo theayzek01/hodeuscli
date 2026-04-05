@@ -6,7 +6,7 @@ Add custom providers and models (Ollama, vLLM, LM Studio, proxies) via `~/.hodeu
 
 - [Minimal Example](#minimal-example)
 - [Full Example](#full-example)
-- [Supported APIs](#supported-ahodeusclis)
+- [Supported APIs](#supported-aapis)
 - [Provider Configuration](#provider-configuration)
 - [Model Configuration](#model-configuration)
 - [Overriding Built-in Providers](#overriding-built-in-providers)
@@ -22,8 +22,8 @@ For local models (Ollama, LM Studio, vLLM), only `id` is required per model:
   "providers": {
     "ollama": {
       "baseUrl": "http://localhost:11434/v1",
-      "ahodeuscli": "openai-completions",
-      "ahodeuscliKey": "ollama",
+      "api": "openai-completions",
+      "apiKey": "ollama",
       "models": [
         { "id": "llama3.1:8b" },
         { "id": "qwen2.5-coder:7b" }
@@ -33,7 +33,7 @@ For local models (Ollama, LM Studio, vLLM), only `id` is required per model:
 }
 ```
 
-The `ahodeuscliKey` is required but Ollama ignores it, so any value works.
+The `apiKey` is required but Ollama ignores it, so any value works.
 
 Some OpenAI-compatible servers do not understand the `developer` role used for reasoning-capable models. For those providers, set `compat.supportsDeveloperRole` to `false` so hodeuscli sends the system prompt as a `system` message instead. If the server also does not support `reasoning_effort`, set `compat.supportsReasoningEffort` to `false` too.
 
@@ -44,8 +44,8 @@ You can set `compat` at the provider level to apply to all models, or at the mod
   "providers": {
     "ollama": {
       "baseUrl": "http://localhost:11434/v1",
-      "ahodeuscli": "openai-completions",
-      "ahodeuscliKey": "ollama",
+      "api": "openai-completions",
+      "apiKey": "ollama",
       "compat": {
         "supportsDeveloperRole": false,
         "supportsReasoningEffort": false
@@ -70,8 +70,8 @@ Override defaults when you need specific values:
   "providers": {
     "ollama": {
       "baseUrl": "http://localhost:11434/v1",
-      "ahodeuscli": "openai-completions",
-      "ahodeuscliKey": "ollama",
+      "api": "openai-completions",
+      "apiKey": "ollama",
       "models": [
         {
           "id": "llama3.1:8b",
@@ -99,36 +99,36 @@ The file reloads each time you open `/model`. Edit during session; no restart ne
 | `Anthropic-messages` | Anthropic Messages API |
 | `google-generative-ai` | Google Generative AI |
 
-Set `ahodeuscli` at provider level (default for all models) or model level (override per model).
+Set `api` at provider level (default for all models) or model level (override per model).
 
 ## Provider Configuration
 
 | Field | Description |
 |-------|-------------|
 | `baseUrl` | API endpoint URL |
-| `ahodeuscli` | API type (see above) |
-| `ahodeuscliKey` | API key (see value resolution below) |
+| `api` | API type (see above) |
+| `apiKey` | API key (see value resolution below) |
 | `headers` | Custom headers (see value resolution below) |
-| `authHeader` | Set `true` to add `Authorization: Bearer <ahodeuscliKey>` automatically |
+| `authHeader` | Set `true` to add `Authorization: Bearer <apiKey>` automatically |
 | `models` | Array of model configurations |
 | `modelOverrides` | Per-model overrides for built-in models on this provider |
 
 ### Value Resolution
 
-The `ahodeuscliKey` and `headers` fields support three formats:
+The `apiKey` and `headers` fields support three formats:
 
 - **Shell command:** `"!command"` executes and uses stdout
   ```json
-  "ahodeuscliKey": "!security find-generic-password -ws 'Anthropic'"
-  "ahodeuscliKey": "!op read 'op://vault/item/credential'"
+  "apiKey": "!security find-generic-password -ws 'Anthropic'"
+  "apiKey": "!op read 'op://vault/item/credential'"
   ```
 - **Environment variable:** Uses the value of the named variable
   ```json
-  "ahodeuscliKey": "MY_API_KEY"
+  "apiKey": "MY_API_KEY"
   ```
 - **Literal value:** Used directly
   ```json
-  "ahodeuscliKey": "sk-..."
+  "apiKey": "sk-..."
   ```
 
 For `models.json`, shell commands are resolved at request time. hodeuscli intentionally does not apply built-in TTL, stale reuse, or recovery logic for arbitrary commands. Different commands need different caching and failure strategies, and hodeuscli cannot infer the right one.
@@ -144,10 +144,10 @@ If your command is slow, expensive, rate-limited, or should keep using a previou
   "providers": {
     "custom-proxy": {
       "baseUrl": "https://proxy.example.com/v1",
-      "ahodeuscliKey": "MY_API_KEY",
-      "ahodeuscli": "Anthropic-messages",
+      "apiKey": "MY_API_KEY",
+      "api": "Anthropic-messages",
       "headers": {
-        "x-portkey-ahodeuscli-key": "PORTKEY_API_KEY",
+        "x-portkey-api-key": "PORTKEY_API_KEY",
         "x-secret": "!op read 'op://vault/item/secret'"
       },
       "models": [...]
@@ -162,7 +162,7 @@ If your command is slow, expensive, rate-limited, or should keep using a previou
 |-------|----------|---------|-------------|
 | `id` | Yes | — | Model identifier (passed to the API) |
 | `name` | No | `id` | Human-readable model label. Used for matching (`--model` patterns) and shown in model details/status text. |
-| `ahodeuscli` | No | provider's `ahodeuscli` | Override provider's API for this model |
+| `api` | No | provider's `api` | Override provider's API for this model |
 | `reasoning` | No | `false` | Supports extended thinking |
 | `input` | No | `["text"]` | Input types: `["text"]` or `["text", "image"]` |
 | `contextWindow` | No | `128000` | Context window size in tokens |
@@ -197,8 +197,8 @@ To merge custom models into a built-in provider, include the `models` array:
   "providers": {
     "Anthropic": {
       "baseUrl": "https://my-proxy.example.com/v1",
-      "ahodeuscliKey": "ANTHROPIC_API_KEY",
-      "ahodeuscli": "Anthropic-messages",
+      "apiKey": "ANTHROPIC_API_KEY",
+      "api": "Anthropic-messages",
       "models": [...]
     }
   }
@@ -254,7 +254,7 @@ For providers with partial OpenAI compatibility, use the `compat` field.
   "providers": {
     "local-llm": {
       "baseUrl": "http://localhost:8080/v1",
-      "ahodeuscli": "openai-completions",
+      "api": "openai-completions",
       "compat": {
         "supportsUsageInStreaming": false,
         "maxTokensField": "max_tokens"
@@ -289,9 +289,9 @@ Example:
 {
   "providers": {
     "openrouter": {
-      "baseUrl": "https://openrouter.ai/ahodeuscli/v1",
-      "ahodeuscliKey": "OPENROUTER_API_KEY",
-      "ahodeuscli": "openai-completions",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "apiKey": "OPENROUTER_API_KEY",
+      "api": "openai-completions",
       "models": [
         {
           "id": "openrouter/Anthropic/claude-3.5-sonnet",
@@ -316,8 +316,8 @@ Vercel AI Gateway example:
   "providers": {
     "vercel-ai-gateway": {
       "baseUrl": "https://ai-gateway.vercel.sh/v1",
-      "ahodeuscliKey": "AI_GATEWAY_API_KEY",
-      "ahodeuscli": "openai-completions",
+      "apiKey": "AI_GATEWAY_API_KEY",
+      "api": "openai-completions",
       "models": [
         {
           "id": "moonshotai/kimi-k2.5",

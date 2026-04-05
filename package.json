@@ -1,12 +1,13 @@
 {
 	"name": "hodeuscli-monorepo",
 	"description": "High-fidelity coding agent for CLI power users.",
-	"homepage": "https://github.com/games-coder/hodeuscli",
+	"homepage": "https://www.hodeusstudio.com",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/games-coder/hodeuscli.git"
 	},
 	"private": true,
+	"author": "Games-coder",
 	"type": "module",
 	"workspaces": [
 		"packages/*",
@@ -17,9 +18,9 @@
 		"packages/coding-agent/examples/extensions/custom-provider-qwen-cli"
 	],
 	"scripts": {
-		"clean": "npm run clean --workspaces",
-		"build": "cd packages/tui && npm run build && cd ../ai && npm run build && cd ../agent && npm run build && cd ../coding-agent && npm run build && cd ../mom && npm run build && cd ../web-ui && npm run build && cd ../pods && npm run build",
-		"dev": "concurrently --names \"ai,agent,coding-agent,mom,web-ui,tui\" --prefix-colors \"cyan,yellow,red,white,green,magenta\" \"cd packages/ai && npm run dev\" \"cd packages/agent && npm run dev\" \"cd packages/coding-agent && npm run dev\" \"cd packages/mom && npm run dev\" \"cd packages/web-ui && npm run dev\" \"cd packages/tui && npm run dev\"",
+		"clean": "npm run clean --workspaces --if-present",
+		"build": "npm run build --workspaces --if-present",
+		"dev": "npm run dev --workspaces --if-present",
 		"dev:tsc": "concurrently --names \"ai,web-ui\" --prefix-colors \"cyan,green\" \"cd packages/ai && npm run dev:tsc\" \"cd packages/web-ui && npm run dev:tsc\"",
 		"check": "biome check --write --error-on-warnings . && tsgo --noEmit && npm run check:browser-smoke && cd packages/web-ui && npm run check",
 		"check:browser-smoke": "node scripts/check-browser-smoke.mjs",
@@ -54,7 +55,7 @@
 	"version": "0.0.3",
 	"dependencies": {
 		"@mariozechner/jiti": "^2.6.5",
-		"@mariozechner/pi-coding-agent": "^0.30.2",
+		"@games-coder/hodeuscli-coding-agent": "workspace:*",
 		"get-east-asian-width": "^1.4.0"
 	},
 	"overrides": {

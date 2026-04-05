@@ -1181,9 +1181,9 @@ Source files:
 {
   "id": "claude-sonnet-4-20250514",
   "name": "Claude Sonnet 4",
-  "ahodeuscli": "Anthropic-messages",
+  "api": "Anthropic-messages",
   "provider": "Anthropic",
-  "baseUrl": "https://ahodeuscli.Anthropic.com",
+  "baseUrl": "https://api.Anthropic.com",
   "reasoning": true,
   "input": ["text", "image"],
   "contextWindow": 200000,
@@ -1220,7 +1220,7 @@ The `content` field can be a string or an array of `TextContent`/`ImageContent` 
     {"type": "thinking", "thinking": "User is greeting me..."},
     {"type": "toolCall", "id": "call_123", "name": "bash", "arguments": {"command": "ls"}}
   ],
-  "ahodeuscli": "Anthropic-messages",
+  "api": "Anthropic-messages",
   "provider": "Anthropic",
   "model": "claude-sonnet-4-20250514",
   "usage": {

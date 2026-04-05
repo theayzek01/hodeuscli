@@ -103,7 +103,7 @@ The hodeuscli CLI maintains all state locally in `~/.hodeuscli/pods.json`:
           "model": "Qwen/Qwen2.5-72B",
           "port": 8001,
           "gpu": "0",
-          "hodeusclid": 12345
+          "pid": 12345
         }
       }
     }

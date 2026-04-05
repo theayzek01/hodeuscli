@@ -5,12 +5,12 @@
  * Uses device code flow with PKCE for secure browser-based authentication.
  *
  * Usage:
- *   pi -e ./packages/coding-agent/examples/extensions/custom-provider-qwen-cli
+ *   Hodeuscli -e ./packages/coding-agent/examples/extensions/custom-provider-qwen-cli
  *   # Then /login qwen-cli, or set QWEN_CLI_API_KEY=...
  */
 
-import type { OAuthCredentials, OAuthLoginCallbacks } from "@mariozechner/pi-ai";
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { OAuthCredentials, OAuthLoginCallbacks } from "@games-coder/hodeuscli-ai";
+import type { ExtensionAPI } from "@games-coder/hodeuscli-coding-agent";
 
 // =============================================================================
 // Constants

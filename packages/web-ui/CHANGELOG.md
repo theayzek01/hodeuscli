@@ -97,7 +97,7 @@
 
 ### Fixed
 
-- Made model selector search case-insensitive by normalizing query tokens, fixing auto-cahodeusclitalized mobile input filtering ([#1443](https://github.com/badlogic/hodeuscli-mono/issues/1443))
+- Made model selector search case-insensitive by normalizing query tokens, fixing auto-capitalized mobile input filtering ([#1443](https://github.com/badlogic/hodeuscli-mono/issues/1443))
 
 ## [0.52.9] - 2026-02-08
 

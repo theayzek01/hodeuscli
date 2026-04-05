@@ -20,12 +20,12 @@
  *   toggled the tool output open (via ctrl+e or clicking)
  *
  * Usage:
- *   pi -e ./built-in-tool-renderer.ts
+ *   Hodeuscli -e ./built-in-tool-renderer.ts
  */
 
-import type { BashToolDetails, EditToolDetails, ExtensionAPI, ReadToolDetails } from "@mariozechner/pi-coding-agent";
-import { createBashTool, createEditTool, createReadTool, createWriteTool } from "@mariozechner/pi-coding-agent";
-import { Text } from "@mariozechner/pi-tui";
+import type { BashToolDetails, EditToolDetails, ExtensionAPI, ReadToolDetails } from "@games-coder/hodeuscli-coding-agent";
+import { createBashTool, createEditTool, createReadTool, createWriteTool } from "@games-coder/hodeuscli-coding-agent";
+import { Text } from "@games-coder/hodeuscli-tui";
 
 export default function (pi: ExtensionAPI) {
 	const cwd = process.cwd();

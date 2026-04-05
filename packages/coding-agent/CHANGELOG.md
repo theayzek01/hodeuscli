@@ -166,16 +166,16 @@ await runtime.fork("entry-id");
 
 ### Breaking Changes
 
-- `ModelRegistry.getAhodeuscliKey(model)` has been replaced by `getAhodeuscliKeyAndHeaders(model)` because `models.json` auth and header values can now resolve dynamically on every request. Extensions and SDK integrations that previously fetched only an API key must now fetch request auth per call and forward both `ahodeuscliKey` and `headers`. Use `getAhodeuscliKeyForProvider(provider)` only when you explicitly want provider-level API key lookup without model headers or `authHeader` handling ([#1835](https://github.com/badlogic/hodeuscli-mono/issues/1835))
-- Removed deprecated direct `minimax` and `minimax-cn` model IDs, keehodeuscling only `MiniMax-M2.7` and `MiniMax-M2.7-highspeed`. Update hodeusclinned model IDs to one of those supported direct MiniMax models, or use another provider route that still exposes the older IDs ([#2596](https://github.com/badlogic/hodeuscli-mono/pull/2596) by [@liyuan97](https://github.com/liyuan97))
+- `ModelRegistry.getAhodeuscliKey(model)` has been replaced by `getAhodeuscliKeyAndHeaders(model)` because `models.json` auth and header values can now resolve dynamically on every request. Extensions and SDK integrations that previously fetched only an API key must now fetch request auth per call and forward both `apiKey` and `headers`. Use `getAhodeuscliKeyForProvider(provider)` only when you explicitly want provider-level API key lookup without model headers or `authHeader` handling ([#1835](https://github.com/badlogic/hodeuscli-mono/issues/1835))
+- Removed deprecated direct `minimax` and `minimax-cn` model IDs, keehodeuscling only `MiniMax-M2.7` and `MiniMax-M2.7-highspeed`. Update pinned model IDs to one of those supported direct MiniMax models, or use another provider route that still exposes the older IDs ([#2596](https://github.com/badlogic/hodeuscli-mono/pull/2596) by [@liyuan97](https://github.com/liyuan97))
 
 #### Migration Notes
 
 Before:
 
 ```ts
-const ahodeuscliKey = await ctx.modelRegistry.getAhodeuscliKey(model);
-return streamSimple(model, messages, { ahodeuscliKey });
+const apiKey = await ctx.modelRegistry.getAhodeuscliKey(model);
+return streamSimple(model, messages, { apiKey });
 ```
 
 After:
@@ -184,7 +184,7 @@ After:
 const auth = await ctx.modelRegistry.getAhodeuscliKeyAndHeaders(model);
 if (!auth.ok) throw new Error(auth.error);
 return streamSimple(model, messages, {
-  ahodeuscliKey: auth.ahodeuscliKey,
+  apiKey: auth.apiKey,
   headers: auth.headers,
 });
 ```
@@ -194,7 +194,7 @@ return streamSimple(model, messages, {
 - Added `sessionDir` setting support in global and project `settings.json` so session storage can be configured without passing `--session-dir` on every invocation ([#2598](https://github.com/badlogic/hodeuscli-mono/pull/2598) by [@smcllns](https://github.com/smcllns))
 - Added a startup onboarding hint in the interactive header telling users hodeuscli can explain its own features and documentation ([#2620](https://github.com/badlogic/hodeuscli-mono/pull/2620) by [@ferologics](https://github.com/ferologics))
 - Added `edit` tool multi-edit support so one call can update multiple separate, disjoint regions in the same file while matching all replacements against the original file content
-- Added support for `PI_TUI_WRITE_LOG` directory paths, creating a unique log file (`tui-<timestamp>-<hodeusclid>.log`) per instance for easier debugging of multiple hodeuscli sessions ([#2508](https://github.com/badlogic/hodeuscli-mono/pull/2508) by [@mrexodia](https://github.com/mrexodia))
+- Added support for `PI_TUI_WRITE_LOG` directory paths, creating a unique log file (`tui-<timestamp>-<pid>.log`) per instance for easier debugging of multiple hodeuscli sessions ([#2508](https://github.com/badlogic/hodeuscli-mono/pull/2508) by [@mrexodia](https://github.com/mrexodia))
 
 ### Changed
 
@@ -338,11 +338,11 @@ Examples:
 
 - Fork existing sessions directly from the CLI with `--fork <path|id>`, which cohodeusclies a source session into a new session in the current project. See [README.md](README.md).
 - Extensions and SDK callers can reuse hodeuscli's built-in local bash backend via `createLocalBashOperations()` for `user_bash` interception and custom bash integrations. See [docs/extensions.md#user_bash](docs/extensions.md#user_bash).
-- Startup no longer updates unhodeusclinned npm and git packages automatically. Use `hodeuscli update` explicitly, while interactive mode checks for updates in the background and notifies you when newer packages are available. See [README.md](README.md).
+- Startup no longer updates unpinned npm and git packages automatically. Use `hodeuscli update` explicitly, while interactive mode checks for updates in the background and notifies you when newer packages are available. See [README.md](README.md).
 
 ### Breaking Changes
 
-- Changed package startup behavior so installed unhodeusclinned packages are no longer checked or updated during startup. Use `hodeuscli update` to apply npm/git package updates, while interactive mode now checks for available package updates in the background and notifies you when updates are available ([#1963](https://github.com/badlogic/hodeuscli-mono/issues/1963))
+- Changed package startup behavior so installed unpinned packages are no longer checked or updated during startup. Use `hodeuscli update` to apply npm/git package updates, while interactive mode now checks for available package updates in the background and notifies you when updates are available ([#1963](https://github.com/badlogic/hodeuscli-mono/issues/1963))
 
 ### Added
 
@@ -855,7 +855,7 @@ Examples:
 
 ### Fixed
 
-- Fixed temporary git package caches (`-e <git-url>`) to refresh on cache hits for unhodeusclinned sources, including detached/no-upstream checkouts
+- Fixed temporary git package caches (`-e <git-url>`) to refresh on cache hits for unpinned sources, including detached/no-upstream checkouts
 - Fixed aborting retries when an extension customizes the editor ([#1364](https://github.com/badlogic/hodeuscli-mono/pull/1364) by [@Perlence](https://github.com/Perlence))
 - Fixed autocomplete not propagating to custom editors created by extensions ([#1372](https://github.com/badlogic/hodeuscli-mono/pull/1372) by [@Perlence](https://github.com/Perlence))
 - Fixed extension shutdown to use clean TUI shutdown path, preventing orphaned processes
@@ -965,11 +965,11 @@ Examples:
 
 ### New Features
 
-- Configurable resume keybinding action for opening the session resume selector. See [docs/keybindings.md](docs/keybindings.md). ([#1249](https://github.com/badlogic/hodeuscli-mono/pull/1249) by [@juanibiahodeusclina](https://github.com/juanibiahodeusclina))
+- Configurable resume keybinding action for opening the session resume selector. See [docs/keybindings.md](docs/keybindings.md). ([#1249](https://github.com/badlogic/hodeuscli-mono/pull/1249) by [@juanibiapina](https://github.com/juanibiapina))
 
 ### Added
 
-- Added `resume` as a configurable keybinding action, allowing users to bind a key to open the session resume selector (like `newSession`, `tree`, and `fork`) ([#1249](https://github.com/badlogic/hodeuscli-mono/pull/1249) by [@juanibiahodeusclina](https://github.com/juanibiahodeusclina))
+- Added `resume` as a configurable keybinding action, allowing users to bind a key to open the session resume selector (like `newSession`, `tree`, and `fork`) ([#1249](https://github.com/badlogic/hodeuscli-mono/pull/1249) by [@juanibiapina](https://github.com/juanibiapina))
 
 ### Changed
 
@@ -1059,7 +1059,7 @@ Examples:
 ### New Features
 
 - **Extension API switchSession**: Extensions can now programmatically switch sessions via `ctx.switchSession(sessionPath)`. See [docs/extensions.md](docs/extensions.md). ([#1187](https://github.com/badlogic/hodeuscli-mono/issues/1187))
-- **Clear on shrink setting**: New `terminal.clearOnShrink` setting keeps the editor and footer hodeusclinned to the bottom of the terminal when content shrinks. May cause some flicker due to redraws. Disabled by default. Enable via `/settings` or `PI_CLEAR_ON_SHRINK=1` env var.
+- **Clear on shrink setting**: New `terminal.clearOnShrink` setting keeps the editor and footer pinned to the bottom of the terminal when content shrinks. May cause some flicker due to redraws. Disabled by default. Enable via `/settings` or `PI_CLEAR_ON_SHRINK=1` env var.
 
 ### Fixed
 
@@ -1084,12 +1084,12 @@ Examples:
 
 - **Android/Termux support**: Pi now runs on Android via Termux. Install with:
   ```bash
-  pkg install nodejs termux-ahodeuscli git
+  pkg install nodejs termux-api git
   npm install -g @mariozechner/hodeuscli
   mkdir -p ~/.hodeuscli/agent
   echo "You are running on Android in Termux." > ~/.hodeuscli/agent/AGENTS.md
   ```
-  Clipboard operations fall back gracefully when `termux-ahodeuscli` is unavailable. ([#1164](https://github.com/badlogic/hodeuscli-mono/issues/1164))
+  Clipboard operations fall back gracefully when `termux-api` is unavailable. ([#1164](https://github.com/badlogic/hodeuscli-mono/issues/1164))
 - **Bash spawn hook**: Extensions can now intercept and modify bash commands before execution via `hodeuscli.setBashSpawnHook()`. Adjust the command string, working directory, or environment variables. See [docs/extensions.md](docs/extensions.md). ([#1160](https://github.com/badlogic/hodeuscli-mono/pull/1160) by [@mitsuhiko](https://github.com/mitsuhiko))
 - **Linux ARM64 musl support**: Pi now runs on Alhodeuscline Linux ARM64 (linux-arm64-musl) via updated clipboard dependency.
 - **Nix/Guix support**: `PI_PACKAGE_DIR` environment variable overrides the package path for content-addressed package managers where store paths tokenize poorly. See [README.md#environment-variables](README.md#environment-variables). ([#1153](https://github.com/badlogic/hodeuscli-mono/pull/1153) by [@odysseus0](https://github.com/odysseus0))
@@ -1133,7 +1133,7 @@ Examples:
 
 ### Added
 
-- Added `newSession`, `tree`, and `fork` keybinding actions for `/new`, `/tree`, and `/fork` commands. All unbound by default. ([#1114](https://github.com/badlogic/hodeuscli-mono/pull/1114) by [@juanibiahodeusclina](https://github.com/juanibiahodeusclina))
+- Added `newSession`, `tree`, and `fork` keybinding actions for `/new`, `/tree`, and `/fork` commands. All unbound by default. ([#1114](https://github.com/badlogic/hodeuscli-mono/pull/1114) by [@juanibiapina](https://github.com/juanibiapina))
 - Added `retry.maxDelayMs` setting to cap maximum server-requested retry delay. When a provider requests a longer delay (e.g., Google's "quota will reset after 5h"), the request fails immediately with an informative error instead of waiting silently. Default: 60000ms (60 seconds). ([#1123](https://github.com/badlogic/hodeuscli-mono/issues/1123))
 - `/resume` session hodeusclicker: new "Threaded" sort mode (now default) displays sessions in a tree structure based on fork relationships. Compact one-line format with message count and age on the right. ([#1124](https://github.com/badlogic/hodeuscli-mono/pull/1124) by [@pasky](https://github.com/pasky))
 - Added Qwen CLI OAuth provider extension example. ([#940](https://github.com/badlogic/hodeuscli-mono/pull/940) by [@4h9fbZ](https://github.com/4h9fbZ))
@@ -1178,11 +1178,11 @@ Examples:
 - **Line boundary navigation** - Editor jumps to line start when pressing Up at first visual line, and line end when pressing Down at last visual line. ([#1050](https://github.com/badlogic/hodeuscli-mono/pull/1050) by [@4h9fbZ](https://github.com/4h9fbZ))
 - **Performance improvements** - Optimized image line detection and box rendering cache in the TUI for better rendering performance. ([#1084](https://github.com/badlogic/hodeuscli-mono/pull/1084) by [@can1357](https://github.com/can1357))
 - **`set_session_name` RPC command** - Headless clients can now set the session display name programmatically. ([#1075](https://github.com/badlogic/hodeuscli-mono/pull/1075) by [@dnouri](https://github.com/dnouri))
-- **Disable double-escape behavior** - New `"none"` option for `doubleEscapeAction` setting completely disables the double-escape shortcut. ([#973](https://github.com/badlogic/hodeuscli-mono/issues/973) by [@juanibiahodeusclina](https://github.com/juanibiahodeusclina))
+- **Disable double-escape behavior** - New `"none"` option for `doubleEscapeAction` setting completely disables the double-escape shortcut. ([#973](https://github.com/badlogic/hodeuscli-mono/issues/973) by [@juanibiapina](https://github.com/juanibiapina))
 
 ### Added
 
-- Added "none" option to `doubleEscapeAction` setting to disable double-escape behavior entirely ([#973](https://github.com/badlogic/hodeuscli-mono/issues/973) by [@juanibiahodeusclina](https://github.com/juanibiahodeusclina))
+- Added "none" option to `doubleEscapeAction` setting to disable double-escape behavior entirely ([#973](https://github.com/badlogic/hodeuscli-mono/issues/973) by [@juanibiapina](https://github.com/juanibiapina))
 - Added OSC 52 clipboard support for SSH/mosh sessions. `/copy` now works over remote connections. ([#1069](https://github.com/badlogic/hodeuscli-mono/issues/1069) by [@gturkoglu](https://github.com/gturkoglu))
 - Added Vercel AI Gateway routing support via `vercelGatewayRouting` in models.json ([#1051](https://github.com/badlogic/hodeuscli-mono/pull/1051) by [@ben-vargas](https://github.com/ben-vargas))
 - Added Ctrl+B and Ctrl+F keybindings for cursor word left/right navigation in the editor ([#1053](https://github.com/badlogic/hodeuscli-mono/pull/1053) by [@ninlds](https://github.com/ninlds))
@@ -1274,7 +1274,7 @@ Examples:
 - Hot reload (`/reload`) of resources including AGENTS.md, SYSTEM.md, APPEND_SYSTEM.md, prompt templates, skills, themes, and extensions. See [README.md#commands](README.md#commands) and [README.md#context-files](README.md#context-files).
 - Custom providers via `hodeuscli.registerProvider()` for proxies, custom endpoints, OAuth or SSO flows, and non-standard streaming APIs. See [docs/custom-provider.md](docs/custom-provider.md).
 - Azure OpenAI Responses provider support with deployment-aware model maphodeuscling. See [docs/providers.md#azure-openai](docs/providers.md#azure-openai).
-- OpenRouter routing support for custom models via `openRouterRouting`. See [docs/providers.md#ahodeuscli-keys](docs/providers.md#ahodeuscli-keys) and [docs/models.md](docs/models.md).
+- OpenRouter routing support for custom models via `openRouterRouting`. See [docs/providers.md#api-keys](docs/providers.md#api-keys) and [docs/models.md](docs/models.md).
 - Skill invocation messages are now collapsible and skills can opt out of model invocation via `disable-model-invocation`. See [docs/skills.md#frontmatter](docs/skills.md#frontmatter).
 - Session selector renaming and configurable keybindings. See [README.md#commands](README.md#commands) and [docs/keybindings.md](docs/keybindings.md).
 - `models.json` headers can resolve environment variables and shell commands. See [docs/models.md#value-resolution](docs/models.md#value-resolution).
@@ -1300,7 +1300,7 @@ There are multiple SDK breaking changes since v0.49.3. For the quickest migratio
 - `disable-model-invocation` frontmatter field for skills to prevent agentic invocation while still allowing explicit `/skill:name` commands ([#927](https://github.com/badlogic/hodeuscli-mono/issues/927))
 - Exposed `copyToClipboard` utility for extensions ([#926](https://github.com/badlogic/hodeuscli-mono/issues/926) by [@mitsuhiko](https://github.com/mitsuhiko))
 - Skill invocation messages are now collapsible in chat output, showing collapsed by default with skill name and expand hint ([#894](https://github.com/badlogic/hodeuscli-mono/issues/894))
-- Header values in `models.json` now support environment variables and shell commands, matching `ahodeuscliKey` resolution ([#909](https://github.com/badlogic/hodeuscli-mono/issues/909))
+- Header values in `models.json` now support environment variables and shell commands, matching `apiKey` resolution ([#909](https://github.com/badlogic/hodeuscli-mono/issues/909))
 - Added HTTP proxy environment variable support for API requests ([#942](https://github.com/badlogic/hodeuscli-mono/pull/942) by [@haoqixu](https://github.com/haoqixu))
 - Added OpenRouter provider routing support for custom models via `openRouterRouting` compat field ([#859](https://github.com/badlogic/hodeuscli-mono/pull/859) by [@v01dpr1mr0s3](https://github.com/v01dpr1mr0s3))
 - Added `azure-openai-responses` provider support for Azure OpenAI Responses API. ([#890](https://github.com/badlogic/hodeuscli-mono/pull/890) by [@markusylisiurunen](https://github.com/markusylisiurunen))
@@ -1349,7 +1349,7 @@ There are multiple SDK breaking changes since v0.49.3. For the quickest migratio
 - Fixed editor word wraphodeuscling to use single-pass backtracking for whitespace handling ([#924](https://github.com/badlogic/hodeuscli-mono/pull/924) by [@Perlence](https://github.com/Perlence))
 - Fixed Kitty image ID allocation and cleanup to prevent image ID collisions
 - Fixed overlays staying centered after terminal resizes ([#950](https://github.com/badlogic/hodeuscli-mono/pull/950) by [@nicobailon](https://github.com/nicobailon))
-- Fixed streaming dispatch to use the model ahodeuscli type instead of hardcoded API defaults
+- Fixed streaming dispatch to use the model api type instead of hardcoded API defaults
 - Fixed Google providers to default tool call arguments to an empty object when omitted
 - Fixed OpenAI Responses streaming to handle `arguments.done` events on OpenAI-compatible endpoints ([#917](https://github.com/badlogic/hodeuscli-mono/pull/917) by [@williballenthin](https://github.com/williballenthin))
 - Fixed OpenAI Codex Responses tool strictness handling after the shared responses refactor
@@ -1424,7 +1424,7 @@ There are multiple SDK breaking changes since v0.49.3. For the quickest migratio
 ### Changed
 
 - Share URLs now use hash fragments (`#`) instead of query strings (`?`) to prevent session IDs from being sent to buildwithhodeuscli.ai ([#829](https://github.com/badlogic/hodeuscli-mono/pull/829) by [@terrorobe](https://github.com/terrorobe))
-- API keys in `models.json` can now be retrieved via shell command using `!` prefix (e.g., `"ahodeuscliKey": "!security find-generic-password -ws 'Anthropic'"` for macOS Keychain) ([#762](https://github.com/badlogic/hodeuscli-mono/pull/762) by [@cv](https://github.com/cv))
+- API keys in `models.json` can now be retrieved via shell command using `!` prefix (e.g., `"apiKey": "!security find-generic-password -ws 'Anthropic'"` for macOS Keychain) ([#762](https://github.com/badlogic/hodeuscli-mono/pull/762) by [@cv](https://github.com/cv))
 
 ### Fixed
 
@@ -1548,7 +1548,7 @@ There are multiple SDK breaking changes since v0.49.3. For the quickest migratio
 ### Changed
 
 - Replaced `wasm-vips` with `@silvia-odwyer/photon-node` for image processing ([#710](https://github.com/badlogic/hodeuscli-mono/pull/710) by [@can1357](https://github.com/can1357))
-- Extension example: `plan-mode/` shortcut changed from Shift+P to Ctrl+Alt+P to avoid conflict with tyhodeuscling cahodeusclital P ([#746](https://github.com/badlogic/hodeuscli-mono/pull/746) by [@ferologics](https://github.com/ferologics))
+- Extension example: `plan-mode/` shortcut changed from Shift+P to Ctrl+Alt+P to avoid conflict with tyhodeuscling capital P ([#746](https://github.com/badlogic/hodeuscli-mono/pull/746) by [@ferologics](https://github.com/ferologics))
 - UI keybinding hints now respect configured keybindings across components ([#724](https://github.com/badlogic/hodeuscli-mono/pull/724) by [@dannote](https://github.com/dannote))
 - CLI process title is now set to `hodeuscli` for easier process identification ([#742](https://github.com/badlogic/hodeuscli-mono/pull/742) by [@richardgill](https://github.com/richardgill))
 
@@ -2449,7 +2449,7 @@ const available = await modelRegistry.getAvailable();
 const model = modelRegistry.find("Anthropic", "claude-sonnet-4-20250514");
 
 // Get API key for a model
-const ahodeuscliKey = await modelRegistry.getAhodeuscliKey(model);
+const apiKey = await modelRegistry.getAhodeuscliKey(model);
 ```
 
 This replaces the old `resolveAhodeuscliKey` callback pattern. Hooks and custom tools access it via `ctx.modelRegistry`.
@@ -2548,7 +2548,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
 - HTML export now properly sanitizes user messages containing HTML tags like `<style>` that could break DOM rendering
 - Crash when displaying bash output containing Unicode format characters like U+0600-U+0604 ([#372](https://github.com/badlogic/hodeuscli-mono/pull/372) by [@HACKE-RC](https://github.com/HACKE-RC))
 - **Footer shows full session stats**: Token usage and cost now include all messages, not just those after compaction. ([#322](https://github.com/badlogic/hodeuscli-mono/issues/322))
-- **Status messages spam chat log**: Rahodeusclidly changing settings (e.g., thinking level via Shift+Tab) would add multiple status lines. Sequential status updates now coalesce into a single line. ([#365](https://github.com/badlogic/hodeuscli-mono/pull/365) by [@paulbettner](https://github.com/paulbettner))
+- **Status messages spam chat log**: Rapidly changing settings (e.g., thinking level via Shift+Tab) would add multiple status lines. Sequential status updates now coalesce into a single line. ([#365](https://github.com/badlogic/hodeuscli-mono/pull/365) by [@paulbettner](https://github.com/paulbettner))
 - **Toggling thinking blocks during streaming shows nothing**: Pressing Ctrl+T while streaming would hide the current message until streaming completed.
 - **Resuming session resets thinking level to off**: Initial model and thinking level were not saved to session file, causing `--resume`/`--continue` to default to `off`. ([#342](https://github.com/badlogic/hodeuscli-mono/issues/342) by [@aliou](https://github.com/aliou))
 - **Hook `tool_result` event ignores errors from custom tools**: The `tool_result` hook event was never emitted when tools threw errors, and always had `isError: false` for successful executions. Now emits the event with correct `isError` value in both success and error cases. ([#374](https://github.com/badlogic/hodeuscli-mono/issues/374) by [@nicobailon](https://github.com/nicobailon))
@@ -2556,7 +2556,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
 - **Edit tool fails on files with UTF-8 BOM**: Files with UTF-8 BOM marker could cause "text not found" errors since the LLM doesn't include the invisible BOM character. BOM is now stripped before matching and restored on write. ([#394](https://github.com/badlogic/hodeuscli-mono/pull/394) by [@prathamdby](https://github.com/prathamdby))
 - **Use bash instead of sh on Unix**: Fixed shell commands using `/bin/sh` instead of `/bin/bash` on Unix systems. ([#328](https://github.com/badlogic/hodeuscli-mono/pull/328) by [@dnouri](https://github.com/dnouri))
 - **OAuth login URL clickable**: Made OAuth login URLs clickable in terminal. ([#349](https://github.com/badlogic/hodeuscli-mono/pull/349) by [@Cursivez](https://github.com/Cursivez))
-- **Improved error messages**: Better error messages when `ahodeuscliKey` or `model` are missing. ([#346](https://github.com/badlogic/hodeuscli-mono/pull/346) by [@ronyrus](https://github.com/ronyrus))
+- **Improved error messages**: Better error messages when `apiKey` or `model` are missing. ([#346](https://github.com/badlogic/hodeuscli-mono/pull/346) by [@ronyrus](https://github.com/ronyrus))
 - **Session file validation**: `findMostRecentSession()` now validates session headers before returning, preventing non-session JSONL files from being loaded
 - **Compaction error handling**: `generateSummary()` and `generateTurnPrefixSummary()` now throw on LLM errors instead of returning empty strings
 - **Compaction with branched sessions**: Fixed compaction incorrectly including entries from abandoned branches, causing token overflow errors. Compaction now uses `sessionManager.getPath()` to work only on the current branch path, eliminating 80+ lines of duplicate entry collection logic between `prepareCompaction()` and `compact()`
@@ -2630,7 +2630,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
   - Use `getModel()` from `@mariozechner/hodeuscli-ai` for built-in models, `modelRegistry.find()` for custom models + built-in models
   - See updated [SDK documentation](docs/sdk.md) and [README](README.md)
 
-- **Settings changes**: Removed `ahodeuscliKeys` from `settings.json`. Use `auth.json` instead. ([#296](https://github.com/badlogic/hodeuscli-mono/issues/296))
+- **Settings changes**: Removed `apiKeys` from `settings.json`. Use `auth.json` instead. ([#296](https://github.com/badlogic/hodeuscli-mono/issues/296))
 
 ### Fixed
 
@@ -2663,7 +2663,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
   - `previousSummary`: Summary from the last compaction (if any), so hooks can preserve accumulated context
   - `messagesToKeep`: Messages that will be kept after the summary (recent turns), in addition to `messagesToSummarize`
   - `resolveAhodeuscliKey`: Function to resolve API keys for any model (checks settings, OAuth, env vars)
-  - Removed `ahodeuscliKey` string in favor of `resolveAhodeuscliKey` for more flexibility
+  - Removed `apiKey` string in favor of `resolveAhodeuscliKey` for more flexibility
 
 - **SessionManager API cleanup**:
   - Renamed `loadSessionFromEntries()` to `buildSessionContext()` (builds LLM context from entries, handling compaction)
@@ -2691,7 +2691,7 @@ Total color count increased from 46 to 50. See [docs/themes.md](docs/themes.md) 
 
 ### Added
 
-- **API keys in settings.json**: Store API keys in `~/.hodeuscli/agent/settings.json` under the `ahodeuscliKeys` field (e.g., `{ "ahodeuscliKeys": { "Anthropic": "sk-..." } }`). Settings keys take priority over environment variables. ([#295](https://github.com/badlogic/hodeuscli-mono/issues/295))
+- **API keys in settings.json**: Store API keys in `~/.hodeuscli/agent/settings.json` under the `apiKeys` field (e.g., `{ "apiKeys": { "Anthropic": "sk-..." } }`). Settings keys take priority over environment variables. ([#295](https://github.com/badlogic/hodeuscli-mono/issues/295))
 
 ### Fixed
 
@@ -3252,7 +3252,7 @@ _Dedicated to Peter's shoulder ([@steipete](https://twitter.com/steipete))_
 
 ### Added
 
-- **`authHeader` option in models.json**: Custom providers can set `"authHeader": true` to automatically add `Authorization: Bearer <ahodeuscliKey>` header. Useful for providers that require explicit auth headers. ([#81](https://github.com/badlogic/hodeuscli-mono/issues/81))
+- **`authHeader` option in models.json**: Custom providers can set `"authHeader": true` to automatically add `Authorization: Bearer <apiKey>` header. Useful for providers that require explicit auth headers. ([#81](https://github.com/badlogic/hodeuscli-mono/issues/81))
 - **`--append-system-prompt` Flag**: Append additional text or file contents to the system prompt. Supports both inline text and file paths. Complements `--system-prompt` for layering custom instructions without replacing the base system prompt. ([#114](https://github.com/badlogic/hodeuscli-mono/pull/114) by [@markusylisiurunen](https://github.com/markusylisiurunen))
 - **Thinking Block Toggle**: Added `Ctrl+T` shortcut to toggle visibility of LLM thinking blocks. When toggled off, shows a static "Thinking..." label instead of full content. Useful for reducing visual clutter during long conversations. ([#113](https://github.com/badlogic/hodeuscli-mono/pull/113) by [@markusylisiurunen](https://github.com/markusylisiurunen))
 

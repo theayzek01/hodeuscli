@@ -1,7 +1,7 @@
 /**
  * Component for displaying tool execution with rendering support.
  */
-import { Box, type Component, Container, getCapabilities, Image, Spacer, Text, type TUI } from "@mariozechner/pi-tui";
+import { Box, type Component, Container, getCapabilities, Image, Spacer, Text, type TUI } from "@games-coder/hodeuscli-tui";
 import stripAnsi from "strip-ansi";
 import type { ToolDefinition, ToolRenderContext } from "../../../core/extensions/types.js";
 import { allToolDefinitions } from "../../../core/tools/index.js";

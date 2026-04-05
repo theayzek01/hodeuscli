@@ -43,7 +43,7 @@ See [examples/extensions/](../examples/extensions/) for working implementations.
   - [Tool Events](#tool-events)
 - [ExtensionContext](#extensioncontext)
 - [ExtensionCommandContext](#extensioncommandcontext)
-- [ExtensionAPI Methods](#extensionahodeuscli-methods)
+- [ExtensionAPI Methods](#extensionapi-methods)
 - [State Management](#state-management)
 - [Custom Tools](#custom-tools)
 - [Custom UI](#custom-ui)
@@ -781,7 +781,7 @@ It is usually `undefined` in idle or non-turn contexts such as session events, e
 
 ```typescript
 hodeuscli.on("tool_result", async (event, ctx) => {
-  const response = await fetch("https://example.com/ahodeuscli", {
+  const response = await fetch("https://example.com/api", {
     method: "POST",
     body: JSON.stringify(event),
     signal: ctx.signal,
@@ -1346,8 +1346,8 @@ Calls made during the extension factory function are queued and applied once the
 // Register a new provider with custom models
 hodeuscli.registerProvider("my-proxy", {
   baseUrl: "https://proxy.example.com",
-  ahodeuscliKey: "PROXY_API_KEY",  // env var name or literal
-  ahodeuscli: "Anthropic-messages",
+  apiKey: "PROXY_API_KEY",  // env var name or literal
+  api: "Anthropic-messages",
   models: [
     {
       id: "claude-sonnet-4-20250514",
@@ -1369,7 +1369,7 @@ hodeuscli.registerProvider("Anthropic", {
 // Register provider with OAuth support for /login
 hodeuscli.registerProvider("corporate-ai", {
   baseUrl: "https://ai.corp.com",
-  ahodeuscli: "openai-responses",
+  api: "openai-responses",
   models: [...],
   oauth: {
     name: "Corporate AI (SSO)",
@@ -1392,8 +1392,8 @@ hodeuscli.registerProvider("corporate-ai", {
 
 **Config options:**
 - `baseUrl` - API endpoint URL. Required when defining models.
-- `ahodeuscliKey` - API key or environment variable name. Required when defining models (unless `oauth` provided).
-- `ahodeuscli` - API type: `"Anthropic-messages"`, `"openai-completions"`, `"openai-responses"`, etc.
+- `apiKey` - API key or environment variable name. Required when defining models (unless `oauth` provided).
+- `api` - API type: `"Anthropic-messages"`, `"openai-completions"`, `"openai-responses"`, etc.
 - `headers` - Custom headers to include in requests.
 - `authHeader` - If true, adds `Authorization: Bearer` header automatically.
 - `models` - Array of model definitions. If provided, replaces all existing models for this provider.

@@ -348,7 +348,7 @@ Bundle and share extensions, skills, prompts, and themes via npm or git. Find pa
 
 ```bash
 hodeuscli install npm:@foo/hodeuscli-tools
-hodeuscli install npm:@foo/hodeuscli-tools@1.2.3      # hodeusclinned version
+hodeuscli install npm:@foo/hodeuscli-tools@1.2.3      # pinned version
 hodeuscli install git:github.com/user/repo
 hodeuscli install git:github.com/user/repo@v1  # tag or commit
 hodeuscli install git:git@github.com:user/repo
@@ -360,7 +360,7 @@ hodeuscli install ssh://git@github.com/user/repo@v1    # tag or commit
 hodeuscli remove npm:@foo/hodeuscli-tools
 hodeuscli uninstall npm:@foo/hodeuscli-tools          # alias for remove
 hodeuscli list
-hodeuscli update                               # skips hodeusclinned packages
+hodeuscli update                               # skips pinned packages
 hodeuscli config                               # enable/disable extensions, skills, prompts, themes
 ```
 
@@ -455,7 +455,7 @@ hodeuscli [options] [@files...] [messages...]
 hodeuscli install <source> [-l]     # Install package, -l for project-local
 hodeuscli remove <source> [-l]      # Remove package
 hodeuscli uninstall <source> [-l]   # Alias for remove
-hodeuscli update [source]           # Update packages (skips hodeusclinned)
+hodeuscli update [source]           # Update packages (skips pinned)
 hodeuscli list                      # List installed packages
 hodeuscli config                    # Enable/disable package resources
 ```
@@ -482,7 +482,7 @@ cat README.md | hodeuscli -p "Summarize this text"
 |--------|-------------|
 | `--provider <name>` | Provider (Anthropic, openai, google, etc.) |
 | `--model <pattern>` | Model pattern or ID (supports `provider/id` and optional `:<thinking>`) |
-| `--ahodeuscli-key <key>` | API key (overrides env vars) |
+| `--api-key <key>` | API key (overrides env vars) |
 | `--thinking <level>` | `off`, `minimal`, `low`, `medium`, `high`, `xhigh` |
 | `--models <patterns>` | Comma-separated patterns for Ctrl+P cycling |
 | `--list-models [search]` | List available models |

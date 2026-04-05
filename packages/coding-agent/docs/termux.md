@@ -5,7 +5,7 @@ Pi runs on Android via [Termux](https://termux.dev/), a terminal emulator and Li
 ## Prerequisites
 
 1. Install [Termux](https://github.com/termux/termux-app#installation) from GitHub or F-Droid (not Google Play, that version is deprecated)
-2. Install [Termux:API](https://github.com/termux/termux-ahodeuscli#installation) from GitHub or F-Droid for clipboard and other device integrations
+2. Install [Termux:API](https://github.com/termux/termux-api#installation) from GitHub or F-Droid for clipboard and other device integrations
 
 ## Installation
 
@@ -14,7 +14,7 @@ Pi runs on Android via [Termux](https://termux.dev/), a terminal emulator and Li
 pkg update && pkg upgrade
 
 # Install dependencies
-pkg install nodejs termux-ahodeuscli git
+pkg install nodejs termux-api git
 
 # Install hodeuscli
 npm install -g @mariozechner/hodeuscli
@@ -89,7 +89,7 @@ termux-camera-photo out.jpg   # Take photo
 
 ## Notes
 - Termux:API app must be installed for `termux-*` commands
-- Use `pkg install termux-ahodeuscli` for the command-line tools
+- Use `pkg install termux-api` for the command-line tools
 - Storage permission needed for `/storage/emulated/0` access
 ```
 
@@ -109,7 +109,7 @@ Ensure both apps are installed:
 
 Then install the CLI tools:
 ```bash
-pkg install termux-ahodeuscli
+pkg install termux-api
 ```
 
 ### Permission denied for shared storage

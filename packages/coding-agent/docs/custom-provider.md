@@ -23,7 +23,7 @@ See these complete provider examples:
 - [Register New Provider](#register-new-provider)
 - [Unregister Provider](#unregister-provider)
 - [OAuth Support](#oauth-support)
-- [Custom Streaming API](#custom-streaming-ahodeuscli)
+- [Custom Streaming API](#custom-streaming-api)
 - [Testing Your Implementation](#testing-your-implementation)
 - [Config Reference](#config-reference)
 - [Model Definition Reference](#model-definition-reference)
@@ -41,9 +41,9 @@ export default function (hodeuscli: ExtensionAPI) {
 
   // Register new provider with models
   hodeuscli.registerProvider("my-provider", {
-    baseUrl: "https://ahodeuscli.example.com",
-    ahodeuscliKey: "MY_API_KEY",
-    ahodeuscli: "openai-completions",
+    baseUrl: "https://api.example.com",
+    apiKey: "MY_API_KEY",
+    api: "openai-completions",
     models: [
       {
         id: "my-model",
@@ -93,9 +93,9 @@ To add a completely new provider, specify `models` along with the required confi
 
 ```typescript
 hodeuscli.registerProvider("my-llm", {
-  baseUrl: "https://ahodeuscli.my-llm.com/v1",
-  ahodeuscliKey: "MY_LLM_API_KEY",  // env var name or literal value
-  ahodeuscli: "openai-completions",  // which streaming API to use
+  baseUrl: "https://api.my-llm.com/v1",
+  apiKey: "MY_LLM_API_KEY",  // env var name or literal value
+  api: "openai-completions",  // which streaming API to use
   models: [
     {
       id: "my-llm-large",
@@ -124,9 +124,9 @@ Use `hodeuscli.unregisterProvider(name)` to remove a provider that was previousl
 ```typescript
 // Register
 hodeuscli.registerProvider("my-llm", {
-  baseUrl: "https://ahodeuscli.my-llm.com/v1",
-  ahodeuscliKey: "MY_LLM_API_KEY",
-  ahodeuscli: "openai-completions",
+  baseUrl: "https://api.my-llm.com/v1",
+  apiKey: "MY_LLM_API_KEY",
+  api: "openai-completions",
   models: [
     {
       id: "my-llm-large",
@@ -150,7 +150,7 @@ Calls made after the initial extension load phase are applied immediately, so no
 
 ### API Types
 
-The `ahodeuscli` field determines which streaming implementation is used:
+The `api` field determines which streaming implementation is used:
 
 | API | Use for |
 |-----|---------|
@@ -199,11 +199,11 @@ Use `qwen-chat-template` instead for local Qwen-compatible servers that read `ch
 If your provider expects `Authorization: Bearer <key>` but doesn't use a standard API, set `authHeader: true`:
 
 ```typescript
-hodeuscli.registerProvider("custom-ahodeuscli", {
-  baseUrl: "https://ahodeuscli.example.com",
-  ahodeuscliKey: "MY_API_KEY",
+hodeuscli.registerProvider("custom-api", {
+  baseUrl: "https://api.example.com",
+  apiKey: "MY_API_KEY",
   authHeader: true,  // adds Authorization: Bearer header
-  ahodeuscli: "openai-completions",
+  api: "openai-completions",
   models: [...]
 });
 ```
@@ -217,7 +217,7 @@ import type { OAuthCredentials, OAuthLoginCallbacks } from "@mariozechner/hodeus
 
 hodeuscli.registerProvider("corporate-ai", {
   baseUrl: "https://ai.corp.com/v1",
-  ahodeuscli: "openai-responses",
+  api: "openai-responses",
   models: [...],
   oauth: {
     name: "Corporate AI (SSO)",
@@ -340,7 +340,7 @@ function streamMyProvider(
     const output: AssistantMessage = {
       role: "assistant",
       content: [],
-      ahodeuscli: model.ahodeuscli,
+      api: model.api,
       provider: model.provider,
       model: model.id,
       usage: {
@@ -473,9 +473,9 @@ Register your stream function:
 
 ```typescript
 hodeuscli.registerProvider("my-provider", {
-  baseUrl: "https://ahodeuscli.example.com",
-  ahodeuscliKey: "MY_API_KEY",
-  ahodeuscli: "my-custom-ahodeuscli",
+  baseUrl: "https://api.example.com",
+  apiKey: "MY_API_KEY",
+  api: "my-custom-api",
   models: [...],
   streamSimple: streamMyProvider
 });
@@ -509,10 +509,10 @@ interface ProviderConfig {
   baseUrl?: string;
 
   /** API key or environment variable name. Required when defining models (unless oauth). */
-  ahodeuscliKey?: string;
+  apiKey?: string;
 
   /** API type for streaming. Required at provider or model level when defining models. */
-  ahodeuscli?: Ahodeuscli;
+  api?: Ahodeuscli;
 
   /** Custom streaming implementation for non-standard APIs. */
   streamSimple?: (
@@ -552,7 +552,7 @@ interface ProviderModelConfig {
   name: string;
 
   /** API type override for this specific model. */
-  ahodeuscli?: Ahodeuscli;
+  api?: Ahodeuscli;
 
   /** Whether the model supports extended thinking. */
   reasoning: boolean;

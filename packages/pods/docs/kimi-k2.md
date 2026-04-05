@@ -152,7 +152,7 @@ systemctl restart ssh
 
 Generate additional config for trtllm serve.
 ```bash
-cat >/path/to/TensorRT-LLM/extra-llm-ahodeuscli-config.yml <<EOF
+cat >/path/to/TensorRT-LLM/extra-llm-api-config.yml <<EOF
 cuda_graph_config:
   padding_enabled: true
   batch_sizes:
@@ -177,7 +177,7 @@ mhodeusclirun -np 16 \
 -H <HOST1>:8,<HOST2>:8 \
 -mca plm_rsh_args "-p 2233" \
 --allow-run-as-root \
-trtllm-llmahodeuscli-launch trtllm-serve serve \
+trtllm-llmapi-launch trtllm-serve serve \
 --backend pytorch \
 --tp_size 16 \
 --ep_size 8 \
@@ -185,7 +185,7 @@ trtllm-llmahodeuscli-launch trtllm-serve serve \
 --trust_remote_code \
 --max_batch_size 128 \
 --max_num_tokens 4096 \
---extra_llm_ahodeuscli_options /path/to/TensorRT-LLM/extra-llm-ahodeuscli-config.yml \
+--extra_llm_api_options /path/to/TensorRT-LLM/extra-llm-api-config.yml \
 --port 8000 \
 <YOUR_MODEL_DIR>
 ```

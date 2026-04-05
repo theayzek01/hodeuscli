@@ -360,7 +360,7 @@ WRAPPER
 			console.log("  • Try a smaller model variant");
 		}
 
-		console.log(`\n${chalk.cyan(`Check full logs: pi ssh "tail -100 ~/.vllm_logs/${name}.log"`)}`);
+		console.log(`\n${chalk.cyan(`Check full logs: Hodeuscli ssh "tail -100 ~/.vllm_logs/${name}.log"`)}`);
 		process.exit(1);
 	} else if (startupComplete) {
 		// Model started successfully - output connection details
@@ -395,20 +395,20 @@ WRAPPER
     -d '{"model":"${modelId}","messages":[{"role":"user","content":"Hi"}]}'`),
 		);
 		console.log("");
-		console.log(chalk.cyan(`Chat with model:  pi agent ${name} "Your message"`));
-		console.log(chalk.cyan(`Interactive mode: pi agent ${name} -i`));
-		console.log(chalk.cyan(`Monitor logs:     pi logs ${name}`));
-		console.log(chalk.cyan(`Stop model:       pi stop ${name}`));
+		console.log(chalk.cyan(`Chat with model:  Hodeuscli agent ${name} "Your message"`));
+		console.log(chalk.cyan(`Interactive mode: Hodeuscli agent ${name} -i`));
+		console.log(chalk.cyan(`Monitor logs:     Hodeuscli logs ${name}`));
+		console.log(chalk.cyan(`Stop model:       Hodeuscli stop ${name}`));
 	} else if (interrupted) {
 		console.log(chalk.yellow("\n\nStopped monitoring. Model deployment continues in background."));
-		console.log(chalk.cyan(`Chat with model: pi agent ${name} "Your message"`));
-		console.log(chalk.cyan(`Check status: pi logs ${name}`));
-		console.log(chalk.cyan(`Stop model: pi stop ${name}`));
+		console.log(chalk.cyan(`Chat with model: Hodeuscli agent ${name} "Your message"`));
+		console.log(chalk.cyan(`Check status: Hodeuscli logs ${name}`));
+		console.log(chalk.cyan(`Stop model: Hodeuscli stop ${name}`));
 	} else {
 		console.log(chalk.yellow("\n\nLog stream ended. Model may still be running."));
-		console.log(chalk.cyan(`Chat with model: pi agent ${name} "Your message"`));
-		console.log(chalk.cyan(`Check status: pi logs ${name}`));
-		console.log(chalk.cyan(`Stop model: pi stop ${name}`));
+		console.log(chalk.cyan(`Chat with model: Hodeuscli agent ${name} "Your message"`));
+		console.log(chalk.cyan(`Check status: Hodeuscli logs ${name}`));
+		console.log(chalk.cyan(`Stop model: Hodeuscli stop ${name}`));
 	}
 };
 
@@ -546,7 +546,7 @@ export const listModels = async (options: { pod?: string }) => {
 	if (anyDead) {
 		console.log("");
 		console.log(chalk.yellow("Some models are not running. Clean up with:"));
-		console.log(chalk.cyan("  pi stop <name>"));
+		console.log(chalk.cyan("  Hodeuscli stop <name>"));
 	} else {
 		console.log(chalk.green("✓ All processes verified"));
 	}
@@ -614,7 +614,7 @@ export const showKnownModels = async () => {
 		console.log(chalk.yellow("No active pod. Use 'pi pods active <name>' to filter compatible models.\n"));
 	}
 
-	console.log("Usage: pi start <model> --name <name> [options]\n");
+	console.log("Usage: Hodeuscli start <model> --name <name> [options]\n");
 
 	// Group models by compatibility and family
 	const compatible: Record<string, Array<{ id: string; name: string; config: string; notes?: string }>> = {};
