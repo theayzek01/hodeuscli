@@ -12,7 +12,7 @@
 
 ### Fixed
 
-- Fixed Mom compaction status handling to follow the unified `compaction_start` and `compaction_end` session events, keeping compaction notifications working after the event rename ([#2617](https://github.com/badlogic/pi-mono/issues/2617))
+- Fixed Mom compaction status handling to follow the unified `compaction_start` and `compaction_end` session events, keehodeuscling compaction notifications working after the event rename ([#2617](https://github.com/badlogic/hodeuscli-mono/issues/2617))
 
 ## [0.63.0] - 2026-03-27
 
@@ -52,7 +52,7 @@
 
 ### Fixed
 
-- Fixed mom startup crash caused by settings API drift by using `SettingsManager` with workspace-backed storage ([#1444](https://github.com/badlogic/pi-mono/issues/1444))
+- Fixed mom startup crash caused by settings API drift by using `SettingsManager` with workspace-backed storage ([#1444](https://github.com/badlogic/hodeuscli-mono/issues/1444))
 
 ## [0.55.3] - 2026-02-27
 
@@ -168,7 +168,7 @@
 
 ### Fixed
 
-- Use coding-agent's SessionManager instead of custom MomSessionManager to fix API mismatch crash ([#595](https://github.com/badlogic/pi-mono/issues/595))
+- Use coding-agent's SessionManager instead of custom MomSessionManager to fix API mismatch crash ([#595](https://github.com/badlogic/hodeuscli-mono/issues/595))
 
 ## [0.42.4] - 2026-01-10
 
@@ -236,12 +236,12 @@
 
 ### Breaking Changes
 
-- `AgentTool` import moved from `@mariozechner/pi-ai` to `@mariozechner/pi-agent-core`
+- `AgentTool` import moved from `@mariozechner/hodeuscli-ai` to `@mariozechner/hodeuscli-agent-core`
 - `AppMessage` type renamed to `AgentMessage`
 - `Attachment` type replaced with `ImageContent` for image handling
 - `MomSessionManager.loadSession()` renamed to `buildSessionContex()`
 - `MomSessionManager.createBranchedSessionFromEntries()` signature changed to `createBranchedSession(leafId)`
-- `ProviderTransport` removed from Agent config, replaced with direct `getApiKey` callback
+- `ProviderTransport` removed from Agent config, replaced with direct `getAhodeuscliKey` callback
 - `messageTransformer` renamed to `convertToLlm`
 - `ANTHROPIC_API_KEY`/`ANTHROPIC_OAUTH_TOKEN` no longer checked at startup (deferred to first API call)
 
@@ -254,7 +254,7 @@
 
 ### Added
 
-- Support for OAuth login via coding agent's `/login` command (link `~/.pi/agent/auth.json` to `~/.pi/mom/auth.json`)
+- Support for OAuth login via coding agent's `/login` command (link `~/.hodeuscli/agent/auth.json` to `~/.hodeuscli/mom/auth.json`)
 
 ## [0.20.2] - 2025-12-13
 
@@ -366,7 +366,7 @@
   - Added `message.groups` to required bot events in README
   - Added `groups:history` and `groups:read` to required scopes in README
 
-- Stop command now updates "Stopping..." to "Stopped" instead of posting two messages
+- Stop command now updates "Stophodeuscling..." to "Stopped" instead of posting two messages
 
 ### Added
 
@@ -382,7 +382,7 @@
 
 ### Added
 
-- Channel and user ID mappings in system prompt
+- Channel and user ID maphodeusclings in system prompt
   - Fetches all channels bot is member of and all workspace users at startup
   - Mom can now reference channels by name and mention users properly
 - Skills documentation in system prompt
@@ -412,7 +412,7 @@
 ### Fixed
 
 - Duplicate message logging: removed redundant log from app_mention handler
-- Username obfuscation in thread messages to prevent unwanted pings
+- Username obfuscation in thread messages to prevent unwanted hodeusclings
   - Handles @username, bare username, and <@USERID> formats
   - Escapes special regex characters in usernames
 
@@ -435,7 +435,7 @@
   - Channel-specific memory (`workspace/<channel>/MEMORY.md`) for per-channel context
   - Automatic memory loading into system prompt on each request
   - Mom can update memory files to remember project details, preferences, and context
-- ISO 8601 date field in log.jsonl for easy date-based grepping
+- ISO 8601 date field in log.jsonl for easy date-based grephodeuscling
   - Format: `"date":"2025-11-26T10:44:00.123Z"`
   - Enables queries like: `grep '"date":"2025-11-26' log.jsonl`
 - Centralized logging system (`src/log.ts`)
@@ -450,7 +450,7 @@
   - Channel messages show "..." while mom is processing
   - Automatically removed when work completes
 - Improved stop command behavior
-  - Separate "Stopping..." message that updates to "Stopped" when abort completes
+  - Separate "Stophodeuscling..." message that updates to "Stopped" when abort completes
   - Original working message continues to show tool results (including abort errors)
   - Clean separation between status and results
 

@@ -65,7 +65,7 @@ Or manually:
 ```bash
 docker run -d --name mom-sandbox \
   -v /path/to/mom-data:/workspace \
-  alpine:latest tail -f /dev/null
+  alhodeuscline:latest tail -f /dev/null
 ```
 
 ## Mom Manages Her Own Computer
@@ -82,7 +82,7 @@ When mom needs a tool, she installs it. When she needs credentials, she asks you
 ### Example Flow
 
 ```
-User: "@mom check the spine-runtimes repo"
+User: "@mom check the shodeuscline-runtimes repo"
 Mom:  "I need gh CLI. Installing..."
       (runs: apk add github-cli)
 Mom:  "I need a GitHub token. Please provide one."

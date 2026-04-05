@@ -197,7 +197,11 @@ export function printHelp(extensionFlags?: ExtensionFlag[]): void {
 					})
 					.join("\n")}\n`
 			: "";
-	console.log(`${chalk.bold(APP_NAME)} - AI coding assistant with read, bash, edit, write tools
+	console.log(`
+ ╔══════════════════════════╗
+ ║   ◆ HODEUSCLI  v0.65.0 ◆ ║
+ ╚══════════════════════════╝
+ ${chalk.italic("The World's Most Refined Terminal Coding Assistant")}
 
 ${chalk.bold("Usage:")}
   ${APP_NAME} [options] [@files...] [messages...]

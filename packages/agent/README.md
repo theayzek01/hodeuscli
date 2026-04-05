@@ -1,23 +1,23 @@
-# @mariozechner/pi-agent-core
+# @mariozechner/hodeuscli-agent-core
 
-Stateful agent with tool execution and event streaming. Built on `@mariozechner/pi-ai`.
+Stateful agent with tool execution and event streaming. Built on `@mariozechner/hodeuscli-ai`.
 
 ## Installation
 
 ```bash
-npm install @mariozechner/pi-agent-core
+npm install @mariozechner/hodeuscli-agent-core
 ```
 
 ## Quick Start
 
 ```typescript
-import { Agent } from "@mariozechner/pi-agent-core";
-import { getModel } from "@mariozechner/pi-ai";
+import { Agent } from "@mariozechner/hodeuscli-agent-core";
+import { getModel } from "@mariozechner/hodeuscli-ai";
 
 const agent = new Agent({
   initialState: {
     systemPrompt: "You are a helpful assistant.",
-    model: getModel("anthropic", "claude-sonnet-4-20250514"),
+    model: getModel("Anthropic", "claude-sonnet-4-20250514"),
   },
 });
 
@@ -167,8 +167,8 @@ const agent = new Agent({
   // Session ID for provider caching
   sessionId: "session-123",
 
-  // Dynamic API key resolution (for expiring OAuth tokens)
-  getApiKey: async (provider) => refreshToken(),
+  // Dynamic API key resolution (for exhodeuscliring OAuth tokens)
+  getapiKey: async (provider) => refreshToken(),
 
   // Tool execution mode: "parallel" (default) or "sequential"
   toolExecution: "parallel",
@@ -215,7 +215,7 @@ interface AgentState {
 
 Access state via `agent.state`.
 
-Assigning `agent.state.tools = [...]` or `agent.state.messages = [...]` copies the top-level array before storing it. Mutating the returned array mutates the current agent state.
+Assigning `agent.state.tools = [...]` or `agent.state.messages = [...]` cohodeusclies the top-level array before storing it. Mutating the returned array mutates the current agent state.
 
 During streaming, `agent.state.streamingMessage` contains the current partial assistant message.
 
@@ -251,7 +251,7 @@ agent.state.tools = [myTool];
 agent.toolExecution = "sequential";
 agent.beforeToolCall = async ({ toolCall }) => undefined;
 agent.afterToolCall = async ({ toolCall, result }) => undefined;
-agent.state.messages = newMessages; // top-level array is copied
+agent.state.messages = newMessages; // top-level array is cohodeusclied
 agent.state.messages.push(message);
 agent.reset();
 ```
@@ -332,7 +332,7 @@ Follow-up messages are checked only when there are no more tool calls and no ste
 Extend `AgentMessage` via declaration merging:
 
 ```typescript
-declare module "@mariozechner/pi-agent-core" {
+declare module "@mariozechner/hodeuscli-agent-core" {
   interface CustomAgentMessages {
     notification: { role: "notification"; text: string; timestamp: number };
   }
@@ -404,7 +404,7 @@ Thrown errors are caught by the agent and reported to the LLM as tool errors wit
 For browser apps that proxy through a backend:
 
 ```typescript
-import { Agent, streamProxy } from "@mariozechner/pi-agent-core";
+import { Agent, streamProxy } from "@mariozechner/hodeuscli-agent-core";
 
 const agent = new Agent({
   streamFn: (model, context, options) =>
@@ -421,7 +421,7 @@ const agent = new Agent({
 For direct control without the Agent class:
 
 ```typescript
-import { agentLoop, agentLoopContinue } from "@mariozechner/pi-agent-core";
+import { agentLoop, agentLoopContinue } from "@mariozechner/hodeuscli-agent-core";
 
 const context: AgentContext = {
   systemPrompt: "You are helpful.",

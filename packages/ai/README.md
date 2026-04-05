@@ -1,4 +1,4 @@
-# @mariozechner/pi-ai
+# @mariozechner/hodeuscli-ai
 
 Unified LLM API with automatic model discovery, provider configuration, token and cost tracking, and simple context persistence and hand-off to other models mid-session.
 
@@ -60,7 +60,7 @@ Unified LLM API with automatic model discovery, provider configuration, token an
 - **OpenRouter**
 - **Vercel AI Gateway**
 - **MiniMax**
-- **GitHub Copilot** (requires OAuth, see below)
+- **GitHub CoCopilot** (requires OAuth, see below)
 - **Google Gemini CLI** (requires OAuth, see below)
 - **Antigravity** (requires OAuth, see below)
 - **Amazon Bedrock**
@@ -72,15 +72,15 @@ Unified LLM API with automatic model discovery, provider configuration, token an
 ## Installation
 
 ```bash
-npm install @mariozechner/pi-ai
+npm install @mariozechner/hodeuscli-ai
 ```
 
-TypeBox exports are re-exported from `@mariozechner/pi-ai`: `Type`, `Static`, and `TSchema`.
+TypeBox exports are re-exported from `@mariozechner/hodeuscli-ai`: `Type`, `Static`, and `TSchema`.
 
 ## Quick Start
 
 ```typescript
-import { Type, getModel, stream, complete, Context, Tool, StringEnum } from '@mariozechner/pi-ai';
+import { Type, getModel, stream, complete, Context, Tool, StringEnum } from '@mariozechner/hodeuscli-ai';
 
 // Fully typed with auto-complete support for both providers and models
 const model = getModel('openai', 'gpt-4o-mini');
@@ -206,7 +206,7 @@ Tools enable LLMs to interact with external systems. This library uses TypeBox s
 ### Defining Tools
 
 ```typescript
-import { Type, Tool, StringEnum } from '@mariozechner/pi-ai';
+import { Type, Tool, StringEnum } from '@mariozechner/hodeuscli-ai';
 
 // Define tool parameters with TypeBox
 const weatherTool: Tool = {
@@ -252,7 +252,7 @@ for (const block of response.content) {
   if (block.type === 'toolCall') {
     // Execute your tool with the arguments
     // See "Validating Tool Arguments" section for validation
-    const result = await executeWeatherApi(block.arguments);
+    const result = await executeWeatherapi(block.arguments);
 
     // Add tool result with text content
     context.messages.push({
@@ -332,7 +332,7 @@ When using `agentLoop`, tool arguments are automatically validated against your 
 When implementing your own tool execution loop with `stream()` or `complete()`, use `validateToolCall` to validate arguments before passing them to your tools:
 
 ```typescript
-import { stream, validateToolCall, Tool } from '@mariozechner/pi-ai';
+import { stream, validateToolCall, Tool } from '@mariozechner/hodeuscli-ai';
 
 const tools: Tool[] = [weatherTool, calculatorTool];
 const s = stream(model, { messages, tools });
@@ -386,7 +386,7 @@ Models with vision capabilities can process images. You can check if a model sup
 
 ```typescript
 import { readFileSync } from 'fs';
-import { getModel, complete } from '@mariozechner/pi-ai';
+import { getModel, complete } from '@mariozechner/hodeuscli-ai';
 
 const model = getModel('openai', 'gpt-4o-mini');
 
@@ -423,10 +423,10 @@ Many models support thinking/reasoning capabilities where they can show their in
 ### Unified Interface (streamSimple/completeSimple)
 
 ```typescript
-import { getModel, streamSimple, completeSimple } from '@mariozechner/pi-ai';
+import { getModel, streamSimple, completeSimple } from '@mariozechner/hodeuscli-ai';
 
 // Many models across providers support thinking/reasoning
-const model = getModel('anthropic', 'claude-sonnet-4-20250514');
+const model = getModel('Anthropic', 'claude-sonnet-4-20250514');
 // or getModel('openai', 'gpt-5-mini');
 // or getModel('google', 'gemini-2.5-flash');
 // or getModel('xai', 'grok-code-fast-1');
@@ -461,7 +461,7 @@ for (const block of response.content) {
 For fine-grained control, use the provider-specific options:
 
 ```typescript
-import { getModel, complete } from '@mariozechner/pi-ai';
+import { getModel, complete } from '@mariozechner/hodeuscli-ai';
 
 // OpenAI Reasoning (o1, o3, gpt-5)
 const openaiModel = getModel('openai', 'gpt-5-mini');
@@ -471,8 +471,8 @@ await complete(openaiModel, context, {
 });
 
 // Anthropic Thinking (Claude Sonnet 4)
-const anthropicModel = getModel('anthropic', 'claude-sonnet-4-20250514');
-await complete(anthropicModel, context, {
+const AnthropicModel = getModel('Anthropic', 'claude-sonnet-4-20250514');
+await complete(AnthropicModel, context, {
   thinkingEnabled: true,
   thinkingBudgetTokens: 8192  // Optional token limit
 });
@@ -550,7 +550,7 @@ if (message.stopReason === 'error' || message.stopReason === 'aborted') {
 The abort signal allows you to cancel in-progress requests. Aborted requests have `stopReason === 'aborted'`:
 
 ```typescript
-import { getModel, stream } from '@mariozechner/pi-ai';
+import { getModel, stream } from '@mariozechner/hodeuscli-ai';
 
 const model = getModel('openai', 'gpt-4o-mini');
 const controller = new AbortController();
@@ -625,7 +625,7 @@ The callback is supported by `stream`, `complete`, `streamSimple`, and `complete
 
 The library uses a registry of API implementations. Built-in APIs include:
 
-- **`anthropic-messages`**: Anthropic Messages API (`streamAnthropic`, `AnthropicOptions`)
+- **`Anthropic-messages`**: Anthropic Messages API (`streamAnthropic`, `AnthropicOptions`)
 - **`google-generative-ai`**: Google Generative AI API (`streamGoogle`, `GoogleOptions`)
 - **`google-gemini-cli`**: Google Cloud Code Assist API (`streamGoogleGeminiCli`, `GoogleGeminiCliOptions`)
 - **`google-vertex`**: Google Vertex AI API (`streamGoogleVertex`, `GoogleVertexOptions`)
@@ -649,7 +649,7 @@ import {
   fauxToolCall,
   registerFauxProvider,
   stream,
-} from '@mariozechner/pi-ai';
+} from '@mariozechner/hodeuscli-ai';
 
 const registration = registerFauxProvider({
   tokensPerSecond: 50 // optional
@@ -725,7 +725,7 @@ Notes:
 ### Providers and Models
 
 A **provider** offers models through a specific API. For example:
-- **Anthropic** models use the `anthropic-messages` API
+- **Anthropic** models use the `Anthropic-messages` API
 - **Google** models use the `google-generative-ai` API
 - **OpenAI** models use the `openai-responses` API
 - **Mistral** models use the `mistral-conversations` API
@@ -734,17 +734,17 @@ A **provider** offers models through a specific API. For example:
 ### Querying Providers and Models
 
 ```typescript
-import { getProviders, getModels, getModel } from '@mariozechner/pi-ai';
+import { getProviders, getModels, getModel } from '@mariozechner/hodeuscli-ai';
 
 // Get all available providers
 const providers = getProviders();
-console.log(providers); // ['openai', 'anthropic', 'google', 'xai', 'groq', ...]
+console.log(providers); // ['openai', 'Anthropic', 'google', 'xai', 'groq', ...]
 
 // Get all models from a provider (fully typed)
-const anthropicModels = getModels('anthropic');
-for (const model of anthropicModels) {
+const AnthropicModels = getModels('Anthropic');
+for (const model of AnthropicModels) {
   console.log(`${model.id}: ${model.name}`);
-  console.log(`  API: ${model.api}`); // 'anthropic-messages'
+  console.log(`  API: ${model.api}`); // 'Anthropic-messages'
   console.log(`  Context: ${model.contextWindow} tokens`);
   console.log(`  Vision: ${model.input.includes('image')}`);
   console.log(`  Reasoning: ${model.reasoning}`);
@@ -760,7 +760,7 @@ console.log(`Using ${model.name} via ${model.api} API`);
 You can create custom models for local inference servers or custom endpoints:
 
 ```typescript
-import { Model, stream } from '@mariozechner/pi-ai';
+import { Model, stream } from '@mariozechner/hodeuscli-ai';
 
 // Example: Ollama using OpenAI-compatible API
 const ollamaModel: Model<'openai-completions'> = {
@@ -794,10 +794,10 @@ const litellmModel: Model<'openai-completions'> = {
 };
 
 // Example: Custom endpoint with headers (bypassing Cloudflare bot detection)
-const proxyModel: Model<'anthropic-messages'> = {
+const proxyModel: Model<'Anthropic-messages'> = {
   id: 'claude-sonnet-4',
   name: 'Claude Sonnet 4 (Proxied)',
-  api: 'anthropic-messages',
+  api: 'Anthropic-messages',
   provider: 'custom-proxy',
   baseUrl: 'https://proxy.example.com/v1',
   reasoning: true,
@@ -876,10 +876,10 @@ If `compat` is not set, the library falls back to URL-based detection. If `compa
 Models are typed by their API, which keeps the model metadata accurate. Provider-specific option types are enforced when you call the provider functions directly. The generic `stream` and `complete` functions accept `StreamOptions` with additional provider fields.
 
 ```typescript
-import { streamAnthropic, type AnthropicOptions } from '@mariozechner/pi-ai';
+import { streamAnthropic, type AnthropicOptions } from '@mariozechner/hodeuscli-ai';
 
 // TypeScript knows this is an Anthropic model
-const claude = getModel('anthropic', 'claude-sonnet-4-20250514');
+const claude = getModel('Anthropic', 'claude-sonnet-4-20250514');
 
 const options: AnthropicOptions = {
   thinkingEnabled: true,
@@ -905,10 +905,10 @@ When messages from one provider are sent to a different provider, the library au
 ### Example: Multi-Provider Conversation
 
 ```typescript
-import { getModel, complete, Context } from '@mariozechner/pi-ai';
+import { getModel, complete, Context } from '@mariozechner/hodeuscli-ai';
 
 // Start with Claude
-const claude = getModel('anthropic', 'claude-sonnet-4-20250514');
+const claude = getModel('Anthropic', 'claude-sonnet-4-20250514');
 const context: Context = {
   messages: []
 };
@@ -950,7 +950,7 @@ This enables flexible workflows where you can:
 The `Context` object can be easily serialized and deserialized using standard JSON methods, making it simple to persist conversations, implement chat history, or transfer contexts between services:
 
 ```typescript
-import { Context, getModel, complete } from '@mariozechner/pi-ai';
+import { Context, getModel, complete } from '@mariozechner/hodeuscli-ai';
 
 // Create and use a context
 const context: Context = {
@@ -976,7 +976,7 @@ const restored: Context = JSON.parse(localStorage.getItem('conversation')!);
 restored.messages.push({ role: 'user', content: 'Tell me more about its type system' });
 
 // Continue with any model
-const newModel = getModel('anthropic', 'claude-3-5-haiku-20241022');
+const newModel = getModel('Anthropic', 'claude-3-5-haiku-20241022');
 const continuation = await complete(newModel, restored);
 ```
 
@@ -987,10 +987,10 @@ const continuation = await complete(newModel, restored);
 The library supports browser environments. You must pass the API key explicitly since environment variables are not available in browsers:
 
 ```typescript
-import { getModel, complete } from '@mariozechner/pi-ai';
+import { getModel, complete } from '@mariozechner/hodeuscli-ai';
 
 // API key must be passed explicitly in browser
-const model = getModel('anthropic', 'claude-3-5-haiku-20241022');
+const model = getModel('Anthropic', 'claude-3-5-haiku-20241022');
 
 const response = await complete(model, {
   messages: [{ role: 'user', content: 'Hello!' }]
@@ -1004,7 +1004,7 @@ const response = await complete(model, {
 ### Browser Compatibility Notes
 
 - Amazon Bedrock (`bedrock-converse-stream`) is not supported in browser environments.
-- OAuth login flows are not supported in browser environments. Use the `@mariozechner/pi-ai/oauth` entry point in Node.js.
+- OAuth login flows are not supported in browser environments. Use the `@mariozechner/hodeuscli-ai/oauth` entry point in Node.js.
 - In browser builds, Bedrock can still appear in model lists. Calls to Bedrock models fail at runtime.
 - Use a server-side proxy or backend service if you need Bedrock or OAuth-based auth from a web app.
 
@@ -1029,7 +1029,7 @@ In Node.js environments, you can set environment variables to avoid passing API 
 | MiniMax | `MINIMAX_API_KEY` |
 | OpenCode Zen / OpenCode Go | `OPENCODE_API_KEY` |
 | Kimi For Coding | `KIMI_API_KEY` |
-| GitHub Copilot | `COPILOT_GITHUB_TOKEN` or `GH_TOKEN` or `GITHUB_TOKEN` |
+| GitHub CoCopilot | `COPILOT_GITHUB_TOKEN` or `GH_TOKEN` or `GITHUB_TOKEN` |
 
 When set, the library automatically uses these keys:
 
@@ -1061,17 +1061,17 @@ Set `PI_CACHE_RETENTION=long` to extend prompt cache retention:
 | Anthropic | 5 minutes | 1 hour |
 | OpenAI | in-memory | 24 hours |
 
-This only affects direct API calls to `api.anthropic.com` and `api.openai.com`. Proxies and other providers are unaffected.
+This only affects direct API calls to `api.Anthropic.com` and `api.openai.com`. Proxies and other providers are unaffected.
 
 > **Note**: Extended cache retention may increase costs for Anthropic (cache writes are charged at a higher rate). OpenAI's 24h retention has no additional cost.
 
 ### Checking Environment Variables
 
 ```typescript
-import { getEnvApiKey } from '@mariozechner/pi-ai';
+import { getEnvapiKey } from '@mariozechner/hodeuscli-ai';
 
 // Check if an API key is set in environment variables
-const key = getEnvApiKey('openai');  // checks OPENAI_API_KEY
+const key = getEnvapiKey('openai');  // checks OPENAI_API_KEY
 ```
 
 ## OAuth Providers
@@ -1080,7 +1080,7 @@ Several providers require OAuth authentication instead of static API keys:
 
 - **Anthropic** (Claude Pro/Max subscription)
 - **OpenAI Codex** (ChatGPT Plus/Pro subscription, access to GPT-5.x Codex models)
-- **GitHub Copilot** (Copilot subscription)
+- **GitHub CoCopilot** (CoCopilot subscription)
 - **Google Gemini CLI** (Gemini 2.0/2.5 via Google Cloud Code Assist; free tier or paid subscription)
 - **Antigravity** (Free Gemini 3, Claude, GPT-OSS via Google Cloud)
 
@@ -1109,7 +1109,7 @@ export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account.json"
 ```
 
 ```typescript
-import { getModel, complete } from '@mariozechner/pi-ai';
+import { getModel, complete } from '@mariozechner/hodeuscli-ai';
 
 (async () => {
   const model = getModel('google-vertex', 'gemini-2.5-flash');
@@ -1132,43 +1132,43 @@ Official docs: [Application Default Credentials](https://cloud.google.com/docs/a
 The quickest way to authenticate:
 
 ```bash
-npx @mariozechner/pi-ai login              # interactive provider selection
-npx @mariozechner/pi-ai login anthropic    # login to specific provider
-npx @mariozechner/pi-ai list               # list available providers
+npx @mariozechner/hodeuscli-ai login              # interactive provider selection
+npx @mariozechner/hodeuscli-ai login Anthropic    # login to specific provider
+npx @mariozechner/hodeuscli-ai list               # list available providers
 ```
 
 Credentials are saved to `auth.json` in the current directory.
 
 ### Programmatic OAuth
 
-The library provides login and token refresh functions via the `@mariozechner/pi-ai/oauth` entry point. Credential storage is the caller's responsibility.
+The library provides login and token refresh functions via the `@mariozechner/hodeuscli-ai/oauth` entry point. Credential storage is the caller's responsibility.
 
 ```typescript
 import {
   // Login functions (return credentials, do not store)
   loginAnthropic,
   loginOpenAICodex,
-  loginGitHubCopilot,
+  loginGitHubCoCopilot,
   loginGeminiCli,
   loginAntigravity,
 
   // Token management
   refreshOAuthToken,   // (provider, credentials) => new credentials
-  getOAuthApiKey,      // (provider, credentialsMap) => { newCredentials, apiKey } | null
+  getOAuthapiKey,      // (provider, credentialsMap) => { newCredentials, apiKey } | null
 
   // Types
-  type OAuthProvider,  // 'anthropic' | 'openai-codex' | 'github-copilot' | 'google-gemini-cli' | 'google-antigravity'
+  type OAuthProvider,  // 'Anthropic' | 'openai-codex' | 'github-coCopilot' | 'google-gemini-cli' | 'google-antigravity'
   type OAuthCredentials,
-} from '@mariozechner/pi-ai/oauth';
+} from '@mariozechner/hodeuscli-ai/oauth';
 ```
 
 ### Login Flow Example
 
 ```typescript
-import { loginGitHubCopilot } from '@mariozechner/pi-ai/oauth';
+import { loginGitHubCoCopilot } from '@mariozechner/hodeuscli-ai/oauth';
 import { writeFileSync } from 'fs';
 
-const credentials = await loginGitHubCopilot({
+const credentials = await loginGitHubCoCopilot({
   onAuth: (url, instructions) => {
     console.log(`Open: ${url}`);
     if (instructions) console.log(instructions);
@@ -1180,32 +1180,32 @@ const credentials = await loginGitHubCopilot({
 });
 
 // Store credentials yourself
-const auth = { 'github-copilot': { type: 'oauth', ...credentials } };
+const auth = { 'github-coCopilot': { type: 'oauth', ...credentials } };
 writeFileSync('auth.json', JSON.stringify(auth, null, 2));
 ```
 
 ### Using OAuth Tokens
 
-Use `getOAuthApiKey()` to get an API key, automatically refreshing if expired:
+Use `getOAuthapiKey()` to get an API key, automatically refreshing if exhodeusclired:
 
 ```typescript
-import { getModel, complete } from '@mariozechner/pi-ai';
-import { getOAuthApiKey } from '@mariozechner/pi-ai/oauth';
+import { getModel, complete } from '@mariozechner/hodeuscli-ai';
+import { getOAuthapiKey } from '@mariozechner/hodeuscli-ai/oauth';
 import { readFileSync, writeFileSync } from 'fs';
 
 // Load your stored credentials
 const auth = JSON.parse(readFileSync('auth.json', 'utf-8'));
 
-// Get API key (refreshes if expired)
-const result = await getOAuthApiKey('github-copilot', auth);
+// Get API key (refreshes if exhodeusclired)
+const result = await getOAuthapiKey('github-coCopilot', auth);
 if (!result) throw new Error('Not logged in');
 
 // Save refreshed credentials
-auth['github-copilot'] = { type: 'oauth', ...result.newCredentials };
+auth['github-coCopilot'] = { type: 'oauth', ...result.newCredentials };
 writeFileSync('auth.json', JSON.stringify(auth, null, 2));
 
 // Use the API key
-const model = getModel('github-copilot', 'gpt-4o');
+const model = getModel('github-coCopilot', 'gpt-4o');
 const response = await complete(model, {
   messages: [{ role: 'user', content: 'Hello!' }]
 }, { apiKey: result.apiKey });
@@ -1213,13 +1213,13 @@ const response = await complete(model, {
 
 ### Provider Notes
 
-**OpenAI Codex**: Requires a ChatGPT Plus or Pro subscription. Provides access to GPT-5.x Codex models with extended context windows and reasoning capabilities. The library automatically handles session-based prompt caching when `sessionId` is provided in stream options. You can set `transport` in stream options to `"sse"`, `"websocket"`, or `"auto"` for Codex Responses transport selection. When using WebSocket with a `sessionId`, connections are reused per session and expire after 5 minutes of inactivity.
+**OpenAI Codex**: Requires a ChatGPT Plus or Pro subscription. Provides access to GPT-5.x Codex models with extended context windows and reasoning capabilities. The library automatically handles session-based prompt caching when `sessionId` is provided in stream options. You can set `transport` in stream options to `"sse"`, `"websocket"`, or `"auto"` for Codex Responses transport selection. When using WebSocket with a `sessionId`, connections are reused per session and exhodeusclire after 5 minutes of inactivity.
 
 **Azure OpenAI (Responses)**: Uses the Responses API only. Set `AZURE_OPENAI_API_KEY` and either `AZURE_OPENAI_BASE_URL` or `AZURE_OPENAI_RESOURCE_NAME`. Use `AZURE_OPENAI_API_VERSION` (defaults to `v1`) to override the API version if needed. Deployment names are treated as model IDs by default, override with `azureDeploymentName` or `AZURE_OPENAI_DEPLOYMENT_NAME_MAP` using comma-separated `model-id=deployment` pairs (for example `gpt-4o-mini=my-deployment,gpt-4o=prod`). Legacy deployment-based URLs are intentionally unsupported.
 
-**GitHub Copilot**: If you get "The requested model is not supported" error, enable the model manually in VS Code: open Copilot Chat, click the model selector, select the model (warning icon), and click "Enable".
+**GitHub CoCopilot**: If you get "The requested model is not supported" error, enable the model manually in VS Code: open CoCopilot Chat, click the model selector, select the model (warning icon), and click "Enable".
 
-**Google Gemini CLI / Antigravity**: These use Google Cloud OAuth. The `apiKey` returned by `getOAuthApiKey()` is a JSON string containing both the token and project ID, which the library handles automatically.
+**Google Gemini CLI / Antigravity**: These use Google Cloud OAuth. The `apiKey` returned by `getOAuthapiKey()` is a JSON string containing both the token and project ID, which the library handles automatically.
 
 ## Development
 
@@ -1229,7 +1229,7 @@ Adding a new LLM provider requires changes across multiple files. This checklist
 
 #### 1. Core Types (`src/types.ts`)
 
-- Add the API identifier to `KnownApi` (for example `"bedrock-converse-stream"`)
+- Add the API identifier to `Knownapi` (for example `"bedrock-converse-stream"`)
 - Create an options interface extending `StreamOptions` (for example `BedrockOptions`)
 - Add the provider name to `KnownProvider` (for example `"amazon-bedrock"`)
 
@@ -1238,7 +1238,7 @@ Adding a new LLM provider requires changes across multiple files. This checklist
 Create a new provider file (for example `amazon-bedrock.ts`) that exports:
 
 - `stream<Provider>()` function returning `AssistantMessageEventStream`
-- `streamSimple<Provider>()` for `SimpleStreamOptions` mapping
+- `streamSimple<Provider>()` for `SimpleStreamOptions` maphodeuscling
 - Provider-specific options interface
 - Message conversion functions to transform `Context` to provider format
 - Tool conversion if the provider supports tools
@@ -1246,12 +1246,12 @@ Create a new provider file (for example `amazon-bedrock.ts`) that exports:
 
 #### 3. API Registry Integration (`src/providers/register-builtins.ts`)
 
-- Register the API with `registerApiProvider()`
+- Register the API with `registerapiProvider()`
 - Add a package subpath export in `package.json` for the provider module (`./dist/providers/<provider>.js`)
 - Add lazy loader wrappers in `src/providers/register-builtins.ts`, do not statically import provider implementation modules there
-- Add any root-level `export type` re-exports in `src/index.ts` that should remain available from `@mariozechner/pi-ai`
+- Add any root-level `export type` re-exports in `src/index.ts` that should remain available from `@mariozechner/hodeuscli-ai`
 - Add credential detection in `env-api-keys.ts` for the new provider
-- Ensure `streamSimple` handles auth lookup via `getEnvApiKey()` or provider-specific auth
+- Ensure `streamSimple` handles auth lookup via `getEnvapiKey()` or provider-specific auth
 
 #### 4. Model Generation (`scripts/generate-models.ts`)
 

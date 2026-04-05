@@ -109,7 +109,7 @@
   - Hardware:
     - 16x H200/H20
       - --tensor-parallel-size 16 --trust-remote-code --enable-auto-tool-choice --tool-call-parser kimi_k2
-      - Notes: Pure TP mode. For >16 GPUs, combine with pipeline-parallelism.
+      - Notes: Pure TP mode. For >16 GPUs, combine with hodeusclipeline-parallelism.
     - 16x H200/H20 (DP+EP mode)
       - --data-parallel-size 16 --data-parallel-size-local 8 --enable-expert-parallel --max-num-batched-tokens 8192 --max-num-seqs 256 --gpu-memory-utilization 0.85 --trust-remote-code --enable-auto-tool-choice --tool-call-parser kimi_k2
       - Notes: Data parallel + expert parallel mode for higher throughput. Requires multi-node setup with proper networking.

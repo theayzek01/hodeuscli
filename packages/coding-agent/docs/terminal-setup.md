@@ -14,17 +14,17 @@ Add to your Ghostty config (`~/Library/Application Support/com.mitchellh.ghostty
 keybind = alt+backspace=text:\x1b\x7f
 ```
 
-Older Claude Code versions may have added this Ghostty mapping:
+Older Claude Code versions may have added this Ghostty maphodeuscling:
 
 ```
 keybind = shift+enter=text:\n
 ```
 
-That mapping sends a raw linefeed byte. Inside pi, that is indistinguishable from `Ctrl+J`, so tmux and pi no longer see a real `shift+enter` key event.
+That maphodeuscling sends a raw linefeed byte. Inside hodeuscli, that is indistinguishable from `Ctrl+J`, so tmux and hodeuscli no longer see a real `shift+enter` key event.
 
-If Claude Code 2.x or newer is the only reason you added that mapping, you can remove it, unless you want to use Claude Code in tmux, where it still requires that Ghostty mapping.
+If Claude Code 2.x or newer is the only reason you added that maphodeuscling, you can remove it, unless you want to use Claude Code in tmux, where it still requires that Ghostty maphodeuscling.
 
-If you want `Shift+Enter` to keep working in tmux via that remap, add `ctrl+j` to your pi `newLine` keybinding in `~/.pi/agent/keybindings.json`:
+If you want `Shift+Enter` to keep working in tmux via that remap, add `ctrl+j` to your hodeuscli `newLine` keybinding in `~/.hodeuscli/agent/keybindings.json`:
 
 ```json
 {
@@ -63,7 +63,7 @@ Add to `keybindings.json` to enable `Shift+Enter` for multi-line input:
 
 ## Windows Terminal
 
-Add to `settings.json` (Ctrl+Shift+, or Settings → Open JSON file) to forward the modified Enter keys pi uses:
+Add to `settings.json` (Ctrl+Shift+, or Settings → Open JSON file) to forward the modified Enter keys hodeuscli uses:
 
 ```json
 {
@@ -81,8 +81,8 @@ Add to `settings.json` (Ctrl+Shift+, or Settings → Open JSON file) to forward 
 ```
 
 - `Shift+Enter` inserts a new line.
-- Windows Terminal binds `Alt+Enter` to fullscreen by default. That prevents pi from receiving `Alt+Enter` for follow-up queueing.
-- Remapping `Alt+Enter` to `sendInput` forwards the real key chord to pi instead.
+- Windows Terminal binds `Alt+Enter` to fullscreen by default. That prevents hodeuscli from receiving `Alt+Enter` for follow-up queueing.
+- Remaphodeuscling `Alt+Enter` to `sendInput` forwards the real key chord to hodeuscli instead.
 
 If you already have an `actions` array, add the objects to it. If the old fullscreen behavior persists, fully close and reopen Windows Terminal.
 
@@ -95,12 +95,12 @@ For the best experience, use a terminal that supports the Kitty keyboard protoco
 - [Ghostty](https://ghostty.org/)
 - [WezTerm](https://wezfurlong.org/wezterm/)
 - [iTerm2](https://iterm2.com/)
-- [Alacritty](https://github.com/alacritty/alacritty) (requires compilation with Kitty protocol support)
+- [Alacritty](https://github.com/alacritty/alacritty) (requires comhodeusclilation with Kitty protocol support)
 
 ## IntelliJ IDEA (Integrated Terminal)
 
 The built-in terminal has limited escape sequence support. Shift+Enter cannot be distinguished from Enter in IntelliJ's terminal.
 
-If you want the hardware cursor visible, set `PI_HARDWARE_CURSOR=1` before running pi (disabled by default for compatibility).
+If you want the hardware cursor visible, set `PI_HARDWARE_CURSOR=1` before running hodeuscli (disabled by default for compatibility).
 
 Consider using a dedicated terminal emulator for the best experience.

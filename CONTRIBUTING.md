@@ -1,42 +1,29 @@
-# Contributing to pi
+# Contributing to Hodeuscli
 
-Thanks for wanting to contribute! This guide exists to save both of us time.
+Thank you for your interest in contributing to Hodeuscli, the world's most advanced terminal coding assistant!
 
-## The One Rule
+## Code of Conduct
 
-**You must understand your code.** If you can't explain what your changes do and how they interact with the rest of the system, your PR will be closed.
+As a high-fidelity project, we maintain a professional and prestigious environment. Please be respectful and constructive in all interactions.
 
-Using AI to write code is fine. You can gain understanding by interrogating an agent with access to the codebase until you grasp all edge cases and effects of your changes. What's not fine is submitting agent-generated slop without that understanding.
+## How to Contribute
 
-If you use an agent, run it from the `pi-mono` root directory so it picks up `AGENTS.md` automatically. Your agent must follow the rules and guidelines in that file.
+1.  **Fork the Project**: Create your own fork of the `hodeuscli-monorepo`.
+2.  **Create a Branch**: Work on a descriptive feature or bugfix branch.
+3.  **Implement Changes**: Ensure your code follows our design aesthetics (Luxury TUI) and quality standards.
+4.  **Run Checks**: Execute `npm run check` to ensure linting and types pass.
+5.  **Submit a PR**: Detailed PR descriptions are highly encouraged.
 
-## First-Time Contributors
+## Design Philosophy
 
-We use an approval gate for new contributors:
+Hodeuscli is NOT just a tool; it's an experience. We value:
+- **Aesthetic Excellence**: Every TUI element should look premium.
+- **Performance**: Millisecond precision is the standard.
+- **Stability**: Robust error handling is mandatory.
 
-1. Open an issue describing what you want to change and why
-2. Keep it concise (if it doesn't fit on one screen, it's too long)
-3. Write in your own voice, at least for the intro
-4. A maintainer will comment `lgtm` if approved
-5. Once approved, you can submit PRs
+## Project Rules
 
-This exists because AI makes it trivial to generate plausible-looking but low-quality contributions. The issue step lets us filter early.
+Refer to [AGENTS.md](AGENTS.md) for deeper architectural rules and the "Sovereign Rule" for code quality.
 
-## Before Submitting a PR
-
-```bash
-npm run check  # must pass with no errors
-./test.sh      # must pass
-```
-
-Do not edit `CHANGELOG.md`. Changelog entries are added by maintainers.
-
-If you're adding a new provider to `packages/ai`, see `AGENTS.md` for required tests.
-
-## Philosophy
-
-pi's core is minimal. If your feature doesn't belong in the core, it should be an extension. PRs that bloat the core will likely be rejected.
-
-## Questions?
-
-Open an issue or ask on [Discord](https://discord.com/invite/nKXTsAcmbT).
+---
+MIT License - Copyright (c) 2026 Games-coder

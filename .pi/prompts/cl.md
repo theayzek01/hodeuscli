@@ -21,7 +21,7 @@ Audit changelog entries for all commits since the last release.
    - packages/coding-agent/CHANGELOG.md
 
 4. **For each commit, check:**
-   - Skip: changelog updates, doc-only changes, release housekeeping
+   - Skip: changelog updates, doc-only changes, release housekeehodeuscling
    - Skip: changes to generated model catalogs (for example `packages/ai/src/models.generated.ts`) unless accompanied by an intentional product-facing change in non-generated source/docs.
    - Determine which package(s) the commit affects (use `git show <hash> --stat`)
    - Verify a changelog entry exists in the affected package(s)
@@ -50,5 +50,5 @@ Sections (in order):
 - `### Removed` - Removed features
 
 Attribution:
-- Internal: `Fixed foo ([#123](https://github.com/badlogic/pi-mono/issues/123))`
-- External: `Added bar ([#456](https://github.com/badlogic/pi-mono/pull/456) by [@user](https://github.com/user))`
+- Internal: `Fixed foo ([#123](https://github.com/badlogic/hodeuscli-mono/issues/123))`
+- External: `Added bar ([#456](https://github.com/badlogic/hodeuscli-mono/pull/456) by [@user](https://github.com/user))`

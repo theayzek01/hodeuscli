@@ -2,32 +2,32 @@
 
 Pi automates vLLM deployment on GPU pods from DataCrunch, Vast.ai, Prime Intellect, RunPod (or any Ubuntu machine with NVIDIA GPUs). It manages multiple concurrent model deployments via separate vLLM instances, each accessible through the OpenAI API protocol with API key authentication.
 
-Pods are treated as ephemeral - spin up when needed, tear down when done. To avoid re-downloading models (30+ minutes for 100GB+ models), pi uses persistent network volumes for model storage that can be shared across pods on the same provider. This minimizes both cost (only pay for active compute) and setup time (models already cached).
+Pods are treated as ephemeral - shodeusclin up when needed, tear down when done. To avoid re-downloading models (30+ minutes for 100GB+ models), hodeuscli uses persistent network volumes for model storage that can be shared across pods on the same provider. This minimizes both cost (only pay for active compute) and setup time (models already cached).
 
 ## Usage
 
 ### Pods
 ```bash
-pi pods setup dc1 "ssh root@1.2.3.4" --mount "mount -t nfs..."  # Setup pod (requires HF_TOKEN, PI_API_KEY env vars)
-pi pods                              # List all pods (* = active)
-pi pods active dc2                   # Switch active pod
-pi pods remove dc1                   # Remove pod
+hodeuscli pods setup dc1 "ssh root@1.2.3.4" --mount "mount -t nfs..."  # Setup pod (requires HF_TOKEN, PI_API_KEY env vars)
+hodeuscli pods                              # List all pods (* = active)
+hodeuscli pods active dc2                   # Switch active pod
+hodeuscli pods remove dc1                   # Remove pod
 ```
 
 ### Models
 ```bash
-pi start Qwen/Qwen2.5-72B-Instruct --name qwen72b          # Known model - pi handles vLLM args
-pi start some/unknown-model --name mymodel --vllm --tensor-parallel-size 4 --max-model-len 32768  # Custom vLLM args
-pi list                              # List running models with ports
-pi stop qwen72b                      # Stop model
-pi logs qwen72b                      # View model logs
+hodeuscli start Qwen/Qwen2.5-72B-Instruct --name qwen72b          # Known model - hodeuscli handles vLLM args
+hodeuscli start some/unknown-model --name mymodel --vllm --tensor-parallel-size 4 --max-model-len 32768  # Custom vLLM args
+hodeuscli list                              # List running models with ports
+hodeuscli stop qwen72b                      # Stop model
+hodeuscli logs qwen72b                      # View model logs
 ```
 
-For known models, pi automatically configures appropriate vLLM arguments from model documentation based on the hardware of the pod. For unknown models or custom configurations, pass vLLM args after `--vllm`.
+For known models, hodeuscli automatically configures appropriate vLLM arguments from model documentation based on the hardware of the pod. For unknown models or custom configurations, pass vLLM args after `--vllm`.
 
 ## Pod management
 
-Pi manages GPU pods from various providers (DataCrunch, Vast.ai, Prime Intellect, RunPod) as ephemeral compute resources. Users manually create pods via provider dashboards, then register them with pi for automated setup and management.
+Pi manages GPU pods from various providers (DataCrunch, Vast.ai, Prime Intellect, RunPod) as ephemeral compute resources. Users manually create pods via provider dashboards, then register them with hodeuscli for automated setup and management.
 
 Key capabilities:
 - **Pod setup**: Transform bare Ubuntu/Debian machines into vLLM-ready environments in ~2 minutes
@@ -36,13 +36,13 @@ Key capabilities:
 
 ### Pod setup
 
-When a user creates a fresh pod on a provider, they register it with pi using the SSH command from the provider:
+When a user creates a fresh pod on a provider, they register it with hodeuscli using the SSH command from the provider:
 
 ```bash
-pi pods setup dc1 "ssh root@1.2.3.4" --mount "mount -t nfs..."
+hodeuscli pods setup dc1 "ssh root@1.2.3.4" --mount "mount -t nfs..."
 ```
 
-This copies and executes `pod_setup.sh` which:
+This cohodeusclies and executes `pod_setup.sh` which:
 1. Detects GPUs via `nvidia-smi` and stores count/memory in local config
 2. Installs CUDA toolkit matching the driver version
 3. Creates Python environment
@@ -76,19 +76,19 @@ Without `--mount`, models download to pod-local storage and are lost on terminat
 Users can register multiple pods and switch between them:
 
 ```bash
-pi pods                    # List all pods (* = active)
-pi pods active dc2         # Switch active pod
-pi pods remove dc1         # Remove pod from local config but doesn't destroy pod remotely.
+hodeuscli pods                    # List all pods (* = active)
+hodeuscli pods active dc2         # Switch active pod
+hodeuscli pods remove dc1         # Remove pod from local config but doesn't destroy pod remotely.
 ```
 
-All model commands (`pi start`, `pi stop`, etc.) target the active pod, unless `--pod <podname>` is given, which overrides the active pod for that command.
+All model commands (`hodeuscli start`, `hodeuscli stop`, etc.) target the active pod, unless `--pod <podname>` is given, which overrides the active pod for that command.
 
 ## Model deployment
 
-Pi uses direct SSH commands to manage vLLM instances on pods. No remote manager component is needed - everything is controlled from the local pi CLI.
+Pi uses direct SSH commands to manage vLLM instances on pods. No remote manager component is needed - everything is controlled from the local hodeuscli CLI.
 
 ### Architecture
-The pi CLI maintains all state locally in `~/.pi/pods.json`:
+The hodeuscli CLI maintains all state locally in `~/.hodeuscli/pods.json`:
 ```json
 {
   "pods": {
@@ -103,7 +103,7 @@ The pi CLI maintains all state locally in `~/.pi/pods.json`:
           "model": "Qwen/Qwen2.5-72B",
           "port": 8001,
           "gpu": "0",
-          "pid": 12345
+          "hodeusclid": 12345
         }
       }
     }
@@ -112,17 +112,17 @@ The pi CLI maintains all state locally in `~/.pi/pods.json`:
 }
 ```
 
-The location of the pi config dir can also be specified via the `PI_CONFIG_DIR` env var, e.g. for testing.
+The location of the hodeuscli config dir can also be specified via the `PI_CONFIG_DIR` env var, e.g. for testing.
 
-Pods are assumed to be fully managed by pi - no other processes compete for ports or GPUs.
+Pods are assumed to be fully managed by hodeuscli - no other processes compete for ports or GPUs.
 
 ### Starting models
-When user runs `pi start Qwen/Qwen2.5-72B --name qwen`:
+When user runs `hodeuscli start Qwen/Qwen2.5-72B --name qwen`:
 1. CLI determines next available port (starting from 8001)
 2. Selects GPU (round-robin based on stored GPU info)
 3. Downloads model if not cached:
    - Sets `HF_HUB_ENABLE_HF_TRANSFER=1` for fast downloads
-   - Runs via SSH with output piped to local terminal
+   - Runs via SSH with output hodeuscliped to local terminal
    - Ctrl+C cancels download and returns control
 4. Builds vLLM command with appropriate args and PI_API_KEY
 5. Executes via SSH: `ssh pod "nohup vllm serve ... > ~/.vllm_logs/qwen.log 2>&1 & echo $!"`
@@ -141,10 +141,10 @@ When user runs `pi start Qwen/Qwen2.5-72B --name qwen`:
 - **Setup failures**: Ctrl+C during setup kills remote script and exits cleanly
 
 ### Testing models
-The `pi prompt` command provides a quick way to test deployed models:
+The `hodeuscli prompt` command provides a quick way to test deployed models:
 ```bash
-pi prompt qwen "What is 2+2?"                    # Simple prompt
-pi prompt qwen "Read file.txt and summarize"     # Uses built-in tools
+hodeuscli prompt qwen "What is 2+2?"                    # Simple prompt
+hodeuscli prompt qwen "Read file.txt and summarize"     # Uses built-in tools
 ```
 
 Built-in tools for agentic testing:
@@ -163,4 +163,4 @@ This allows testing basic agent capabilities without external tool configuration
 We want to support these models specifically, with alternative models being marked as "possibly works". This list will be updated with new models regularly. A checked
 box means "supported".
 
-See [models.md](./models.md) for a list of models, their HW reqs, vLLM args and notes, we want to support out of the box with a simple `pi start <model-name> --name <local-name>`
+See [models.md](./models.md) for a list of models, their HW reqs, vLLM args and notes, we want to support out of the box with a simple `hodeuscli start <model-name> --name <local-name>`

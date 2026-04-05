@@ -115,7 +115,7 @@ The code can run under the configurations in the table below using [Swift](https
 Please install the required packages according to `requirements.txt`.
 
 ```shell
-pip install -r requirements.txt
+hodeusclip install -r requirements.txt
 ```
 
 ### transformers
@@ -186,4 +186,4 @@ python3 -m sglang.launch_server \
 + When using `vLLM` and `SGLang`, thinking mode is enabled by default when sending requests. If you want to disable the
   thinking switch, you need to add the `extra_body={"chat_template_kwargs": {"enable_thinking": False}}` parameter.
 + Both support tool calling. Please use OpenAI-style tool description format for calls.
-+ For specific code, please refer to `api_request.py` in the `inference` folder.
++ For specific code, please refer to `ahodeuscli_request.py` in the `inference` folder.

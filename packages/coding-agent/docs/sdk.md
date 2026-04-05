@@ -1,13 +1,13 @@
-> pi can help you use the SDK. Ask it to build an integration for your use case.
+> hodeuscli can help you use the SDK. Ask it to build an integration for your use case.
 
 # SDK
 
-The SDK provides programmatic access to pi's agent capabilities. Use it to embed pi in other applications, build custom interfaces, or integrate with automated workflows.
+The SDK provides programmatic access to hodeuscli's agent capabilities. Use it to embed hodeuscli in other applications, build custom interfaces, or integrate with automated workflows.
 
 **Example use cases:**
 - Build a custom UI (web, desktop, mobile)
 - Integrate agent capabilities into existing applications
-- Create automated pipelines with agent reasoning
+- Create automated hodeusclipelines with agent reasoning
 - Build custom tools that spawn sub-agents
 - Test agent behavior programmatically
 
@@ -16,7 +16,7 @@ See [examples/sdk/](../examples/sdk/) for working examples from minimal to full 
 ## Quick Start
 
 ```typescript
-import { AuthStorage, createAgentSession, ModelRegistry, SessionManager } from "@mariozechner/pi-coding-agent";
+import { AuthStorage, createAgentSession, ModelRegistry, SessionManager } from "@mariozechner/hodeuscli";
 
 // Set up credential storage and model registry
 const authStorage = AuthStorage.create();
@@ -40,7 +40,7 @@ await session.prompt("What files are in the current directory?");
 ## Installation
 
 ```bash
-npm install @mariozechner/pi-coding-agent
+npm install @mariozechner/hodeuscli
 ```
 
 The SDK is included in the main package. No separate installation needed.
@@ -54,7 +54,7 @@ The main factory function for a single `AgentSession`.
 `createAgentSession()` uses a `ResourceLoader` to supply extensions, skills, prompt templates, themes, and context files. If you do not provide one, it uses `DefaultResourceLoader` with standard discovery.
 
 ```typescript
-import { createAgentSession } from "@mariozechner/pi-coding-agent";
+import { createAgentSession } from "@mariozechner/hodeuscli";
 
 // Minimal: defaults with DefaultResourceLoader
 const { session } = await createAgentSession();
@@ -132,7 +132,7 @@ import {
   createAgentSessionServices,
   getAgentDir,
   SessionManager,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 const createRuntime: CreateAgentSessionRuntimeFactory = async ({ cwd, sessionManager, sessionStartEvent }) => {
   const services = await createAgentSessionServices({ cwd });
@@ -199,7 +199,7 @@ await session.prompt("After you're done, also check X", { streamingBehavior: "fo
 ```
 
 **Behavior:**
-- **Extension commands** (e.g., `/mycommand`): Execute immediately, even during streaming. They manage their own LLM interaction via `pi.sendMessage()`.
+- **Extension commands** (e.g., `/mycommand`): Execute immediately, even during streaming. They manage their own LLM interaction via `hodeuscli.sendMessage()`.
 - **File-based prompt templates** (from `.md` files): Expanded to their content before sending/queueing.
 - **During streaming without `streamingBehavior`**: Throws an error. Use `steer()` or `followUp()` directly, or specify the option.
 
@@ -217,7 +217,7 @@ Both `steer()` and `followUp()` expand file-based prompt templates but error on 
 
 ### Agent and AgentState
 
-The `Agent` class (from `@mariozechner/pi-agent-core`) handles the core LLM interaction. Access it via `session.agent`.
+The `Agent` class (from `@mariozechner/hodeuscli-agent-core`) handles the core LLM interaction. Access it via `session.agent`.
 
 ```typescript
 // Access current state
@@ -232,10 +232,10 @@ const state = session.agent.state;
 // state.errorMessage?: string - latest assistant error
 
 // Replace messages (useful for branching or restoration)
-session.agent.state.messages = messages; // copies the top-level array
+session.agent.state.messages = messages; // cohodeusclies the top-level array
 
 // Replace tools
-session.agent.state.tools = tools; // copies the top-level array
+session.agent.state.tools = tools; // cohodeusclies the top-level array
 
 // Wait for agent to finish processing
 await session.agent.waitForIdle();
@@ -316,23 +316,23 @@ const { session } = await createAgentSession({
   cwd: process.cwd(), // default
   
   // Global config directory
-  agentDir: "~/.pi/agent", // default (expands ~)
+  agentDir: "~/.hodeuscli/agent", // default (expands ~)
 });
 ```
 
 `cwd` is used by `DefaultResourceLoader` for:
-- Project extensions (`.pi/extensions/`)
+- Project extensions (`.hodeuscli/extensions/`)
 - Project skills:
-  - `.pi/skills/`
+  - `.hodeuscli/skills/`
   - `.agents/skills/` in `cwd` and ancestor directories (up to git repo root, or filesystem root when not in a repo)
-- Project prompts (`.pi/prompts/`)
+- Project prompts (`.hodeuscli/prompts/`)
 - Context files (`AGENTS.md` walking up from cwd)
 - Session directory naming
 
 `agentDir` is used by `DefaultResourceLoader` for:
 - Global extensions (`extensions/`)
 - Global skills:
-  - `skills/` under `agentDir` (for example `~/.pi/agent/skills/`)
+  - `skills/` under `agentDir` (for example `~/.hodeuscli/agent/skills/`)
   - `~/.agents/skills/`
 - Global prompts (`prompts/`)
 - Global context file (`AGENTS.md`)
@@ -346,14 +346,14 @@ When you pass a custom `ResourceLoader`, `cwd` and `agentDir` no longer control 
 ### Model
 
 ```typescript
-import { getModel } from "@mariozechner/pi-ai";
-import { AuthStorage, ModelRegistry } from "@mariozechner/pi-coding-agent";
+import { getModel } from "@mariozechner/hodeuscli-ai";
+import { AuthStorage, ModelRegistry } from "@mariozechner/hodeuscli";
 
 const authStorage = AuthStorage.create();
 const modelRegistry = ModelRegistry.create(authStorage);
 
 // Find specific built-in model (doesn't check if API key exists)
-const opus = getModel("anthropic", "claude-opus-4-5");
+const opus = getModel("Anthropic", "claude-opus-4-5");
 if (!opus) throw new Error("Model not found");
 
 // Find any model by provider/id, including custom models from models.json
@@ -388,15 +388,15 @@ If no model is provided:
 ### API Keys and OAuth
 
 API key resolution priority (handled by AuthStorage):
-1. Runtime overrides (via `setRuntimeApiKey`, not persisted)
+1. Runtime overrides (via `setRuntimeAhodeuscliKey`, not persisted)
 2. Stored credentials in `auth.json` (API keys or OAuth tokens)
 3. Environment variables (`ANTHROPIC_API_KEY`, `OPENAI_API_KEY`, etc.)
 4. Fallback resolver (for custom provider keys from `models.json`)
 
 ```typescript
-import { AuthStorage, ModelRegistry } from "@mariozechner/pi-coding-agent";
+import { AuthStorage, ModelRegistry } from "@mariozechner/hodeuscli";
 
-// Default: uses ~/.pi/agent/auth.json and ~/.pi/agent/models.json
+// Default: uses ~/.hodeuscli/agent/auth.json and ~/.hodeuscli/agent/models.json
 const authStorage = AuthStorage.create();
 const modelRegistry = ModelRegistry.create(authStorage);
 
@@ -407,7 +407,7 @@ const { session } = await createAgentSession({
 });
 
 // Runtime API key override (not persisted to disk)
-authStorage.setRuntimeApiKey("anthropic", "sk-my-temp-key");
+authStorage.setRuntimeAhodeuscliKey("Anthropic", "sk-my-temp-key");
 
 // Custom auth storage location
 const customAuth = AuthStorage.create("/my/app/auth.json");
@@ -423,14 +423,14 @@ const { session } = await createAgentSession({
 const simpleRegistry = ModelRegistry.inMemory(authStorage);
 ```
 
-> See [examples/sdk/09-api-keys-and-oauth.ts](../examples/sdk/09-api-keys-and-oauth.ts)
+> See [examples/sdk/09-ahodeuscli-keys-and-oauth.ts](../examples/sdk/09-ahodeuscli-keys-and-oauth.ts)
 
 ### System Prompt
 
 Use a `ResourceLoader` to override the system prompt:
 
 ```typescript
-import { createAgentSession, DefaultResourceLoader } from "@mariozechner/pi-coding-agent";
+import { createAgentSession, DefaultResourceLoader } from "@mariozechner/hodeuscli";
 
 const loader = new DefaultResourceLoader({
   systemPromptOverride: () => "You are a helpful assistant.",
@@ -450,7 +450,7 @@ import {
   readOnlyTools, // read, grep, find, ls
   readTool, bashTool, editTool, writeTool,
   grepTool, findTool, lsTool,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 // Use built-in tool set
 const { session } = await createAgentSession({
@@ -478,7 +478,7 @@ import {
   createGrepTool,
   createFindTool,
   createLsTool,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 const cwd = "/path/to/project";
 
@@ -488,7 +488,7 @@ const { session } = await createAgentSession({
   tools: createCodingTools(cwd),  // Tools resolve paths relative to cwd
 });
 
-// Or pick specific tools
+// Or hodeusclick specific tools
 const { session } = await createAgentSession({
   cwd,
   tools: [createReadTool(cwd), createBashTool(cwd), createGrepTool(cwd)],
@@ -496,7 +496,7 @@ const { session } = await createAgentSession({
 ```
 
 **When you don't need factories:**
-- If you omit `tools`, pi automatically creates them with the correct `cwd`
+- If you omit `tools`, hodeuscli automatically creates them with the correct `cwd`
 - If you use `process.cwd()` as your `cwd`, the pre-built instances work fine
 
 **When you must use factories:**
@@ -508,7 +508,7 @@ const { session } = await createAgentSession({
 
 ```typescript
 import { Type } from "@sinclair/typebox";
-import { createAgentSession, defineTool } from "@mariozechner/pi-coding-agent";
+import { createAgentSession, defineTool } from "@mariozechner/hodeuscli";
 
 // Inline custom tool
 const myTool = defineTool({
@@ -530,24 +530,24 @@ const { session } = await createAgentSession({
 });
 ```
 
-Use `defineTool()` for standalone definitions and arrays like `customTools: [myTool]`. Inline `pi.registerTool({ ... })` already infers parameter types correctly.
+Use `defineTool()` for standalone definitions and arrays like `customTools: [myTool]`. Inline `hodeuscli.registerTool({ ... })` already infers parameter types correctly.
 
-Custom tools passed via `customTools` are combined with extension-registered tools. Extensions loaded by the ResourceLoader can also register tools via `pi.registerTool()`.
+Custom tools passed via `customTools` are combined with extension-registered tools. Extensions loaded by the ResourceLoader can also register tools via `hodeuscli.registerTool()`.
 
 > See [examples/sdk/05-tools.ts](../examples/sdk/05-tools.ts)
 
 ### Extensions
 
-Extensions are loaded by the `ResourceLoader`. `DefaultResourceLoader` discovers extensions from `~/.pi/agent/extensions/`, `.pi/extensions/`, and settings.json extension sources.
+Extensions are loaded by the `ResourceLoader`. `DefaultResourceLoader` discovers extensions from `~/.hodeuscli/agent/extensions/`, `.hodeuscli/extensions/`, and settings.json extension sources.
 
 ```typescript
-import { createAgentSession, DefaultResourceLoader } from "@mariozechner/pi-coding-agent";
+import { createAgentSession, DefaultResourceLoader } from "@mariozechner/hodeuscli";
 
 const loader = new DefaultResourceLoader({
   additionalExtensionPaths: ["/path/to/my-extension.ts"],
   extensionFactories: [
-    (pi) => {
-      pi.on("agent_start", () => {
+    (hodeuscli) => {
+      hodeuscli.on("agent_start", () => {
         console.log("[Inline Extension] Agent starting");
       });
     },
@@ -560,10 +560,10 @@ const { session } = await createAgentSession({ resourceLoader: loader });
 
 Extensions can register tools, subscribe to events, add commands, and more. See [extensions.md](extensions.md) for the full API.
 
-**Event Bus:** Extensions can communicate via `pi.events`. Pass a shared `eventBus` to `DefaultResourceLoader` if you need to emit or listen from outside:
+**Event Bus:** Extensions can communicate via `hodeuscli.events`. Pass a shared `eventBus` to `DefaultResourceLoader` if you need to emit or listen from outside:
 
 ```typescript
-import { createEventBus, DefaultResourceLoader } from "@mariozechner/pi-coding-agent";
+import { createEventBus, DefaultResourceLoader } from "@mariozechner/hodeuscli";
 
 const eventBus = createEventBus();
 const loader = new DefaultResourceLoader({
@@ -583,7 +583,7 @@ import {
   createAgentSession,
   DefaultResourceLoader,
   type Skill,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 const customSkill: Skill = {
   name: "my-skill",
@@ -609,7 +609,7 @@ const { session } = await createAgentSession({ resourceLoader: loader });
 ### Context Files
 
 ```typescript
-import { createAgentSession, DefaultResourceLoader } from "@mariozechner/pi-coding-agent";
+import { createAgentSession, DefaultResourceLoader } from "@mariozechner/hodeuscli";
 
 const loader = new DefaultResourceLoader({
   agentsFilesOverride: (current) => ({
@@ -633,7 +633,7 @@ import {
   createAgentSession,
   DefaultResourceLoader,
   type PromptTemplate,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 const customCommand: PromptTemplate = {
   name: "deploy",
@@ -668,7 +668,7 @@ import {
   createAgentSessionServices,
   getAgentDir,
   SessionManager,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 // In-memory (no persistence)
 const { session } = await createAgentSession({
@@ -759,7 +759,7 @@ sm.createBranchedSession(leafId);       // Extract path to new file
 ### Settings Management
 
 ```typescript
-import { createAgentSession, SettingsManager, SessionManager } from "@mariozechner/pi-coding-agent";
+import { createAgentSession, SettingsManager, SessionManager } from "@mariozechner/hodeuscli";
 
 // Default: loads from files (global + project merged)
 const { session } = await createAgentSession({
@@ -793,8 +793,8 @@ const { session } = await createAgentSession({
 **Project-specific settings:**
 
 Settings load from two locations and merge:
-1. Global: `~/.pi/agent/settings.json`
-2. Project: `<cwd>/.pi/settings.json`
+1. Global: `~/.hodeuscli/agent/settings.json`
+2. Project: `<cwd>/.hodeuscli/settings.json`
 
 Project overrides global. Nested objects merge keys. Setters modify global settings by default.
 
@@ -815,7 +815,7 @@ Use `DefaultResourceLoader` to discover extensions, skills, prompts, themes, and
 import {
   DefaultResourceLoader,
   getAgentDir,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 const loader = new DefaultResourceLoader({
   cwd,
@@ -856,7 +856,7 @@ interface LoadExtensionsResult {
 ## Complete Example
 
 ```typescript
-import { getModel } from "@mariozechner/pi-ai";
+import { getModel } from "@mariozechner/hodeuscli-ai";
 import { Type } from "@sinclair/typebox";
 import {
   AuthStorage,
@@ -868,14 +868,14 @@ import {
   readTool,
   SessionManager,
   SettingsManager,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 // Set up auth storage (custom location)
 const authStorage = AuthStorage.create("/custom/agent/auth.json");
 
 // Runtime API key override (not persisted)
 if (process.env.MY_KEY) {
-  authStorage.setRuntimeApiKey("anthropic", process.env.MY_KEY);
+  authStorage.setRuntimeAhodeuscliKey("Anthropic", process.env.MY_KEY);
 }
 
 // Model registry (no custom models.json)
@@ -893,7 +893,7 @@ const statusTool = defineTool({
   }),
 });
 
-const model = getModel("anthropic", "claude-opus-4-5");
+const model = getModel("Anthropic", "claude-opus-4-5");
 if (!model) throw new Error("Model not found");
 
 // In-memory settings with overrides
@@ -953,7 +953,7 @@ import {
   getAgentDir,
   InteractiveMode,
   SessionManager,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 const createRuntime: CreateAgentSessionRuntimeFactory = async ({ cwd, sessionManager, sessionStartEvent }) => {
   const services = await createAgentSessionServices({ cwd });
@@ -993,7 +993,7 @@ import {
   getAgentDir,
   runPrintMode,
   SessionManager,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 const createRuntime: CreateAgentSessionRuntimeFactory = async ({ cwd, sessionManager, sessionStartEvent }) => {
   const services = await createAgentSessionServices({ cwd });
@@ -1030,7 +1030,7 @@ import {
   getAgentDir,
   runRpcMode,
   SessionManager,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 const createRuntime: CreateAgentSessionRuntimeFactory = async ({ cwd, sessionManager, sessionStartEvent }) => {
   const services = await createAgentSessionServices({ cwd });
@@ -1056,7 +1056,7 @@ See [RPC documentation](rpc.md) for the JSON protocol.
 For subprocess-based integration without building with the SDK, use the CLI directly:
 
 ```bash
-pi --mode rpc --no-session
+hodeuscli --mode rpc --no-session
 ```
 
 See [RPC documentation](rpc.md) for the JSON protocol.

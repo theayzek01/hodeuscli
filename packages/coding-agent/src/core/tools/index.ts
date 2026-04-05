@@ -110,7 +110,7 @@ export type ToolDef = ToolDefinition<any, any>;
 export const codingTools: Tool[] = [readTool, bashTool, editTool, writeTool];
 export const readOnlyTools: Tool[] = [readTool, grepTool, findTool, lsTool];
 
-export const allTools = {
+export const allTools: Record<string, Tool> = {
 	read: readTool,
 	bash: bashTool,
 	edit: editTool,
@@ -120,7 +120,7 @@ export const allTools = {
 	ls: lsTool,
 };
 
-export const allToolDefinitions = {
+export const allToolDefinitions: Record<string, ToolDef> = {
 	read: readToolDefinition,
 	bash: bashToolDefinition,
 	edit: editToolDefinition,

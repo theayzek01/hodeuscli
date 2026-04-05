@@ -7,12 +7,12 @@ Here's how to connect your Node.js agent to Slack using **Socket Mode** - no Exp
 ## 1. Dependencies
 
 ```bash
-npm install @slack/socket-mode @slack/web-api
+npm install @slack/socket-mode @slack/web-ahodeuscli
 ```
 
 That's it. Two packages:
 - `@slack/socket-mode` - Receives events via WebSocket
-- `@slack/web-api` - Sends messages back to Slack
+- `@slack/web-ahodeuscli` - Sends messages back to Slack
 
 ---
 
@@ -21,7 +21,7 @@ That's it. Two packages:
 You need **TWO tokens**:
 
 ### A. Bot Token (`xoxb-...`)
-1. Go to https://api.slack.com/apps
+1. Go to https://ahodeuscli.slack.com/apps
 2. Create app → "From scratch"
 3. Click "OAuth & Permissions" in sidebar
 4. Add **Bot Token Scopes** (all 16):
@@ -38,9 +38,9 @@ You need **TWO tokens**:
    im:history
    im:read
    im:write
-   mpim:history
-   mpim:read
-   mpim:write
+   mhodeusclim:history
+   mhodeusclim:read
+   mhodeusclim:write
    users:read
    ```
 5. Click "Install to Workspace" at top
@@ -59,7 +59,7 @@ You need **TWO tokens**:
 
 ## 3. Enable Socket Mode
 
-1. Go to https://api.slack.com/apps → select your app
+1. Go to https://ahodeuscli.slack.com/apps → select your app
 2. Click **"Socket Mode"** in sidebar
 3. Toggle **"Enable Socket Mode"** to ON
 4. This routes your app's interactions and events over WebSockets instead of public HTTP endpoints
@@ -71,7 +71,7 @@ You need **TWO tokens**:
 
 ## 4. Enable Direct Messages
 
-1. Go to https://api.slack.com/apps → select your app
+1. Go to https://ahodeuscli.slack.com/apps → select your app
 2. Click **"App Home"** in sidebar
 3. Scroll to **"Show Tabs"** section
 4. Check **"Allow users to send Slash commands and messages from the messages tab"**
@@ -81,7 +81,7 @@ You need **TWO tokens**:
 
 ## 5. Subscribe to Events
 
-1. Go to https://api.slack.com/apps → select your app
+1. Go to https://ahodeuscli.slack.com/apps → select your app
 2. Click **"Event Subscriptions"** in sidebar
 3. Toggle **"Enable Events"** to ON
 4. **Important:** No Request URL needed (Socket Mode handles this)
@@ -117,7 +117,7 @@ echo ".env" >> .gitignore
 ```javascript
 require('dotenv').config();
 const { SocketModeClient } = require('@slack/socket-mode');
-const { WebClient } = require('@slack/web-api');
+const { WebClient } = require('@slack/web-ahodeuscli');
 
 const socketClient = new SocketModeClient({ 
   appToken: process.env.SLACK_APP_TOKEN 
@@ -267,7 +267,7 @@ await webClient.files.uploadV2({
 ```javascript
 require('dotenv').config();
 const { SocketModeClient } = require('@slack/socket-mode');
-const { WebClient } = require('@slack/web-api');
+const { WebClient } = require('@slack/web-ahodeuscli');
 
 const socketClient = new SocketModeClient({ 
   appToken: process.env.SLACK_APP_TOKEN 

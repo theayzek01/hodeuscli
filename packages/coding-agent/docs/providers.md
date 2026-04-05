@@ -1,11 +1,11 @@
 # Providers
 
-Pi supports subscription-based providers via OAuth and API key providers via environment variables or auth file. For each provider, pi knows all available models. The list is updated with every pi release.
+Pi supports subscription-based providers via OAuth and API key providers via environment variables or auth file. For each provider, hodeuscli knows all available models. The list is updated with every hodeuscli release.
 
 ## Table of Contents
 
 - [Subscriptions](#subscriptions)
-- [API Keys](#api-keys)
+- [API Keys](#ahodeuscli-keys)
 - [Auth File](#auth-file)
 - [Cloud Providers](#cloud-providers)
 - [Custom Providers](#custom-providers)
@@ -17,16 +17,16 @@ Use `/login` in interactive mode, then select a provider:
 
 - Claude Pro/Max
 - ChatGPT Plus/Pro (Codex)
-- GitHub Copilot
+- GitHub CoCopilot
 - Google Gemini CLI
 - Google Antigravity
 
-Use `/logout` to clear credentials. Tokens are stored in `~/.pi/agent/auth.json` and auto-refresh when expired.
+Use `/logout` to clear credentials. Tokens are stored in `~/.hodeuscli/agent/auth.json` and auto-refresh when exhodeusclired.
 
-### GitHub Copilot
+### GitHub CoCopilot
 
 - Press Enter for github.com, or enter your GitHub Enterprise Server domain
-- If you get "model not supported", enable it in VS Code: Copilot Chat → model selector → select model → "Enable"
+- If you get "model not supported", enable it in VS Code: CoCopilot Chat → model selector → select model → "Enable"
 
 ### Google Providers
 
@@ -48,12 +48,12 @@ Set via environment variable:
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...
-pi
+hodeuscli
 ```
 
 | Provider | Environment Variable | `auth.json` key |
 |----------|----------------------|------------------|
-| Anthropic | `ANTHROPIC_API_KEY` | `anthropic` |
+| Anthropic | `ANTHROPIC_API_KEY` | `Anthropic` |
 | Azure OpenAI Responses | `AZURE_OPENAI_API_KEY` | `azure-openai-responses` |
 | OpenAI | `OPENAI_API_KEY` | `openai` |
 | Google Gemini | `GEMINI_API_KEY` | `google` |
@@ -71,19 +71,19 @@ pi
 | MiniMax | `MINIMAX_API_KEY` | `minimax` |
 | MiniMax (China) | `MINIMAX_CN_API_KEY` | `minimax-cn` |
 
-Reference for environment variables and `auth.json` keys: [`const envMap`](https://github.com/badlogic/pi-mono/blob/main/packages/ai/src/env-api-keys.ts) in [`packages/ai/src/env-api-keys.ts`](https://github.com/badlogic/pi-mono/blob/main/packages/ai/src/env-api-keys.ts).
+Reference for environment variables and `auth.json` keys: [`const envMap`](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/env-ahodeuscli-keys.ts) in [`packages/ai/src/env-ahodeuscli-keys.ts`](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/env-ahodeuscli-keys.ts).
 
 #### Auth File
 
-Store credentials in `~/.pi/agent/auth.json`:
+Store credentials in `~/.hodeuscli/agent/auth.json`:
 
 ```json
 {
-  "anthropic": { "type": "api_key", "key": "sk-ant-..." },
-  "openai": { "type": "api_key", "key": "sk-..." },
-  "google": { "type": "api_key", "key": "..." },
-  "opencode": { "type": "api_key", "key": "..." },
-  "opencode-go": { "type": "api_key", "key": "..." }
+  "Anthropic": { "type": "ahodeuscli_key", "key": "sk-ant-..." },
+  "openai": { "type": "ahodeuscli_key", "key": "sk-..." },
+  "google": { "type": "ahodeuscli_key", "key": "..." },
+  "opencode": { "type": "ahodeuscli_key", "key": "..." },
+  "opencode-go": { "type": "ahodeuscli_key", "key": "..." }
 }
 ```
 
@@ -95,16 +95,16 @@ The `key` field supports three formats:
 
 - **Shell command:** `"!command"` executes and uses stdout (cached for process lifetime)
   ```json
-  { "type": "api_key", "key": "!security find-generic-password -ws 'anthropic'" }
-  { "type": "api_key", "key": "!op read 'op://vault/item/credential'" }
+  { "type": "ahodeuscli_key", "key": "!security find-generic-password -ws 'Anthropic'" }
+  { "type": "ahodeuscli_key", "key": "!op read 'op://vault/item/credential'" }
   ```
 - **Environment variable:** Uses the value of the named variable
   ```json
-  { "type": "api_key", "key": "MY_ANTHROPIC_KEY" }
+  { "type": "ahodeuscli_key", "key": "MY_ANTHROPIC_KEY" }
   ```
 - **Literal value:** Used directly
   ```json
-  { "type": "api_key", "key": "sk-ant-..." }
+  { "type": "ahodeuscli_key", "key": "sk-ant-..." }
   ```
 
 OAuth credentials are also stored here after `/login` and managed automatically.
@@ -144,14 +144,14 @@ export AWS_REGION=us-west-2
 Also supports ECS task roles (`AWS_CONTAINER_CREDENTIALS_*`) and IRSA (`AWS_WEB_IDENTITY_TOKEN_FILE`).
 
 ```bash
-pi --provider amazon-bedrock --model us.anthropic.claude-sonnet-4-20250514-v1:0
+hodeuscli --provider amazon-bedrock --model us.Anthropic.claude-sonnet-4-20250514-v1:0
 ```
 
 Prompt caching is enabled automatically for Claude models whose ID contains a recognizable model name (base models and system-defined inference profiles). For application inference profiles (whose ARNs don't contain the model name), set `AWS_BEDROCK_FORCE_CACHE=1` to enable cache points:
 
 ```bash
 export AWS_BEDROCK_FORCE_CACHE=1
-pi --provider amazon-bedrock --model arn:aws:bedrock:us-east-1:123456789012:application-inference-profile/abc123
+hodeuscli --provider amazon-bedrock --model arn:aws:bedrock:us-east-1:123456789012:application-inference-profile/abc123
 ```
 
 If you are connecting to a Bedrock API proxy, the following environment variables can be used:
@@ -189,7 +189,7 @@ Or set `GOOGLE_APPLICATION_CREDENTIALS` to a service account key file.
 
 When resolving credentials for a provider:
 
-1. CLI `--api-key` flag
+1. CLI `--ahodeuscli-key` flag
 2. `auth.json` entry (API key or OAuth token)
 3. Environment variable
 4. Custom provider keys from `models.json`

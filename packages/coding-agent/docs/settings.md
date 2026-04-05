@@ -4,8 +4,8 @@ Pi uses JSON settings files with project settings overriding global settings.
 
 | Location | Scope |
 |----------|-------|
-| `~/.pi/agent/settings.json` | Global (all projects) |
-| `.pi/settings.json` | Project (current directory) |
+| `~/.hodeuscli/agent/settings.json` | Global (all projects) |
+| `.hodeuscli/settings.json` | Project (current directory) |
 
 Edit directly or use `/settings` for common options.
 
@@ -15,7 +15,7 @@ Edit directly or use `/settings` for common options.
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `defaultProvider` | string | - | Default provider (e.g., `"anthropic"`, `"openai"`) |
+| `defaultProvider` | string | - | Default provider (e.g., `"Anthropic"`, `"openai"`) |
 | `defaultModel` | string | - | Default model ID |
 | `defaultThinkingLevel` | string | - | `"off"`, `"minimal"`, `"low"`, `"medium"`, `"high"`, `"xhigh"` |
 | `hideThinkingBlock` | boolean | `false` | Hide thinking blocks in output |
@@ -134,7 +134,7 @@ When a provider requests a retry delay longer than `maxDelayMs` (e.g., Google's 
 | `sessionDir` | string | - | Directory where session files are stored. Accepts absolute or relative paths. |
 
 ```json
-{ "sessionDir": ".pi/sessions" }
+{ "sessionDir": ".hodeuscli/sessions" }
 ```
 
 When multiple sources specify a session directory, `--session-dir` CLI flag takes precedence over `sessionDir` in settings.json.
@@ -161,7 +161,7 @@ When multiple sources specify a session directory, `--session-dir` CLI flag take
 
 These settings define where to load extensions, skills, prompts, and themes from.
 
-Paths in `~/.pi/agent/settings.json` resolve relative to `~/.pi/agent`. Paths in `.pi/settings.json` resolve relative to `.pi`. Absolute paths and `~` are supported.
+Paths in `~/.hodeuscli/agent/settings.json` resolve relative to `~/.hodeuscli/agent`. Paths in `.hodeuscli/settings.json` resolve relative to `.hodeuscli`. Absolute paths and `~` are supported.
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
@@ -180,7 +180,7 @@ String form loads all resources from a package:
 
 ```json
 {
-  "packages": ["pi-skills", "@org/my-extension"]
+  "packages": ["hodeuscli-skills", "@org/my-extension"]
 }
 ```
 
@@ -190,7 +190,7 @@ Object form filters which resources to load:
 {
   "packages": [
     {
-      "source": "pi-skills",
+      "source": "hodeuscli-skills",
       "skills": ["brave-search", "transcribe"],
       "extensions": []
     }
@@ -204,7 +204,7 @@ See [packages.md](packages.md) for package management details.
 
 ```json
 {
-  "defaultProvider": "anthropic",
+  "defaultProvider": "Anthropic",
   "defaultModel": "claude-sonnet-4-20250514",
   "defaultThinkingLevel": "medium",
   "theme": "dark",
@@ -218,22 +218,22 @@ See [packages.md](packages.md) for package management details.
     "maxRetries": 3
   },
   "enabledModels": ["claude-*", "gpt-4o"],
-  "packages": ["pi-skills"]
+  "packages": ["hodeuscli-skills"]
 }
 ```
 
 ## Project Overrides
 
-Project settings (`.pi/settings.json`) override global settings. Nested objects are merged:
+Project settings (`.hodeuscli/settings.json`) override global settings. Nested objects are merged:
 
 ```json
-// ~/.pi/agent/settings.json (global)
+// ~/.hodeuscli/agent/settings.json (global)
 {
   "theme": "dark",
   "compaction": { "enabled": true, "reserveTokens": 16384 }
 }
 
-// .pi/settings.json (project)
+// .hodeuscli/settings.json (project)
 {
   "compaction": { "reserveTokens": 8192 }
 }

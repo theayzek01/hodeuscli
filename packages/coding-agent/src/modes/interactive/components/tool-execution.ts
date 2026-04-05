@@ -1,17 +1,22 @@
+/**
+ * Component for displaying tool execution with rendering support.
+ */
 import { Box, type Component, Container, getCapabilities, Image, Spacer, Text, type TUI } from "@mariozechner/pi-tui";
+import stripAnsi from "strip-ansi";
 import type { ToolDefinition, ToolRenderContext } from "../../../core/extensions/types.js";
 import { allToolDefinitions } from "../../../core/tools/index.js";
 import { getTextOutput as getRenderedTextOutput } from "../../../core/tools/render-utils.js";
 import { convertToPng } from "../../../utils/image-convert.js";
+import { t } from "../../../core/i18n.js";
 import { theme } from "../theme/theme.js";
+import { formatExecutionTime, getSpinnerFrame, syntaxHighlightJson } from "./execution-utils.js";
 
 export interface ToolExecutionOptions {
 	showImages?: boolean;
 }
 
 export class ToolExecutionComponent extends Container {
-	private contentBox: Box;
-	private contentText: Text;
+	private contentBox: Container;
 	private callRendererComponent?: Component;
 	private resultRendererComponent?: Component;
 	private rendererState: any = {};
@@ -36,6 +41,9 @@ export class ToolExecutionComponent extends Container {
 	};
 	private convertedImages: Map<number, { data: string; mimeType: string }> = new Map();
 	private hideComponent = false;
+	private startTime: number = Date.now();
+	private endTime?: number;
+	private animationInterval?: NodeJS.Timeout;
 
 	constructor(
 		toolName: string,
@@ -58,16 +66,9 @@ export class ToolExecutionComponent extends Container {
 
 		this.addChild(new Spacer(1));
 
-		// Always create both. contentBox is used for tools with renderer-based call/result composition.
-		// contentText is reserved for generic fallback rendering when no tool definition exists.
-		this.contentBox = new Box(1, 1, (text: string) => theme.bg("toolPendingBg", text));
-		this.contentText = new Text("", 1, 1, (text: string) => theme.bg("toolPendingBg", text));
-
-		if (this.hasRendererDefinition()) {
-			this.addChild(this.contentBox);
-		} else {
-			this.addChild(this.contentText);
-		}
+		// Content container (Antigravity-style Card)
+		this.contentBox = new Container();
+		this.addChild(this.contentBox);
 
 		this.updateDisplay();
 	}
@@ -155,6 +156,15 @@ export class ToolExecutionComponent extends Container {
 	): void {
 		this.result = result;
 		this.isPartial = isPartial;
+		
+		if (!isPartial) {
+			this.endTime = Date.now();
+			if (this.animationInterval) {
+				clearInterval(this.animationInterval);
+				this.animationInterval = undefined;
+			}
+		}
+
 		this.updateDisplay();
 		this.maybeConvertImagesForKitty();
 	}
@@ -198,39 +208,54 @@ export class ToolExecutionComponent extends Container {
 	}
 
 	override render(width: number): string[] {
-		if (this.hideComponent) {
+		if (this.hideComponent || width < 15) {
 			return [];
 		}
 		return super.render(width);
 	}
 
 	private updateDisplay(): void {
-		const bgFn = this.isPartial
-			? (text: string) => theme.bg("toolPendingBg", text)
-			: this.result?.isError
-				? (text: string) => theme.bg("toolErrorBg", text)
-				: (text: string) => theme.bg("toolSuccessBg", text);
+		const colorKey = this.isPartial ? "bashMode" : this.result?.isError ? "error" : "bashMode";
+		const borderColor = (str: string) => theme.fg(colorKey, str);
 
-		let hasContent = false;
+		this.contentBox.clear();
 		this.hideComponent = false;
-		if (this.hasRendererDefinition()) {
-			this.contentBox.setBgFn(bgFn);
-			this.contentBox.clear();
 
+		// --- Header ---
+		const titleText = this.isPartial ? t("tool.running") : t("tool.ran");
+		this.contentBox.addChild({
+			render: (width: number) => {
+				const spinner = this.isPartial ? ` ${getSpinnerFrame(this.startTime)}` : "";
+				const durMs = (this.endTime || Date.now()) - this.startTime;
+				const timer = `(${formatExecutionTime(durMs)})`;
+				let title = ` ${titleText}: ${this.toolName}${spinner} ${theme.fg("dim", timer)} `;
+				
+				if (stripAnsi(title).length > Math.max(0, width - 3)) {
+					const clean = stripAnsi(title);
+					title = title.replace(clean, clean.substring(0, Math.max(0, width - 6)) + "...");
+				}
+
+				const titleLength = stripAnsi(title).length;
+				const line = "─".repeat(Math.max(0, width - titleLength - 2));
+				return [borderColor(`┌─${theme.bold(theme.fg("accent", title))}${line}┐`)];
+			},
+			invalidate: () => {},
+		});
+
+		// --- Renderer Content ---
+		const innerContainer = new Container();
+		if (this.hasRendererDefinition()) {
 			const callRenderer = this.getCallRenderer();
 			if (!callRenderer) {
-				this.contentBox.addChild(this.createCallFallback());
-				hasContent = true;
+				innerContainer.addChild(this.createCallFallback());
 			} else {
 				try {
 					const component = callRenderer(this.args, theme, this.getRenderContext(this.callRendererComponent));
 					this.callRendererComponent = component;
-					this.contentBox.addChild(component);
-					hasContent = true;
+					innerContainer.addChild(component);
 				} catch {
 					this.callRendererComponent = undefined;
-					this.contentBox.addChild(this.createCallFallback());
-					hasContent = true;
+					innerContainer.addChild(this.createCallFallback());
 				}
 			}
 
@@ -238,10 +263,7 @@ export class ToolExecutionComponent extends Container {
 				const resultRenderer = this.getResultRenderer();
 				if (!resultRenderer) {
 					const component = this.createResultFallback();
-					if (component) {
-						this.contentBox.addChild(component);
-						hasContent = true;
-					}
+					if (component) innerContainer.addChild(component);
 				} else {
 					try {
 						const component = resultRenderer(
@@ -251,24 +273,65 @@ export class ToolExecutionComponent extends Container {
 							this.getRenderContext(this.resultRendererComponent),
 						);
 						this.resultRendererComponent = component;
-						this.contentBox.addChild(component);
-						hasContent = true;
+						innerContainer.addChild(component);
 					} catch {
 						this.resultRendererComponent = undefined;
 						const component = this.createResultFallback();
-						if (component) {
-							this.contentBox.addChild(component);
-							hasContent = true;
-						}
+						if (component) innerContainer.addChild(component);
 					}
 				}
 			}
 		} else {
-			this.contentText.setCustomBgFn(bgFn);
-			this.contentText.setText(this.formatToolExecution());
-			hasContent = true;
+			innerContainer.addChild(new Text(this.formatToolExecution(), 0, 0));
 		}
 
+		// Wrap inner container in borders
+		this.contentBox.addChild({
+			render: (width: number) => {
+				const lines = innerContainer.render(width - 4);
+				return lines.map((line) => {
+					const visibleLength = stripAnsi(line).length;
+					const paddingChars = Math.max(0, width - visibleLength - 4);
+					const padding = " ".repeat(paddingChars);
+					return borderColor(`│ `) + line + padding + borderColor(` │`);
+				});
+			},
+			invalidate: () => innerContainer.invalidate(),
+		});
+
+		// --- Footer ---
+		const footerText = this.isPartial ? t("tool.waiting") : this.result?.isError ? t("tool.error") : t("tool.success");
+		const smartHint = this.result?.isError ? " [Alt+Enter -> Ask AI to Fix] " : "";
+
+		this.contentBox.addChild({
+			render: (width: number) => {
+				const leftSide = `└─${theme.bold(theme.fg("dim", ` ${footerText} `))}`;
+				let rightSide = smartHint ? theme.fg("error", smartHint) + "┘" : "┘";
+				
+				let leftAnsiClean = stripAnsi(leftSide);
+				let rightAnsiClean = stripAnsi(rightSide);
+				
+				if (leftAnsiClean.length + rightAnsiClean.length > width) {
+					rightSide = "┘";
+					rightAnsiClean = stripAnsi(rightSide);
+				}
+
+				const remaining = Math.max(0, width - leftAnsiClean.length - rightAnsiClean.length);
+				const line = "─".repeat(remaining);
+
+				let combined = borderColor(`└─${theme.bold(theme.fg("dim", ` ${footerText} `))}─${line}`) + (rightSide === "┘" ? borderColor("┘") : theme.fg("error", smartHint) + borderColor("┘"));
+				if (stripAnsi(combined).length > width) {
+					let safeFooter = stripAnsi(footerText);
+					if (safeFooter.length > width - 4) safeFooter = safeFooter.substring(0, width - 7) + "...";
+					combined = borderColor(`└─${theme.bold(theme.fg("dim", ` ${safeFooter} `))}`) + borderColor("─".repeat(Math.max(0, width - safeFooter.length - 5))) + borderColor("┘");
+				}
+
+				return [combined];
+			},
+			invalidate: () => {},
+		});
+
+		// Handle images
 		for (const img of this.imageComponents) {
 			this.removeChild(img);
 		}
@@ -303,10 +366,6 @@ export class ToolExecutionComponent extends Container {
 				}
 			}
 		}
-
-		if (this.hasRendererDefinition() && !hasContent && this.imageComponents.length === 0) {
-			this.hideComponent = true;
-		}
 	}
 
 	private getTextOutput(): string {
@@ -317,7 +376,16 @@ export class ToolExecutionComponent extends Container {
 		let text = theme.fg("toolTitle", theme.bold(this.toolName));
 		const content = JSON.stringify(this.args, null, 2);
 		if (content) {
-			text += `\n\n${content}`;
+			const highlighted = syntaxHighlightJson(content, (type, match) => {
+				switch (type) {
+					case "jsonKey": return theme.fg("syntaxKeyword", match);
+					case "jsonString": return theme.fg("syntaxString", match);
+					case "jsonNumber": return theme.fg("syntaxNumber", match);
+					case "jsonBoolean": return theme.fg("syntaxVariable", match);
+					default: return theme.fg("dim", match);
+				}
+			});
+			text += `\n\n${highlighted}`;
 		}
 		const output = this.getTextOutput();
 		if (output) {

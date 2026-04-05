@@ -58,6 +58,7 @@ import type {
 import { FooterDataProvider, type ReadonlyFooterDataProvider } from "../../core/footer-data-provider.js";
 import { type AppKeybinding, KeybindingsManager } from "../../core/keybindings.js";
 import { createCompactionSummaryMessage } from "../../core/messages.js";
+import { setLanguage, t } from "../../core/i18n.js";
 import { findExactModelReferenceMatch, resolveModelScope } from "../../core/model-resolver.js";
 import { DefaultPackageManager } from "../../core/package-manager.js";
 import type { ResourceDiagnostic } from "../../core/resource-loader.js";
@@ -292,6 +293,9 @@ export class InteractiveMode {
 		// Register themes from resource loader and initialize
 		setRegisteredThemes(this.session.resourceLoader.getThemes().themes);
 		initTheme(this.settingsManager.getTheme(), true);
+        
+        // Apply user language preference to the i18n engine
+		setLanguage(this.settingsManager.getLanguage() || "en");
 	}
 
 	private getAutocompleteSourceTag(sourceInfo?: SourceInfo): string | undefined {
@@ -428,6 +432,9 @@ export class InteractiveMode {
 
 	async init(): Promise<void> {
 		if (this.isInitialized) return;
+ 
+		// Set initial language for i18n system
+		setLanguage(this.settingsManager.getLanguage());
 
 		// Load changelog (only show new entries, skip for resumed sessions)
 		this.changelogMarkdown = this.getChangelogForDisplay();
@@ -442,37 +449,47 @@ export class InteractiveMode {
 
 		// Add header with keybindings from config (unless silenced)
 		if (this.options.verbose || !this.settingsManager.getQuietStartup()) {
-			const logo = theme.bold(theme.fg("accent", APP_NAME)) + theme.fg("dim", ` v${this.version}`);
+			// ─── Luxury boxed banner ───────────────────────────────────────────────
+			const primaryColor = (s: string) => theme.bold(theme.fg("accent", s));
+			const dimColor     = (s: string) => theme.fg("dim", s);
+			const border       = (s: string) => theme.fg("border", s);
+
+			// Top bar with double-line box
+			const versionStr = `v${this.version}`;
+			const brandLine  = `  ◆ HODEUSCLI  ${versionStr} ◆`;
+			const barWidth   = brandLine.length + 2;
+			const topBar     = border("╔" + "═".repeat(barWidth) + "╗");
+			const midBar     = border("║") + " " + primaryColor("  ◆ HODEUSCLI ") + dimColor(` ${versionStr} `) + primaryColor("◆") + " " + border("║");
+			const botBar     = border("╚" + "═".repeat(barWidth) + "╝");
+			const logoBlock  = `${topBar}\n${midBar}\n${botBar}`;
 
 			// Build startup instructions using keybinding hint helpers
-			const hint = (keybinding: AppKeybinding, description: string) => keyHint(keybinding, description);
+			const hint = (keybinding: AppKeybinding, key: string) => keyHint(keybinding, t(key));
 
 			const instructions = [
-				hint("app.interrupt", "to interrupt"),
-				hint("app.clear", "to clear"),
-				rawKeyHint(`${keyText("app.clear")} twice`, "to exit"),
-				hint("app.exit", "to exit (empty)"),
-				hint("app.suspend", "to suspend"),
-				keyHint("tui.editor.deleteToLineEnd", "to delete to end"),
-				hint("app.thinking.cycle", "to cycle thinking level"),
-				rawKeyHint(`${keyText("app.model.cycleForward")}/${keyText("app.model.cycleBackward")}`, "to cycle models"),
-				hint("app.model.select", "to select model"),
-				hint("app.tools.expand", "to expand tools"),
-				hint("app.thinking.toggle", "to expand thinking"),
-				hint("app.editor.external", "for external editor"),
-				rawKeyHint("/", "for commands"),
-				rawKeyHint("!", "to run bash"),
-				rawKeyHint("!!", "to run bash (no context)"),
-				hint("app.message.followUp", "to queue follow-up"),
-				hint("app.message.dequeue", "to edit all queued messages"),
-				hint("app.clipboard.pasteImage", "to paste image"),
-				rawKeyHint("drop files", "to attach"),
+				hint("app.interrupt", "banner.interrupt"),
+				hint("app.clear", "banner.clear"),
+				rawKeyHint(`${keyText("app.clear")} ${t("banner.twice")}`, t("banner.exit")),
+				hint("app.exit", "banner.exit_empty"),
+				hint("app.suspend", "banner.suspend"),
+				keyHint("tui.editor.deleteToLineEnd", t("banner.delete_end")),
+				hint("app.thinking.cycle", "banner.cycle_thinking"),
+				rawKeyHint(`${keyText("app.model.cycleForward")}/${keyText("app.model.cycleBackward")}`, t("banner.cycle_models")),
+				hint("app.model.select", "banner.select_model"),
+				hint("app.tools.expand", "banner.expand_tools"),
+				hint("app.thinking.toggle", "banner.expand_thinking"),
+				hint("app.editor.external", "banner.external_editor"),
+				rawKeyHint("/", t("banner.commands")),
+				rawKeyHint("!", t("banner.run_bash")),
+				rawKeyHint("!!", t("banner.run_bash_no_context")),
+				hint("app.message.followUp", "banner.queue_follow_up"),
+				hint("app.message.dequeue", "banner.edit_queued"),
+				hint("app.clipboard.pasteImage", "banner.paste_image"),
+				rawKeyHint(t("banner.drop_files"), t("banner.attach")),
 			].join("\n");
-			const onboarding = theme.fg(
-				"dim",
-				`Pi can explain its own features and look up its docs. Ask it how to use or extend Pi.`,
-			);
-			this.builtInHeader = new Text(`${logo}\n${instructions}\n\n${onboarding}`, 1, 0);
+
+			const onboarding = dimColor(t("banner.onboarding"));
+			this.builtInHeader = new Text(`${logoBlock}\n${instructions}\n\n${onboarding}`, 1, 0);
 
 			// Setup UI layout
 			this.headerContainer.addChild(new Spacer(1));
@@ -2093,6 +2110,11 @@ export class InteractiveMode {
 			if (!text) return;
 
 			// Handle commands
+			if (text === "/account") {
+				this.handleAccountCommand();
+				this.editor.setText("");
+				return;
+			}
 			if (text === "/settings") {
 				this.showSettingsSelector();
 				this.editor.setText("");
@@ -2166,6 +2188,11 @@ export class InteractiveMode {
 			}
 			if (text === "/logout") {
 				this.showOAuthSelector("logout");
+				this.editor.setText("");
+				return;
+			}
+			if (text === "/accounts") {
+				this.handleAccountsCommand();
 				this.editor.setText("");
 				return;
 			}
@@ -2608,7 +2635,7 @@ export class InteractiveMode {
 	private addMessageToChat(message: AgentMessage, options?: { populateHistory?: boolean }): void {
 		switch (message.role) {
 			case "bashExecution": {
-				const component = new BashExecutionComponent(message.command, this.ui, message.excludeFromContext);
+				const component = new BashExecutionComponent(message.command, this.ui, process.cwd(), message.excludeFromContext);
 				if (message.output) {
 					component.appendOutput(message.output);
 				}
@@ -3326,6 +3353,7 @@ export class InteractiveMode {
 					autocompleteMaxVisible: this.settingsManager.getAutocompleteMaxVisible(),
 					quietStartup: this.settingsManager.getQuietStartup(),
 					clearOnShrink: this.settingsManager.getClearOnShrink(),
+					language: this.settingsManager.getLanguage() as "en" | "tr",
 				},
 				{
 					onAutoCompactChange: (enabled) => {
@@ -3424,6 +3452,10 @@ export class InteractiveMode {
 					onClearOnShrinkChange: (enabled) => {
 						this.settingsManager.setClearOnShrink(enabled);
 						this.ui.setClearOnShrink(enabled);
+					},
+					onLanguageChange: (language) => {
+						this.settingsManager.setLanguage(language);
+						this.ui.requestRender();
 					},
 					onCancel: () => {
 						done();
@@ -4243,6 +4275,74 @@ export class InteractiveMode {
 		this.ui.requestRender();
 	}
 
+	private handleAccountCommand(): void {
+		const authStorage = this.session.modelRegistry.authStorage;
+		const storageData = authStorage.getAll();
+		const providers = authStorage.list();
+		
+		let emailInfo = "";
+		let foundEmail = false;
+
+		for (const p of providers) {
+			const cred = storageData[p];
+			if (cred?.type === "oauth") {
+				const email = (cred as any).user || (cred as any).email || (cred as any).username;
+				if (email) {
+					emailInfo += `  ${theme.fg("muted", "Email:")} ${theme.fg("accent", email)}\n`;
+					foundEmail = true;
+				}
+			}
+		}
+
+		if (!foundEmail) {
+			emailInfo = `  ${theme.fg("muted", "No active session email found. Connect via /login.")}`;
+		}
+
+		const boxWidth = 40;
+		const title = "ANTIGRAVITY";
+		const titlePadding = Math.floor((boxWidth - title.length - 2) / 2);
+		const titleLine = " ".repeat(titlePadding) + theme.bold(theme.fg("accent", title)) + " ".repeat(boxWidth - title.length - titlePadding - 2);
+
+		let info = "";
+		info += theme.fg("accent", "╔" + "═".repeat(boxWidth - 2) + "╗") + "\n";
+		info += theme.fg("accent", "║") + titleLine + theme.fg("accent", "║") + "\n";
+		info += theme.fg("accent", "╚" + "═".repeat(boxWidth - 2) + "╝") + "\n\n";
+		info += emailInfo;
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Text(info, 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.ui.requestRender();
+	}
+
+	private handleAccountsCommand(): void {
+		const authStorage = this.session.modelRegistry.authStorage;
+		const storageData = authStorage.getAll();
+		const providers = authStorage.list();
+		
+		let info = `${theme.bold("Configured Accounts")}\n\n`;
+		
+		if (providers.length === 0) {
+			info += theme.fg("muted", "No accounts configured. Use /login for OAuth or set API keys via environment variables.");
+		} else {
+			for (const p of providers) {
+				const cred = storageData[p];
+				if (cred?.type === "oauth") {
+					const status = Date.now() < cred.expires ? theme.fg("success", "✓ valid") : theme.fg("warning", "↻ expired");
+					info += `  ${theme.fg("accent", "OAuth")} ${theme.bold(p)} (${status})\n`;
+				} else if (cred?.type === "api_key") {
+					info += `  ${theme.fg("accent", "API Key")} ${theme.bold(p)}\n`;
+				}
+			}
+		}
+
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(info, 1, 0));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
 	private handleSessionCommand(): void {
 		const stats = this.session.getSessionStats();
 		const sessionName = this.sessionManager.getSessionName();
@@ -4537,7 +4637,7 @@ export class InteractiveMode {
 			const result = eventResult.result;
 
 			// Create UI component for display
-			this.bashComponent = new BashExecutionComponent(command, this.ui, excludeFromContext);
+			this.bashComponent = new BashExecutionComponent(command, this.ui, this.sessionManager.getCwd(), excludeFromContext);
 			if (this.session.isStreaming) {
 				this.pendingMessagesContainer.addChild(this.bashComponent);
 				this.pendingBashComponents.push(this.bashComponent);
@@ -4565,7 +4665,7 @@ export class InteractiveMode {
 
 		// Normal execution path (possibly with custom operations)
 		const isDeferred = this.session.isStreaming;
-		this.bashComponent = new BashExecutionComponent(command, this.ui, excludeFromContext);
+		this.bashComponent = new BashExecutionComponent(command, this.ui, this.sessionManager.getCwd(), excludeFromContext);
 
 		if (isDeferred) {
 			// Show in pending area when agent is streaming

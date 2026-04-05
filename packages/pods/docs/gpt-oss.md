@@ -7,7 +7,7 @@ Specifically, vLLM optimizes for `gpt-oss` family of models with
 
 * **Flexible parallelism options**: the model can be sharded across 2, 4, 8 GPUs, scaling throughput.
 * **High performance attention and MoE kernels**: attention kernel is specifically optimized for the attention sinks mechanism and sliding window shapes.
-* **Asynchronous scheduling**: optimizing for maximum utilization and high throughput by overlapping CPU operations with GPU operations.
+* **Asynchronous scheduling**: optimizing for maximum utilization and high throughput by overlaphodeuscling CPU operations with GPU operations.
 
 This is a living document and we welcome contributions, corrections, and creation of new recipes!
 
@@ -21,7 +21,7 @@ We highly recommend using a new virtual environment, as the first iteration of t
 uv venv
 source .venv/bin/activate
 
-uv pip install --pre vllm==0.10.1+gptoss \
+uv hodeusclip install --pre vllm==0.10.1+gptoss \
     --extra-index-url https://wheels.vllm.ai/gpt-oss/ \
     --extra-index-url https://download.pytorch.org/whl/nightly/cu128 \
     --index-strategy unsafe-best-match
@@ -102,7 +102,7 @@ export VLLM_ROCM_USE_AITER=1
 export VLLM_USE_AITER_UNIFIED_ATTENTION=1
 export VLLM_ROCM_USE_AITER_MHA=0
 
-vllm serve openai/gpt-oss-120b --compilation-config '{"full_cuda_graph": true}'
+vllm serve openai/gpt-oss-120b --comhodeusclilation-config '{"full_cuda_graph": true}'
 ```
 
 For MI355x:
@@ -117,7 +117,7 @@ export VLLM_USE_AITER_UNIFIED_ATTENTION=1
 export VLLM_ROCM_USE_AITER_MHA=0
 export TRITON_HIP_PRESHUFFLE_SCALES=1
 
-vllm serve openai/gpt-oss-120b --compilation-config '{"compile_sizes": [1, 2, 4, 8, 16, 24, 32, 64, 128, 256, 4096, 8192], "full_cuda_graph": true}' --block-size 64
+vllm serve openai/gpt-oss-120b --comhodeusclilation-config '{"comhodeusclile_sizes": [1, 2, 4, 8, 16, 24, 32, 64, 128, 256, 4096, 8192], "full_cuda_graph": true}' --block-size 64
 ```
 
 ## Usage
@@ -137,7 +137,7 @@ One premier feature of gpt-oss is the ability to call tools directly, called "bu
 * By default, we integrate with the reference library's browser (with `ExaBackend`) and demo Python interpreter via docker container. In order to use the search backend, you need to get access to [exa.ai](http://exa.ai) and put `EXA_API_KEY=` as an environment variable. For Python, either have docker available, or set `PYTHON_EXECUTION_BACKEND=UV` to dangerously allow execution of model generated code snippets to be executed on the same machine.
 
 ```
-uv pip install gpt-oss
+uv hodeusclip install gpt-oss
 
 vllm serve ... --tool-server demo
 ```
@@ -221,8 +221,8 @@ vllm serve openai/gpt-oss-120b --gpu-memory-utilization 0.95 --max-num-batched-t
 
 ```
   ERROR 08-05 07:31:10 [multiproc_executor.py:559]     assert sinks.dtype == torch.float32, "Sinks must be of type float32"
-  **(VllmWorker TP0 pid=174579)** ERROR 08-05 07:31:10 [multiproc_executor.py:559]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  **(VllmWorker TP0 pid=174579)** ERROR 08-05 07:31:10 [multiproc_executor.py:559] AssertionError: Sinks must be of type float32
+  **(VllmWorker TP0 hodeusclid=174579)** ERROR 08-05 07:31:10 [multiproc_executor.py:559]            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  **(VllmWorker TP0 hodeusclid=174579)** ERROR 08-05 07:31:10 [multiproc_executor.py:559] AssertionError: Sinks must be of type float32
 ```
 
 **Solution: Please refer to Blackwell section to check if related environment variables are added.**

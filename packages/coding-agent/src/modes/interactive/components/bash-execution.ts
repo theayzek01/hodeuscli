@@ -2,7 +2,7 @@
  * Component for displaying bash command execution with streaming output.
  */
 
-import { Container, Loader, Spacer, Text, type TUI } from "@mariozechner/pi-tui";
+import { Container, Spacer, Text, type TUI, truncateToWidth, visibleWidth } from "@mariozechner/pi-tui";
 import stripAnsi from "strip-ansi";
 import {
 	DEFAULT_MAX_BYTES,
@@ -11,9 +11,8 @@ import {
 	truncateTail,
 } from "../../../core/tools/truncate.js";
 import { theme } from "../theme/theme.js";
-import { DynamicBorder } from "./dynamic-border.js";
-import { keyHint, keyText } from "./keybinding-hints.js";
-import { truncateToVisualLines } from "./visual-truncate.js";
+import { t } from "../../../core/i18n.js";
+import { formatExecutionTime, getSpinnerFrame } from "./execution-utils.js";
 
 // Preview line limit when not expanded (matches tool execution behavior)
 const PREVIEW_LINES = 20;
@@ -23,45 +22,36 @@ export class BashExecutionComponent extends Container {
 	private outputLines: string[] = [];
 	private status: "running" | "complete" | "cancelled" | "error" = "running";
 	private exitCode: number | undefined = undefined;
-	private loader: Loader;
 	private truncationResult?: TruncationResult;
 	private fullOutputPath?: string;
 	private expanded = false;
 	private contentContainer: Container;
+	private cwd: string;
+	private startTime: number;
+	private endTime?: number;
+	private uiInstance: TUI;
+	private animationInterval?: NodeJS.Timeout;
 
-	constructor(command: string, ui: TUI, excludeFromContext = false) {
+	constructor(command: string, ui: TUI, cwd: string = process.cwd(), excludeFromContext = false) {
 		super();
 		this.command = command;
+		this.cwd = cwd;
+		this.uiInstance = ui;
+		this.startTime = Date.now();
 
-		// Use dim border for excluded-from-context commands (!! prefix)
-		const colorKey = excludeFromContext ? "dim" : "bashMode";
-		const borderColor = (str: string) => theme.fg(colorKey, str);
-
-		// Add spacer
+		// Add spacer for breathing room
 		this.addChild(new Spacer(1));
 
-		// Top border
-		this.addChild(new DynamicBorder(borderColor));
-
-		// Content container (holds dynamic content between borders)
+		// Content container (holds our Antigravity-style Card)
 		this.contentContainer = new Container();
 		this.addChild(this.contentContainer);
 
-		// Command header
-		const header = new Text(theme.fg(colorKey, theme.bold(`$ ${command}`)), 1, 0);
-		this.contentContainer.addChild(header);
-
-		// Loader
-		this.loader = new Loader(
-			ui,
-			(spinner) => theme.fg(colorKey, spinner),
-			(text) => theme.fg("muted", text),
-			`Running... (${keyText("tui.select.cancel")} to cancel)`, // Plain text for loader
-		);
-		this.contentContainer.addChild(this.loader);
-
-		// Bottom border
-		this.addChild(new DynamicBorder(borderColor));
+		// Start animation loop while running
+		this.animationInterval = setInterval(() => {
+			if (this.status === "running") {
+				this.uiInstance.requestRender();
+			}
+		}, 100);
 	}
 
 	/**
@@ -77,9 +67,15 @@ export class BashExecutionComponent extends Container {
 		this.updateDisplay();
 	}
 
+	override render(width: number): string[] {
+		if (width < 15) {
+			return [];
+		}
+		return super.render(width);
+	}
+
 	appendOutput(chunk: string): void {
 		// Strip ANSI codes and normalize line endings
-		// Note: binary data is already sanitized in tui-renderer.ts executeBashCommand
 		const clean = stripAnsi(chunk).replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
 		// Append to output lines
@@ -109,9 +105,12 @@ export class BashExecutionComponent extends Container {
 				: "complete";
 		this.truncationResult = truncationResult;
 		this.fullOutputPath = fullOutputPath;
+		this.endTime = Date.now();
 
-		// Stop loader
-		this.loader.stop();
+		if (this.animationInterval) {
+			clearInterval(this.animationInterval);
+			this.animationInterval = undefined;
+		}
 
 		this.updateDisplay();
 	}
@@ -129,77 +128,131 @@ export class BashExecutionComponent extends Container {
 
 		// Apply preview truncation based on expanded state
 		const previewLogicalLines = availableLines.slice(-PREVIEW_LINES);
-		const hiddenLineCount = availableLines.length - previewLogicalLines.length;
 
 		// Rebuild content container
 		this.contentContainer.clear();
 
-		// Command header
-		const header = new Text(theme.fg("bashMode", theme.bold(`$ ${this.command}`)), 1, 0);
-		this.contentContainer.addChild(header);
+		const colorKey = this.status === "error" ? "error" : this.status === "running" ? "accent" : "bashMode";
+		const borderColor = (str: string) => theme.fg(colorKey, str);
 
-		// Output
+		// --- Header ---
+		const titleText = this.status === "running" ? t("bash.running_title") : t("bash.ran_title");
+		this.contentContainer.addChild({
+			render: (width: number) => {
+				let title = ` ${titleText} `;
+				if (title.length > Math.max(0, width - 3)) {
+					title = title.substring(0, Math.max(0, width - 6)) + "...";
+				}
+				const line = "─".repeat(Math.max(0, width - stripAnsi(title).length - 2));
+				return [borderColor(`┌─${theme.bold(theme.fg("accent", title))}${line}┐`)];
+			},
+			invalidate: () => {},
+		});
+
+		// --- Context Line (CWD > Command) ---
+		const shortCwd = this.cwd.length > 30 ? "..." + this.cwd.slice(-27) : this.cwd;
+		const contextLine = ` ${shortCwd} > ${this.command}`;
+		this.contentContainer.addChild({
+			render: (width: number) => {
+				const visibleWidth = width - 4;
+				const truncated =
+					contextLine.length > visibleWidth ? contextLine.substring(0, visibleWidth - 3) + "..." : contextLine;
+				const padding = " ".repeat(Math.max(0, width - stripAnsi(truncated).length - 2));
+				return [borderColor(`│`) + theme.fg("muted", truncated) + padding + borderColor(`│`)];
+			},
+			invalidate: () => {},
+		});
+
+		// --- Divider ---
+		this.contentContainer.addChild({
+			render: (width: number) => [borderColor(`├${"─".repeat(width - 2)}┤`)],
+			invalidate: () => {},
+		});
+
+		// --- Output Area ---
 		if (availableLines.length > 0) {
+			const renderOutput = (lines: string[], width: number) => {
+				const visibleWidth = width - 4;
+				return lines.map((line) => {
+					const cleanLine = stripAnsi(line);
+					const truncated = cleanLine.length > visibleWidth ? cleanLine.substring(0, visibleWidth - 3) + "..." : cleanLine;
+					const paddingChars = Math.max(0, width - stripAnsi(truncated).length - 3); // -3 because of borders (2) + leading space (1)
+					const padding = " ".repeat(paddingChars);
+					return borderColor(`│`) + theme.fg("muted", ` ${truncated}`) + padding + borderColor(`│`);
+				});
+			};
+
 			if (this.expanded) {
-				// Show all lines
-				const displayText = availableLines.map((line) => theme.fg("muted", line)).join("\n");
-				this.contentContainer.addChild(new Text(`\n${displayText}`, 1, 0));
-			} else {
-				// Use shared visual truncation utility with width-aware caching
-				const styledOutput = previewLogicalLines.map((line) => theme.fg("muted", line)).join("\n");
-				const styledInput = `\n${styledOutput}`;
-				let cachedWidth: number | undefined;
-				let cachedLines: string[] | undefined;
 				this.contentContainer.addChild({
-					render: (width: number) => {
-						if (cachedLines === undefined || cachedWidth !== width) {
-							const result = truncateToVisualLines(styledInput, PREVIEW_LINES, width, 1);
-							cachedLines = result.visualLines;
-							cachedWidth = width;
-						}
-						return cachedLines ?? [];
-					},
-					invalidate: () => {
-						cachedWidth = undefined;
-						cachedLines = undefined;
-					},
+					render: (width: number) => renderOutput(availableLines, width),
+					invalidate: () => {},
+				});
+			} else {
+				this.contentContainer.addChild({
+					render: (width: number) => renderOutput(previewLogicalLines, width),
+					invalidate: () => {},
 				});
 			}
+		} else if (this.status === "running") {
+			// Center the animated spinner in the box
+			this.contentContainer.addChild({
+				render: (width: number) => {
+					const spinner = getSpinnerFrame(this.startTime);
+					let label = ` ${spinner} ${t("bash.waiting_label")}`;
+					if (stripAnsi(label).length > Math.max(0, width - 2)) {
+						label = label.substring(0, Math.max(0, width - 5)) + "...";
+					}
+					const paddingChars = Math.max(0, width - stripAnsi(label).length - 2);
+					const padding = " ".repeat(paddingChars);
+					
+					// Return properly truncated colored structure
+					const visibleSpinner = stripAnsi(label).includes(spinner) ? theme.fg("accent", ` ${spinner} `) : "";
+					const visibleText = label.replace(` ${spinner} `, "");
+					
+					return [borderColor(`│`) + visibleSpinner + theme.fg("dim", visibleText) + padding + borderColor(`│`)];
+				},
+				invalidate: () => {},
+			});
 		}
 
-		// Loader or status
-		if (this.status === "running") {
-			this.contentContainer.addChild(this.loader);
-		} else {
-			const statusParts: string[] = [];
+		// --- Footer ---
+		const durationMs = (this.endTime || Date.now()) - this.startTime;
+		const durStr = formatExecutionTime(durationMs);
 
-			// Show how many lines are hidden (collapsed preview)
-			if (hiddenLineCount > 0) {
-				if (this.expanded) {
-					statusParts.push(`(${keyHint("app.tools.expand", "to collapse")})`);
-				} else {
-					statusParts.push(
-						`${theme.fg("muted", `... ${hiddenLineCount} more lines`)} (${keyHint("app.tools.expand", "to expand")})`,
-					);
+		const smartHint = this.status === "error" ? " [Alt+Enter -> Ask AI to Fix] " : "";
+
+		const footerText =
+			this.status === "running"
+				? ` ${t("bash.waiting")} (${durStr}) `
+				: this.status === "complete"
+					? ` ${t("bash.success")} (${durStr}) `
+					: this.status === "cancelled"
+						? ` ${t("bash.cancelled")} (${durStr}) `
+						: ` ${t("bash.status")}: ${this.exitCode} (${durStr}) `;
+
+		this.contentContainer.addChild({
+			render: (width: number) => {
+				const leftSide = `└─${theme.bold(theme.fg("dim", footerText))}`;
+				const rightSide = (smartHint ? theme.fg("error", smartHint) : "") + "┘";
+				
+				const leftWidth = visibleWidth(leftSide);
+				const rightWidth = visibleWidth(rightSide);
+				
+				if (leftWidth + rightWidth > width) {
+					// Fallback: simplified footer if text is too long
+					const simpleFooter = `└─${theme.bold(theme.fg("dim", t("bash.status")))}─┘`;
+					const simpleWidth = visibleWidth(simpleFooter);
+					if (simpleWidth > width) return [borderColor("└" + "─".repeat(Math.max(0, width - 2)) + "┘")];
+					return [borderColor(truncateToWidth(simpleFooter, width - 1) + "┘")];
 				}
-			}
 
-			if (this.status === "cancelled") {
-				statusParts.push(theme.fg("warning", "(cancelled)"));
-			} else if (this.status === "error") {
-				statusParts.push(theme.fg("error", `(exit ${this.exitCode})`));
-			}
-
-			// Add truncation warning (context truncation, not preview truncation)
-			const wasTruncated = this.truncationResult?.truncated || contextTruncation.truncated;
-			if (wasTruncated && this.fullOutputPath) {
-				statusParts.push(theme.fg("warning", `Output truncated. Full output: ${this.fullOutputPath}`));
-			}
-
-			if (statusParts.length > 0) {
-				this.contentContainer.addChild(new Text(`\n${statusParts.join("\n")}`, 1, 0));
-			}
-		}
+				const remaining = Math.max(0, width - leftWidth - rightWidth);
+				const line = borderColor("─".repeat(remaining));
+				
+				return [borderColor(leftSide) + line + borderColor(rightSide)];
+			},
+			invalidate: () => {},
+		});
 	}
 
 	/**

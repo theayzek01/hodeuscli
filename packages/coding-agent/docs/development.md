@@ -5,8 +5,8 @@ See [AGENTS.md](../../../AGENTS.md) for additional guidelines.
 ## Setup
 
 ```bash
-git clone https://github.com/badlogic/pi-mono
-cd pi-mono
+git clone https://github.com/badlogic/hodeuscli-mono
+cd hodeuscli-mono
 npm install
 npm run build
 ```
@@ -14,7 +14,7 @@ npm run build
 Run from source:
 
 ```bash
-/path/to/pi-mono/pi-test.sh
+/path/to/hodeuscli-mono/hodeuscli-test.sh
 ```
 
 The script can be run from any directory. Pi keeps the caller's current working directory.
@@ -25,9 +25,9 @@ Configure via `package.json`:
 
 ```json
 {
-  "piConfig": {
-    "name": "pi",
-    "configDir": ".pi"
+  "hodeuscliConfig": {
+    "name": "hodeuscli",
+    "configDir": ".hodeuscli"
   }
 }
 ```
@@ -48,7 +48,7 @@ Never use `__dirname` directly for package assets.
 
 ## Debug Command
 
-`/debug` (hidden) writes to `~/.pi/agent/pi-debug.log`:
+`/debug` (hidden) writes to `~/.hodeuscli/agent/hodeuscli-debug.log`:
 - Rendered TUI lines with ANSI codes
 - Last messages sent to the LLM
 

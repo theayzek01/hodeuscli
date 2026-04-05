@@ -22,7 +22,7 @@ main.ts → SlackBot → handler.handleEvent() → agent.run(SlackContext)
 ```
 
 Problems:
-- `SlackContext` interface leaks Slack concepts (threads, typing indicators)
+- `SlackContext` interface leaks Slack concepts (threads, tyhodeuscling indicators)
 - Agent code references Slack-specific formatting (mrkdwn, `<@user>` mentions)
 - Storage uses Slack timestamps (`ts`) as message IDs
 - Message logging assumes Slack's event structure
@@ -176,7 +176,7 @@ interface UserInfo {
 MomAgent wraps `AgentSession` from coding-agent. Agent is platform-agnostic; it just forwards events to the adapter.
 
 ```typescript
-import { type AgentSessionEvent } from "@mariozechner/pi-coding-agent";
+import { type AgentSessionEvent } from "@mariozechner/hodeuscli";
 
 interface MomAgent {
   /**
@@ -269,7 +269,7 @@ Messages stored as received from platform:
 Same format as current (coding-agent compatible):
 
 ```jsonl
-{"type":"session","id":"uuid","timestamp":"...","provider":"anthropic","modelId":"claude-sonnet-4-5"}
+{"type":"session","id":"uuid","timestamp":"...","provider":"Anthropic","modelId":"claude-sonnet-4-5"}
 {"type":"message","timestamp":"...","message":{"role":"user","content":"[mario]: what's the weather?"}}
 {"type":"message","timestamp":"...","message":{"role":"assistant","content":[{"type":"text","text":"The weather is sunny!"}]}}
 ```
@@ -553,7 +553,7 @@ describe('Mom Integration', () => {
    - Add migration for existing Slack-format logs
 
 2. **Phase 2: Extract adapter interface** (non-breaking)
-   - Create SlackAdapter wrapping current SlackBot
+   - Create SlackAdapter wraphodeuscling current SlackBot
    - Agent emits events, adapter handles UI
 
 3. **Phase 3: Decouple agent** (non-breaking)
@@ -645,9 +645,9 @@ Mom runs bash commands inside a sandbox (Docker container), but sometimes you ne
 
 ```typescript
 // data/tools/gmail/index.ts
-import type { MomCustomTool, ToolAPI } from "@mariozechner/pi-mom";
+import type { MomCustomTool, ToolAPI } from "@mariozechner/hodeuscli-mom";
 import { Type } from "@sinclair/typebox";
-import { StringEnum } from "@mariozechner/pi-ai";
+import { StringEnum } from "@mariozechner/hodeuscli-ai";
 
 const tool: MomCustomTool = {
   name: "gmail",
@@ -656,7 +656,7 @@ const tool: MomCustomTool = {
     action: StringEnum(["search", "read", "send"]),
     query: Type.Optional(Type.String({ description: "Search query" })),
     messageId: Type.Optional(Type.String({ description: "Message ID to read" })),
-    to: Type.Optional(Type.String({ description: "Recipient email" })),
+    to: Type.Optional(Type.String({ description: "Recihodeusclient email" })),
     subject: Type.Optional(Type.String({ description: "Email subject" })),
     body: Type.Optional(Type.String({ description: "Email body" })),
   }),
@@ -723,7 +723,7 @@ export interface MomCustomTool<TParams extends TSchema = TSchema, TDetails = any
 }
 
 /** Factory function for tools that need async initialization */
-export type MomCustomToolFactory = (api: ToolAPI) => MomCustomTool | Promise<MomCustomTool>;
+export type MomCustomToolFactory = (ahodeuscli: ToolAPI) => MomCustomTool | Promise<MomCustomTool>;
 
 export interface ToolAPI {
   /** Path to mom's data directory */
@@ -744,7 +744,7 @@ export interface ToolAPI {
 
 Tools are discovered from:
 1. `data/tools/**/index.ts` (workspace-local, recursive)
-2. `~/.pi/mom/tools/**/index.ts` (global, recursive)
+2. `~/.hodeuscli/mom/tools/**/index.ts` (global, recursive)
 
 ```typescript
 // loader.ts
@@ -762,7 +762,7 @@ async function loadCustomTools(dataDir: string): Promise<LoadedTool[]> {
   // Discover tool directories
   const toolDirs = [
     path.join(dataDir, "tools"),
-    path.join(os.homedir(), ".pi", "mom", "tools"),
+    path.join(os.homedir(), ".hodeuscli", "mom", "tools"),
   ];
   
   for (const dir of toolDirs) {
@@ -888,16 +888,16 @@ function schemaToSimpleJson(schema: TSchema): object {
 
 ```typescript
 // data/tools/gmail/index.ts
-import type { MomCustomTool, ToolAPI } from "@mariozechner/pi-mom";
+import type { MomCustomTool, ToolAPI } from "@mariozechner/hodeuscli-mom";
 import { Type } from "@sinclair/typebox";
-import { StringEnum } from "@mariozechner/pi-ai";
+import { StringEnum } from "@mariozechner/hodeuscli-ai";
 import Imap from "imap";
 import nodemailer from "nodemailer";
 
-export default async function(api: ToolAPI): Promise<MomCustomTool> {
+export default async function(ahodeuscli: ToolAPI): Promise<MomCustomTool> {
   // Load credentials from data directory
-  const credsPath = path.join(api.dataDir, "tools", "gmail", "credentials.json");
-  const creds = JSON.parse(await api.readFile(credsPath));
+  const credsPath = path.join(ahodeuscli.dataDir, "tools", "gmail", "credentials.json");
+  const creds = JSON.parse(await ahodeuscli.readFile(credsPath));
   
   return {
     name: "gmail",
@@ -922,7 +922,7 @@ export default async function(api: ToolAPI): Promise<MomCustomTool> {
 
 ### Loading
 
-Tools are loaded via jiti. They can import any 3rd party dependencies (install in the tool directory). Imports of `@mariozechner/pi-ai` and `@mariozechner/pi-mom` are aliased to the running mom bundle.
+Tools are loaded via jiti. They can import any 3rd party dependencies (install in the tool directory). Imports of `@mariozechner/hodeuscli-ai` and `@mariozechner/hodeuscli-mom` are aliased to the running mom bundle.
 
 **Live reload**: In dev mode, tools are watched and reloaded on change. No restart needed.
 

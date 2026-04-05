@@ -5,7 +5,7 @@ Pi runs on Android via [Termux](https://termux.dev/), a terminal emulator and Li
 ## Prerequisites
 
 1. Install [Termux](https://github.com/termux/termux-app#installation) from GitHub or F-Droid (not Google Play, that version is deprecated)
-2. Install [Termux:API](https://github.com/termux/termux-api#installation) from GitHub or F-Droid for clipboard and other device integrations
+2. Install [Termux:API](https://github.com/termux/termux-ahodeuscli#installation) from GitHub or F-Droid for clipboard and other device integrations
 
 ## Installation
 
@@ -14,16 +14,16 @@ Pi runs on Android via [Termux](https://termux.dev/), a terminal emulator and Li
 pkg update && pkg upgrade
 
 # Install dependencies
-pkg install nodejs termux-api git
+pkg install nodejs termux-ahodeuscli git
 
-# Install pi
-npm install -g @mariozechner/pi-coding-agent
+# Install hodeuscli
+npm install -g @mariozechner/hodeuscli
 
 # Create config directory
-mkdir -p ~/.pi/agent
+mkdir -p ~/.hodeuscli/agent
 
-# Run pi
-pi
+# Run hodeuscli
+hodeuscli
 ```
 
 ## Clipboard Support
@@ -34,7 +34,7 @@ Image clipboard is not supported on Termux (the `ctrl+v` image paste feature wil
 
 ## Example AGENTS.md for Termux
 
-Create `~/.pi/agent/AGENTS.md` to help the agent understand the Termux environment:
+Create `~/.hodeuscli/agent/AGENTS.md` to help the agent understand the Termux environment:
 
 ```markdown
 # Agent Environment: Termux on Android
@@ -89,7 +89,7 @@ termux-camera-photo out.jpg   # Take photo
 
 ## Notes
 - Termux:API app must be installed for `termux-*` commands
-- Use `pkg install termux-api` for the command-line tools
+- Use `pkg install termux-ahodeuscli` for the command-line tools
 - Storage permission needed for `/storage/emulated/0` access
 ```
 
@@ -109,7 +109,7 @@ Ensure both apps are installed:
 
 Then install the CLI tools:
 ```bash
-pkg install termux-api
+pkg install termux-ahodeuscli
 ```
 
 ### Permission denied for shared storage

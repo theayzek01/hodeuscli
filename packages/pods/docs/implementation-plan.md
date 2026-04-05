@@ -15,7 +15,7 @@ Generate and execute pod_setup.sh via SSH
   - [ ] Determine CUDA toolkit version needed
   - [ ] Generate uv/Python install commands
   - [ ] Generate venv creation commands
-  - [ ] Generate pip install commands (torch, vLLM, etc.)
+  - [ ] Generate hodeusclip install commands (torch, vLLM, etc.)
   - [ ] Handle model-specific vLLM versions (e.g., gpt-oss needs 0.10.1+gptoss)
   - [ ] Generate mount commands if --mount provided
   - [ ] Generate env var setup (HF_TOKEN, PI_API_KEY)
@@ -37,10 +37,10 @@ Local JSON state management
 
 - [ ] `src/config/types.ts` - TypeScript interfaces
   - [ ] Pod interface (ssh, gpus, models, mount)
-  - [ ] Model interface (model, port, gpu, pid)
+  - [ ] Model interface (model, port, gpu, hodeusclid)
   - [ ] GPU interface (id, name, memory)
 
-- [ ] `src/config/store.ts` - Read/write ~/.pi/pods.json
+- [ ] `src/config/store.ts` - Read/write ~/.hodeuscli/pods.json
   - [ ] Load config (handle missing file)
   - [ ] Save config (atomic write)
   - [ ] Get active pod
@@ -60,21 +60,21 @@ Clean SSH command execution
 ## Package 4: Pod Commands
 Pod management CLI commands
 
-- [ ] `src/commands/pods-setup.ts` - pi pods setup
+- [ ] `src/commands/pods-setup.ts` - hodeuscli pods setup
   - [ ] Parse args (name, ssh, mount)
   - [ ] Check env vars (HF_TOKEN, PI_API_KEY)
   - [ ] Call setup executor
   - [ ] Save pod to config
 
-- [ ] `src/commands/pods-list.ts` - pi pods
+- [ ] `src/commands/pods-list.ts` - hodeuscli pods
   - [ ] Load config
   - [ ] Display all pods with active marker
 
-- [ ] `src/commands/pods-active.ts` - pi pods active
+- [ ] `src/commands/pods-active.ts` - hodeuscli pods active
   - [ ] Switch active pod
   - [ ] Update config
 
-- [ ] `src/commands/pods-remove.ts` - pi pods remove
+- [ ] `src/commands/pods-remove.ts` - hodeuscli pods remove
   - [ ] Remove from config (not remote)
 
 ## Package 5: Model Management
@@ -100,7 +100,7 @@ Model lifecycle management
 ## Package 6: Model Commands
 Model management CLI commands
 
-- [ ] `src/commands/start.ts` - pi start
+- [ ] `src/commands/start.ts` - hodeuscli start
   - [ ] Parse model and args
   - [ ] Find next available port
   - [ ] Select GPU (round-robin)
@@ -109,16 +109,16 @@ Model management CLI commands
   - [ ] Wait for health check
   - [ ] Update config on success
 
-- [ ] `src/commands/stop.ts` - pi stop
+- [ ] `src/commands/stop.ts` - hodeuscli stop
   - [ ] Find model in config
   - [ ] Kill process via PID
   - [ ] Clean up config
 
-- [ ] `src/commands/list.ts` - pi list
+- [ ] `src/commands/list.ts` - hodeuscli list
   - [ ] Show models from config
   - [ ] Optionally verify PIDs
 
-- [ ] `src/commands/logs.ts` - pi logs
+- [ ] `src/commands/logs.ts` - hodeuscli logs
   - [ ] Tail log file via SSH
   - [ ] Handle Ctrl+C (stop tailing only)
 
@@ -134,7 +134,7 @@ Quick model testing with tools
   - [ ] Handle streaming responses
   - [ ] Display thinking, tools, content
 
-- [ ] `src/commands/prompt.ts` - pi prompt
+- [ ] `src/commands/prompt.ts` - hodeuscli prompt
   - [ ] Get model endpoint from config
   - [ ] Augment prompt with CWD info
   - [ ] Send request with tools
@@ -163,7 +163,7 @@ Main CLI with commander.js
 {
   "dependencies": {
     "commander": "^12.0.0",
-    "@commander-js/extra-typings": "^12.0.0",
+    "@commander-js/extra-tyhodeusclings": "^12.0.0",
     "openai": "^4.0.0",
     "chalk": "^5.0.0",
     "ora": "^8.0.0"

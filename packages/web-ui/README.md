@@ -1,6 +1,6 @@
-# @mariozechner/pi-web-ui
+# @mariozechner/hodeuscli-web-ui
 
-Reusable web UI components for building AI chat interfaces powered by [@mariozechner/pi-ai](../ai) and [@mariozechner/pi-agent-core](../agent).
+Reusable web UI components for building AI chat interfaces powered by [@mariozechner/hodeuscli-ai](../ai) and [@mariozechner/hodeuscli-agent-core](../agent).
 
 Built with [mini-lit](https://github.com/badlogic/mini-lit) web components and Tailwind CSS v4.
 
@@ -17,7 +17,7 @@ Built with [mini-lit](https://github.com/badlogic/mini-lit) web components and T
 ## Installation
 
 ```bash
-npm install @mariozechner/pi-web-ui @mariozechner/pi-agent-core @mariozechner/pi-ai
+npm install @mariozechner/hodeuscli-web-ui @mariozechner/hodeuscli-agent-core @mariozechner/hodeuscli-ai
 ```
 
 ## Quick Start
@@ -25,8 +25,8 @@ npm install @mariozechner/pi-web-ui @mariozechner/pi-agent-core @mariozechner/pi
 See the [example](./example) directory for a complete working application.
 
 ```typescript
-import { Agent } from '@mariozechner/pi-agent-core';
-import { getModel } from '@mariozechner/pi-ai';
+import { Agent } from '@mariozechner/hodeuscli-agent-core';
+import { getModel } from '@mariozechner/hodeuscli-ai';
 import {
   ChatPanel,
   AppStorage,
@@ -36,9 +36,9 @@ import {
   SettingsStore,
   setAppStorage,
   defaultConvertToLlm,
-  ApiKeyPromptDialog,
-} from '@mariozechner/pi-web-ui';
-import '@mariozechner/pi-web-ui/app.css';
+  AhodeuscliKeyPromptDialog,
+} from '@mariozechner/hodeuscli-web-ui';
+import '@mariozechner/hodeuscli-web-ui/app.css';
 
 // Set up storage
 const settings = new SettingsStore();
@@ -67,7 +67,7 @@ setAppStorage(storage);
 const agent = new Agent({
   initialState: {
     systemPrompt: 'You are a helpful assistant.',
-    model: getModel('anthropic', 'claude-sonnet-4-5-20250929'),
+    model: getModel('Anthropic', 'claude-sonnet-4-5-20250929'),
     thinkingLevel: 'off',
     messages: [],
     tools: [],
@@ -78,7 +78,7 @@ const agent = new Agent({
 // Create chat panel
 const chatPanel = new ChatPanel();
 await chatPanel.setAgent(agent, {
-  onApiKeyRequired: (provider) => ApiKeyPromptDialog.prompt(provider),
+  onAhodeuscliKeyRequired: (provider) => AhodeuscliKeyPromptDialog.prompt(provider),
 });
 
 document.body.appendChild(chatPanel);
@@ -97,7 +97,7 @@ document.body.appendChild(chatPanel);
                           │
                           ▼
 ┌─────────────────────────────────────────────────────┐
-│              Agent (from pi-agent-core)             │
+│              Agent (from hodeuscli-agent-core)             │
 │  - State management (messages, model, tools)        │
 │  - Event emission (agent_start, message_update, ...)│
 │  - Tool execution                                   │
@@ -125,7 +125,7 @@ High-level chat interface with built-in artifacts panel.
 const chatPanel = new ChatPanel();
 await chatPanel.setAgent(agent, {
   // Prompt for API key when needed
-  onApiKeyRequired: async (provider) => ApiKeyPromptDialog.prompt(provider),
+  onAhodeuscliKeyRequired: async (provider) => AhodeuscliKeyPromptDialog.prompt(provider),
 
   // Hook before sending messages
   onBeforeSend: async () => { /* save draft, etc. */ },
@@ -155,7 +155,7 @@ chat.session = agent;
 chat.enableAttachments = true;
 chat.enableModelSelector = true;
 chat.enableThinkingSelector = true;
-chat.onApiKeyRequired = async (provider) => { /* ... */ };
+chat.onAhodeuscliKeyRequired = async (provider) => { /* ... */ };
 chat.onBeforeSend = async () => { /* ... */ };
 ```
 
@@ -166,14 +166,14 @@ Properties:
 - `enableThinkingSelector`: Show thinking level selector (default: true)
 - `showThemeToggle`: Show theme toggle (default: false)
 
-### Agent (from pi-agent-core)
+### Agent (from hodeuscli-agent-core)
 
 ```typescript
-import { Agent } from '@mariozechner/pi-agent-core';
+import { Agent } from '@mariozechner/hodeuscli-agent-core';
 
 const agent = new Agent({
   initialState: {
-    model: getModel('anthropic', 'claude-sonnet-4-5-20250929'),
+    model: getModel('Anthropic', 'claude-sonnet-4-5-20250929'),
     systemPrompt: 'You are helpful.',
     thinkingLevel: 'off',
     messages: [],
@@ -259,7 +259,7 @@ interface SystemNotification {
   timestamp: string;
 }
 
-declare module '@mariozechner/pi-agent-core' {
+declare module '@mariozechner/hodeuscli-agent-core' {
   interface CustomAgentMessages {
     'system-notification': SystemNotification;
   }
@@ -287,7 +287,7 @@ function myConvertToLlm(messages: AgentMessage[]): Message[] {
 `convertToLlm` transforms app messages to LLM-compatible format:
 
 ```typescript
-import { defaultConvertToLlm, convertAttachments } from '@mariozechner/pi-web-ui';
+import { defaultConvertToLlm, convertAttachments } from '@mariozechner/hodeuscli-web-ui';
 
 // defaultConvertToLlm handles:
 // - UserMessageWithAttachments → user message with image/text content blocks
@@ -302,7 +302,7 @@ import { defaultConvertToLlm, convertAttachments } from '@mariozechner/pi-web-ui
 Execute JavaScript in a sandboxed browser environment:
 
 ```typescript
-import { createJavaScriptReplTool } from '@mariozechner/pi-web-ui';
+import { createJavaScriptReplTool } from '@mariozechner/hodeuscli-web-ui';
 
 const replTool = createJavaScriptReplTool();
 
@@ -320,7 +320,7 @@ agent.state.tools = [replTool];
 Extract text from documents at URLs:
 
 ```typescript
-import { createExtractDocumentTool } from '@mariozechner/pi-web-ui';
+import { createExtractDocumentTool } from '@mariozechner/hodeuscli-web-ui';
 
 const extractTool = createExtractDocumentTool();
 extractTool.corsProxyUrl = 'https://corsproxy.io/?';
@@ -343,7 +343,7 @@ agent.state.tools = [artifactsPanel.tool];
 ### Custom Tool Renderers
 
 ```typescript
-import { registerToolRenderer, type ToolRenderer } from '@mariozechner/pi-web-ui';
+import { registerToolRenderer, type ToolRenderer } from '@mariozechner/hodeuscli-web-ui';
 
 const myRenderer: ToolRenderer = {
   render(params, result, isStreaming) {
@@ -371,7 +371,7 @@ import {
   CustomProvidersStore,
   setAppStorage,
   getAppStorage,
-} from '@mariozechner/pi-web-ui';
+} from '@mariozechner/hodeuscli-web-ui';
 
 // Create stores
 const settings = new SettingsStore();
@@ -418,8 +418,8 @@ const enabled = await storage.settings.get<boolean>('proxy.enabled');
 API keys by provider:
 
 ```typescript
-await storage.providerKeys.set('anthropic', 'sk-ant-...');
-const key = await storage.providerKeys.get('anthropic');
+await storage.providerKeys.set('Anthropic', 'sk-ant-...');
+const key = await storage.providerKeys.get('Anthropic');
 const providers = await storage.providerKeys.list();
 ```
 
@@ -466,7 +466,7 @@ const all = await storage.customProviders.getAll();
 Load and process files:
 
 ```typescript
-import { loadAttachment, type Attachment } from '@mariozechner/pi-web-ui';
+import { loadAttachment, type Attachment } from '@mariozechner/hodeuscli-web-ui';
 
 // From File input
 const file = inputElement.files[0];
@@ -498,7 +498,7 @@ Supported formats: PDF, DOCX, XLSX, PPTX, images, text files.
 For browser environments with CORS restrictions:
 
 ```typescript
-import { createStreamFn, shouldUseProxyForProvider, isCorsError } from '@mariozechner/pi-web-ui';
+import { createStreamFn, shouldUseProxyForProvider, isCorsError } from '@mariozechner/hodeuscli-web-ui';
 
 // AgentInterface auto-configures proxy from settings
 // For manual setup:
@@ -509,7 +509,7 @@ agent.streamFn = createStreamFn(async () => {
 
 // Providers requiring proxy:
 // - zai: always
-// - anthropic: only OAuth tokens (sk-ant-oat-*)
+// - Anthropic: only OAuth tokens (sk-ant-oat-*)
 ```
 
 ## Dialogs
@@ -517,19 +517,19 @@ agent.streamFn = createStreamFn(async () => {
 ### SettingsDialog
 
 ```typescript
-import { SettingsDialog, ProvidersModelsTab, ProxyTab, ApiKeysTab } from '@mariozechner/pi-web-ui';
+import { SettingsDialog, ProvidersModelsTab, ProxyTab, AhodeuscliKeysTab } from '@mariozechner/hodeuscli-web-ui';
 
 SettingsDialog.open([
   new ProvidersModelsTab(), // Custom providers + model list
   new ProxyTab(),           // CORS proxy settings
-  new ApiKeysTab(),         // API keys per provider
+  new AhodeuscliKeysTab(),         // API keys per provider
 ]);
 ```
 
 ### SessionListDialog
 
 ```typescript
-import { SessionListDialog } from '@mariozechner/pi-web-ui';
+import { SessionListDialog } from '@mariozechner/hodeuscli-web-ui';
 
 SessionListDialog.open(
   async (sessionId) => { /* load session */ },
@@ -537,18 +537,18 @@ SessionListDialog.open(
 );
 ```
 
-### ApiKeyPromptDialog
+### AhodeuscliKeyPromptDialog
 
 ```typescript
-import { ApiKeyPromptDialog } from '@mariozechner/pi-web-ui';
+import { AhodeuscliKeyPromptDialog } from '@mariozechner/hodeuscli-web-ui';
 
-const success = await ApiKeyPromptDialog.prompt('anthropic');
+const success = await AhodeuscliKeyPromptDialog.prompt('Anthropic');
 ```
 
 ### ModelSelector
 
 ```typescript
-import { ModelSelector } from '@mariozechner/pi-web-ui';
+import { ModelSelector } from '@mariozechner/hodeuscli-web-ui';
 
 ModelSelector.open(currentModel, (selectedModel) => {
   agent.state.model = selectedModel;
@@ -560,7 +560,7 @@ ModelSelector.open(currentModel, (selectedModel) => {
 Import the pre-built CSS:
 
 ```typescript
-import '@mariozechner/pi-web-ui/app.css';
+import '@mariozechner/hodeuscli-web-ui/app.css';
 ```
 
 Or use Tailwind with custom config:
@@ -575,7 +575,7 @@ Or use Tailwind with custom config:
 ## Internationalization
 
 ```typescript
-import { i18n, setLanguage, translations } from '@mariozechner/pi-web-ui';
+import { i18n, setLanguage, translations } from '@mariozechner/hodeuscli-web-ui';
 
 // Add translations
 translations.de = {
@@ -590,7 +590,7 @@ console.log(i18n('Loading...')); // "Laden..."
 ## Examples
 
 - [example/](./example) - Complete web app with sessions, artifacts, custom messages
-- [sitegeist](https://sitegeist.ai) - Browser extension using pi-web-ui
+- [sitegeist](https://sitegeist.ai) - Browser extension using hodeuscli-web-ui
 
 ## Known Issues
 

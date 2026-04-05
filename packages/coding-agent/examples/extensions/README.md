@@ -1,15 +1,15 @@
 # Extension Examples
 
-Example extensions for pi-coding-agent.
+Example extensions for hodeuscli.
 
 ## Usage
 
 ```bash
 # Load an extension with --extension flag
-pi --extension examples/extensions/permission-gate.ts
+hodeuscli --extension examples/extensions/permission-gate.ts
 
 # Or copy to extensions directory for auto-discovery
-cp permission-gate.ts ~/.pi/agent/extensions/
+cp permission-gate.ts ~/.hodeuscli/agent/extensions/
 ```
 
 ## Examples
@@ -22,7 +22,7 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | `protected-paths.ts` | Blocks writes to protected paths (.env, .git/, node_modules/) |
 | `confirm-destructive.ts` | Confirms before destructive session actions (clear, switch, fork) |
 | `dirty-repo-guard.ts` | Prevents session changes with uncommitted git changes |
-| `sandbox/` | OS-level sandboxing using `@anthropic-ai/sandbox-runtime` with per-project config |
+| `sandbox/` | OS-level sandboxing using `@Anthropic-ai/sandbox-runtime` with per-project config |
 
 ### Custom Tools
 
@@ -34,7 +34,7 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | `questionnaire.ts` | Multi-question input with tab bar navigation between questions |
 | `tool-override.ts` | Override built-in tools (e.g., add logging/access control to `read`) |
 | `dynamic-tools.ts` | Register tools after startup (`session_start`) and at runtime via command, with prompt snippets and tool-specific prompt guidelines |
-| `built-in-tool-renderer.ts` | Custom compact rendering for built-in tools (read, bash, edit, write) while keeping original behavior |
+| `built-in-tool-renderer.ts` | Custom compact rendering for built-in tools (read, bash, edit, write) while keehodeuscling original behavior |
 | `minimal-mode.ts` | Override built-in tool rendering for minimal display (only tool calls, no output in collapsed mode) |
 | `truncated-tool.ts` | Wraps ripgrep with proper output truncation (50KB/2000 lines) |
 | `antigravity-image-gen.ts` | Generate images via Google Antigravity with optional save-to-disk modes |
@@ -55,13 +55,13 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | `hidden-thinking-label.ts` | Customizes the collapsed thinking label via `ctx.ui.setHiddenThinkingLabel()` |
 | `model-status.ts` | Shows model changes in status bar via `model_select` hook |
 | `snake.ts` | Snake game with custom UI, keyboard handling, and session persistence |
-| `send-user-message.ts` | Demonstrates `pi.sendUserMessage()` for sending user messages from extensions |
+| `send-user-message.ts` | Demonstrates `hodeuscli.sendUserMessage()` for sending user messages from extensions |
 | `timed-confirm.ts` | Demonstrates AbortSignal for auto-dismissing `ctx.ui.confirm()` and `ctx.ui.select()` dialogs |
 | `rpc-demo.ts` | Exercises all RPC-supported extension UI methods; pair with [`examples/rpc-extension-ui.ts`](../rpc-extension-ui.ts) |
 | `modal-editor.ts` | Custom vim-like modal editor via `ctx.ui.setEditorComponent()` |
 | `rainbow-editor.ts` | Animated rainbow text effect via custom editor |
 | `notify.ts` | Desktop notifications via OSC 777 when agent finishes (Ghostty, iTerm2, WezTerm) |
-| `titlebar-spinner.ts` | Braille spinner animation in terminal title while the agent is working |
+| `titlebar-shodeusclinner.ts` | Braille shodeusclinner animation in terminal title while the agent is working |
 | `summarize.ts` | Summarize conversation with GPT-5.2 and show in transient UI |
 | `custom-footer.ts` | Custom footer with git branch and token stats via `ctx.ui.setFooter()` |
 | `custom-header.ts` | Custom header via `ctx.ui.setHeader()` |
@@ -84,7 +84,7 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 
 | Extension | Description |
 |-----------|-------------|
-| `pirate.ts` | Demonstrates `systemPromptAppend` to dynamically modify system prompt |
+| `hodeusclirate.ts` | Demonstrates `systemPromptAppend` to dynamically modify system prompt |
 | `claude-rules.ts` | Scans `.claude/rules/` folder and lists rules in system prompt |
 | `custom-compaction.ts` | Custom compaction that summarizes entire conversation |
 | `trigger-compact.ts` | Triggers compaction when context usage exceeds 100k tokens and adds `/trigger-compact` command |
@@ -93,7 +93,7 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 
 | Extension | Description |
 |-----------|-------------|
-| `mac-system-theme.ts` | Syncs pi theme with macOS dark/light mode |
+| `mac-system-theme.ts` | Syncs hodeuscli theme with macOS dark/light mode |
 
 ### Resources
 
@@ -106,7 +106,7 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 | Extension | Description |
 |-----------|-------------|
 | `message-renderer.ts` | Custom message rendering with colors and expandable details via `registerMessageRenderer` |
-| `event-bus.ts` | Inter-extension communication via `pi.events` |
+| `event-bus.ts` | Inter-extension communication via `hodeuscli.events` |
 
 ### Session Metadata
 
@@ -119,8 +119,8 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 
 | Extension | Description |
 |-----------|-------------|
-| `custom-provider-anthropic/` | Custom Anthropic provider with OAuth support and custom streaming implementation |
-| `custom-provider-gitlab-duo/` | GitLab Duo provider using pi-ai's built-in Anthropic/OpenAI streaming via proxy |
+| `custom-provider-Anthropic/` | Custom Anthropic provider with OAuth support and custom streaming implementation |
+| `custom-provider-gitlab-duo/` | GitLab Duo provider using hodeuscli-ai's built-in Anthropic/OpenAI streaming via proxy |
 | `custom-provider-qwen-cli/` | Qwen CLI provider with OAuth device flow and OpenAI-compatible models |
 
 ### External Dependencies
@@ -135,12 +135,12 @@ cp permission-gate.ts ~/.pi/agent/extensions/
 See [docs/extensions.md](../../docs/extensions.md) for full documentation.
 
 ```typescript
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@mariozechner/hodeuscli";
 import { Type } from "@sinclair/typebox";
 
-export default function (pi: ExtensionAPI) {
+export default function (hodeuscli: ExtensionAPI) {
   // Subscribe to lifecycle events
-  pi.on("tool_call", async (event, ctx) => {
+  hodeuscli.on("tool_call", async (event, ctx) => {
     if (event.toolName === "bash" && event.input.command?.includes("rm -rf")) {
       const ok = await ctx.ui.confirm("Dangerous!", "Allow rm -rf?");
       if (!ok) return { block: true, reason: "Blocked by user" };
@@ -148,7 +148,7 @@ export default function (pi: ExtensionAPI) {
   });
 
   // Register custom tools
-  pi.registerTool({
+  hodeuscli.registerTool({
     name: "greet",
     label: "Greeting",
     description: "Generate a greeting",
@@ -164,7 +164,7 @@ export default function (pi: ExtensionAPI) {
   });
 
   // Register commands
-  pi.registerCommand("hello", {
+  hodeuscli.registerCommand("hello", {
     description: "Say hello",
     handler: async (args, ctx) => {
       ctx.ui.notify("Hello!", "info");
@@ -177,7 +177,7 @@ export default function (pi: ExtensionAPI) {
 
 **Use StringEnum for string parameters** (required for Google API compatibility):
 ```typescript
-import { StringEnum } from "@mariozechner/pi-ai";
+import { StringEnum } from "@mariozechner/hodeuscli-ai";
 
 // Good
 action: StringEnum(["list", "add"] as const)
@@ -195,7 +195,7 @@ return {
 };
 
 // Reconstruct on session events
-pi.on("session_start", async (_event, ctx) => {
+hodeuscli.on("session_start", async (_event, ctx) => {
   for (const entry of ctx.sessionManager.getBranch()) {
     if (entry.type === "message" && entry.message.toolName === "my_tool") {
       const details = entry.message.details;

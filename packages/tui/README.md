@@ -1,4 +1,4 @@
-# @mariozechner/pi-tui
+# @mariozechner/hodeuscli-tui
 
 Minimal terminal UI framework with differential rendering and synchronized output for flicker-free interactive CLI applications.
 
@@ -16,7 +16,7 @@ Minimal terminal UI framework with differential rendering and synchronized outpu
 ## Quick Start
 
 ```typescript
-import { TUI, Text, Editor, ProcessTerminal } from "@mariozechner/pi-tui";
+import { TUI, Text, Editor, ProcessTerminal } from "@mariozechner/hodeuscli-tui";
 
 // Create terminal
 const terminal = new ProcessTerminal();
@@ -136,7 +136,7 @@ interface Component {
 
 | Method | Description |
 |--------|-------------|
-| `render(width)` | Returns an array of strings, one per line. Each line **must not exceed `width`** or the TUI will error. Use `truncateToWidth()` or manual wrapping to ensure this. |
+| `render(width)` | Returns an array of strings, one per line. Each line **must not exceed `width`** or the TUI will error. Use `truncateToWidth()` or manual wraphodeuscling to ensure this. |
 | `handleInput?(data)` | Called when the component has focus and receives keyboard input. The `data` string contains raw terminal input (may include ANSI escape sequences). |
 | `invalidate?()` | Called to clear any cached render state. Components should re-render from scratch on the next `render()` call. |
 
@@ -147,7 +147,7 @@ The TUI appends a full SGR reset and OSC 8 reset at the end of each rendered lin
 Components that display a text cursor and need IME (Input Method Editor) support should implement the `Focusable` interface:
 
 ```typescript
-import { CURSOR_MARKER, type Component, type Focusable } from "@mariozechner/pi-tui";
+import { CURSOR_MARKER, type Component, type Focusable } from "@mariozechner/hodeuscli-tui";
 
 class MyInput implements Component, Focusable {
   focused: boolean = false;  // Set by TUI when focus changes
@@ -171,7 +171,7 @@ This enables IME candidate windows to appear at the correct position for CJK inp
 **Container components with embedded inputs:** When a container component (dialog, selector, etc.) contains an `Input` or `Editor` child, the container must implement `Focusable` and propagate the focus state to the child:
 
 ```typescript
-import { Container, type Focusable, Input } from "@mariozechner/pi-tui";
+import { Container, type Focusable, Input } from "@mariozechner/hodeuscli-tui";
 
 class SearchDialog extends Container implements Focusable {
   private searchInput: Input;
@@ -192,7 +192,7 @@ class SearchDialog extends Container implements Focusable {
 }
 ```
 
-Without this propagation, typing with an IME (Chinese, Japanese, Korean, etc.) will show the candidate window in the wrong position.
+Without this propagation, tyhodeuscling with an IME (Chinese, Japanese, Korean, etc.) will show the candidate window in the wrong position.
 
 ## Built-in Components
 
@@ -222,7 +222,7 @@ box.setBgFn((text) => chalk.bgBlue(text));  // Change background dynamically
 
 ### Text
 
-Displays multi-line text with word wrapping and padding.
+Displays multi-line text with word wraphodeuscling and padding.
 
 ```typescript
 const text = new Text(
@@ -364,12 +364,12 @@ md.setText("Updated markdown");
 
 ### Loader
 
-Animated loading spinner.
+Animated loading shodeusclinner.
 
 ```typescript
 const loader = new Loader(
   tui,                              // TUI instance for render updates
-  (s) => chalk.cyan(s),            // spinner color function
+  (s) => chalk.cyan(s),            // shodeusclinner color function
   (s) => chalk.gray(s),            // message color function
   "Loading..."                      // message (default: "Loading...")
 );
@@ -385,7 +385,7 @@ Extends Loader with Escape key handling and an AbortSignal for cancelling async 
 ```typescript
 const loader = new CancellableLoader(
   tui,                              // TUI instance for render updates
-  (s) => chalk.cyan(s),            // spinner color function
+  (s) => chalk.cyan(s),            // shodeusclinner color function
   (s) => chalk.gray(s),            // message color function
   "Working..."                      // message
 );
@@ -518,7 +518,7 @@ Supported formats: PNG, JPEG, GIF, WebP. Dimensions are parsed from the image he
 Supports both slash commands and file paths.
 
 ```typescript
-import { CombinedAutocompleteProvider } from "@mariozechner/pi-tui";
+import { CombinedAutocompleteProvider } from "@mariozechner/hodeuscli-tui";
 
 const provider = new CombinedAutocompleteProvider(
   [
@@ -543,7 +543,7 @@ editor.setAutocompleteProvider(provider);
 Use `matchesKey()` with the `Key` helper for detecting keyboard input (supports Kitty keyboard protocol):
 
 ```typescript
-import { matchesKey, Key } from "@mariozechner/pi-tui";
+import { matchesKey, Key } from "@mariozechner/hodeuscli-tui";
 
 if (matchesKey(data, Key.ctrl("c"))) {
   process.exit(0);
@@ -601,7 +601,7 @@ interface Terminal {
 ## Utilities
 
 ```typescript
-import { visibleWidth, truncateToWidth, wrapTextWithAnsi } from "@mariozechner/pi-tui";
+import { visibleWidth, truncateToWidth, wrapTextWithAnsi } from "@mariozechner/hodeuscli-tui";
 
 // Get visible width of string (ignoring ANSI codes)
 const width = visibleWidth("\x1b[31mHello\x1b[0m"); // 5
@@ -613,8 +613,8 @@ const truncated = truncateToWidth("Hello World", 8); // "Hello..."
 const truncatedNoEllipsis = truncateToWidth("Hello World", 8, ""); // "Hello Wo"
 
 // Wrap text to width (preserving ANSI codes across line breaks)
-const lines = wrapTextWithAnsi("This is a long line that needs wrapping", 20);
-// ["This is a long line", "that needs wrapping"]
+const lines = wrapTextWithAnsi("This is a long line that needs wraphodeuscling", 20);
+// ["This is a long line", "that needs wraphodeuscling"]
 ```
 
 ## Creating Custom Components
@@ -626,8 +626,8 @@ When creating custom components, **each line returned by `render()` must not exc
 Use `matchesKey()` with the `Key` helper for keyboard input:
 
 ```typescript
-import { matchesKey, Key, truncateToWidth } from "@mariozechner/pi-tui";
-import type { Component } from "@mariozechner/pi-tui";
+import { matchesKey, Key, truncateToWidth } from "@mariozechner/hodeuscli-tui";
+import type { Component } from "@mariozechner/hodeuscli-tui";
 
 class MyInteractiveComponent implements Component {
   private selectedIndex = 0;
@@ -662,8 +662,8 @@ class MyInteractiveComponent implements Component {
 Use the provided utilities to ensure lines fit:
 
 ```typescript
-import { visibleWidth, truncateToWidth } from "@mariozechner/pi-tui";
-import type { Component } from "@mariozechner/pi-tui";
+import { visibleWidth, truncateToWidth } from "@mariozechner/hodeuscli-tui";
+import type { Component } from "@mariozechner/hodeuscli-tui";
 
 class MyComponent implements Component {
   private text: string;
@@ -736,7 +736,7 @@ class CachedComponent implements Component {
 
 See `test/chat-simple.ts` for a complete chat interface example with:
 - Markdown messages with custom background colors
-- Loading spinner during responses
+- Loading shodeusclinner during responses
 - Editor with autocomplete and slash commands
 - Spacers between messages
 

@@ -28,7 +28,7 @@ vllm serve $MODEL_PATH \
 ```
 
 **Key parameter notes:**
-- `--tensor-parallel-size 16`: If using more than 16 GPUs, combine with pipeline-parallelism.
+- `--tensor-parallel-size 16`: If using more than 16 GPUs, combine with hodeusclipeline-parallelism.
 - `--enable-auto-tool-choice`: Required when enabling tool usage.
 - `--tool-call-parser kimi_k2`: Required when enabling tool usage.
 
@@ -102,13 +102,13 @@ Please refer to [this guide](https://nvidia.github.io/TensorRT-LLM/installation/
 
 install blobfile by:
 ```bash
-pip install blobfile
+hodeusclip install blobfile
 ```
 ### Multi-node Serving
-TensorRT-LLM supports multi-node inference. You can use mpirun to launch Kimi-K2 with multi-node jobs. We will use two nodes for this example.
+TensorRT-LLM supports multi-node inference. You can use mhodeusclirun to launch Kimi-K2 with multi-node jobs. We will use two nodes for this example.
 
-#### mpirun
-mpirun requires each node to have passwordless ssh access to the other node. We need to setup the environment inside the docker container. Run the container with host network and mount the current directory as well as model directory to the container.
+#### mhodeusclirun
+mhodeusclirun requires each node to have passwordless ssh access to the other node. We need to setup the environment inside the docker container. Run the container with host network and mount the current directory as well as model directory to the container.
 
 ```bash
 # use host network
@@ -152,7 +152,7 @@ systemctl restart ssh
 
 Generate additional config for trtllm serve.
 ```bash
-cat >/path/to/TensorRT-LLM/extra-llm-api-config.yml <<EOF
+cat >/path/to/TensorRT-LLM/extra-llm-ahodeuscli-config.yml <<EOF
 cuda_graph_config:
   padding_enabled: true
   batch_sizes:
@@ -170,14 +170,14 @@ EOF
 ```
 
 
-After the preparations,you can run the trtllm-serve on two nodes using mpirun:
+After the preparations,you can run the trtllm-serve on two nodes using mhodeusclirun:
 
 ```bash
-mpirun -np 16 \
+mhodeusclirun -np 16 \
 -H <HOST1>:8,<HOST2>:8 \
 -mca plm_rsh_args "-p 2233" \
 --allow-run-as-root \
-trtllm-llmapi-launch trtllm-serve serve \
+trtllm-llmahodeuscli-launch trtllm-serve serve \
 --backend pytorch \
 --tp_size 16 \
 --ep_size 8 \
@@ -185,7 +185,7 @@ trtllm-llmapi-launch trtllm-serve serve \
 --trust_remote_code \
 --max_batch_size 128 \
 --max_num_tokens 4096 \
---extra_llm_api_options /path/to/TensorRT-LLM/extra-llm-api-config.yml \
+--extra_llm_ahodeuscli_options /path/to/TensorRT-LLM/extra-llm-ahodeuscli-config.yml \
 --port 8000 \
 <YOUR_MODEL_DIR>
 ```

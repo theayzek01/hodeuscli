@@ -1,4 +1,4 @@
-> pi can create skills. Ask it to build one for your use case.
+> hodeuscli can create skills. Ask it to build one for your use case.
 
 # Skills
 
@@ -24,17 +24,17 @@ Pi implements the [Agent Skills standard](https://agentskills.io/specification),
 Pi loads skills from:
 
 - Global:
-  - `~/.pi/agent/skills/`
+  - `~/.hodeuscli/agent/skills/`
   - `~/.agents/skills/`
 - Project:
-  - `.pi/skills/`
+  - `.hodeuscli/skills/`
   - `.agents/skills/` in `cwd` and ancestor directories (up to git repo root, or filesystem root when not in a repo)
-- Packages: `skills/` directories or `pi.skills` entries in `package.json`
+- Packages: `skills/` directories or `hodeuscli.skills` entries in `package.json`
 - Settings: `skills` array with files or directories
 - CLI: `--skill <path>` (repeatable, additive even with `--no-skills`)
 
 Discovery rules:
-- In `~/.pi/agent/skills/` and `.pi/skills/`, direct root `.md` files are discovered as individual skills
+- In `~/.hodeuscli/agent/skills/` and `.hodeuscli/skills/`, direct root `.md` files are discovered as individual skills
 - In all skill locations, directories containing `SKILL.md` are discovered recursively
 - In `~/.agents/skills/` and project `.agents/skills/`, root `.md` files are ignored
 
@@ -53,7 +53,7 @@ To use skills from Claude Code or OpenAI Codex, add their directories to setting
 }
 ```
 
-For project-level Claude Code skills, add to `.pi/settings.json`:
+For project-level Claude Code skills, add to `.hodeuscli/settings.json`:
 
 ```json
 {
@@ -63,7 +63,7 @@ For project-level Claude Code skills, add to `.pi/settings.json`:
 
 ## How Skills Work
 
-1. At startup, pi scans skill locations and extracts names and descriptions
+1. At startup, hodeuscli scans skill locations and extracts names and descriptions
 2. The system prompt includes available skills in XML format per the [specification](https://agentskills.io/integrate-skills)
 3. When a task matches, the agent uses `read` to load the full SKILL.md (models don't always do this; use prompting or `/skill:name` to force it)
 4. The agent follows the instructions, using relative paths to reference scripts and assets
@@ -99,7 +99,7 @@ my-skill/
 ├── scripts/              # Helper scripts
 │   └── process.sh
 ├── references/           # Detailed docs loaded on-demand
-│   └── api-reference.md
+│   └── ahodeuscli-reference.md
 └── assets/
     └── template.json
 ```
@@ -144,7 +144,7 @@ Per the [Agent Skills specification](https://agentskills.io/specification#frontm
 | `description` | Yes | Max 1024 chars. What the skill does and when to use it. |
 | `license` | No | License name or reference to bundled file. |
 | `compatibility` | No | Max 500 chars. Environment requirements. |
-| `metadata` | No | Arbitrary key-value mapping. |
+| `metadata` | No | Arbitrary key-value maphodeuscling. |
 | `allowed-tools` | No | Space-delimited list of pre-approved tools (experimental). |
 | `disable-model-invocation` | No | When `true`, skill is hidden from system prompt. Users must use `/skill:name`. |
 
@@ -228,5 +228,5 @@ cd /path/to/brave-search && npm install
 
 ## Skill Repositories
 
-- [Anthropic Skills](https://github.com/anthropics/skills) - Document processing (docx, pdf, pptx, xlsx), web development
-- [Pi Skills](https://github.com/badlogic/pi-skills) - Web search, browser automation, Google APIs, transcription
+- [Anthropic Skills](https://github.com/Anthropics/skills) - Document processing (docx, pdf, pptx, xlsx), web development
+- [Pi Skills](https://github.com/badlogic/hodeuscli-skills) - Web search, browser automation, Google APIs, transcription

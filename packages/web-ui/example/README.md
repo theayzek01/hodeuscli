@@ -1,6 +1,6 @@
 # Pi Web UI - Example
 
-This is a minimal example showing how to use `@mariozechner/pi-web-ui` in a web application.
+This is a minimal example showing how to use `@mariozechner/hodeuscli-web-ui` in a web application.
 
 ## Setup
 
@@ -35,7 +35,7 @@ To use the chat:
 1. Click the settings icon (⚙️) in the chat interface
 2. Click "Manage API Keys"
 3. Add your API key for your preferred provider:
-   - **Anthropic**: Get a key from [console.anthropic.com](https://console.anthropic.com/)
+   - **Anthropic**: Get a key from [console.Anthropic.com](https://console.Anthropic.com/)
    - **OpenAI**: Get a key from [platform.openai.com](https://platform.openai.com/)
    - **Google**: Get a key from [makersuite.google.com](https://makersuite.google.com/)
 

@@ -11,7 +11,7 @@
   - `error` was renamed to `errorMessage`
   - `isStreaming`, `streamingMessage`, `pendingToolCalls`, and `errorMessage` are now readonly in the public API
   - `pendingToolCalls` is now typed as `ReadonlySet<string>`
-  - `tools` and `messages` are now accessor properties, and assigning either field copies the provided top-level array instead of preserving array identity
+  - `tools` and `messages` are now accessor properties, and assigning either field cohodeusclies the provided top-level array instead of preserving array identity
 - `AgentOptions.initialState` no longer accepts runtime-owned fields. Remove `isStreaming`, `streamingMessage`, `pendingToolCalls`, and `errorMessage` from `initialState` values.
 - Removed `Agent` mutator methods in favor of direct property access:
   - `agent.setSystemPrompt(value)` -> `agent.state.systemPrompt = value`
@@ -46,7 +46,7 @@
 
 ### Added
 
-- Added `Agent.signal` to expose the active abort signal for the current turn, allowing callers to forward cancellation into nested async work ([#2660](https://github.com/badlogic/pi-mono/issues/2660))
+- Added `Agent.signal` to expose the active abort signal for the current turn, allowing callers to forward cancellation into nested async work ([#2660](https://github.com/badlogic/hodeuscli-mono/issues/2660))
 
 ## [0.63.1] - 2026-03-27
 
@@ -66,7 +66,7 @@
 
 ### Fixed
 
-- Fixed steering messages to wait until the current assistant message's tool-call batch fully finishes instead of skipping pending tool calls.
+- Fixed steering messages to wait until the current assistant message's tool-call batch fully finishes instead of skiphodeuscling pending tool calls.
 
 ## [0.58.3] - 2026-03-15
 
@@ -134,7 +134,7 @@
 
 ### Fixed
 
-- Fixed `continue()` to resume queued steering/follow-up messages when context currently ends in an assistant message, and preserved one-at-a-time steering ordering during assistant-tail resumes ([#1312](https://github.com/badlogic/pi-mono/pull/1312) by [@ferologics](https://github.com/ferologics))
+- Fixed `continue()` to resume queued steering/follow-up messages when context currently ends in an assistant message, and preserved one-at-a-time steering ordering during assistant-tail resumes ([#1312](https://github.com/badlogic/hodeuscli-mono/pull/1312) by [@ferologics](https://github.com/ferologics))
 
 ## [0.52.6] - 2026-02-05
 
@@ -170,7 +170,7 @@
 
 ### Added
 
-- Added `maxRetryDelayMs` option to `AgentOptions` to cap server-requested retry delays. Passed through to the underlying stream function. ([#1123](https://github.com/badlogic/pi-mono/issues/1123))
+- Added `maxRetryDelayMs` option to `AgentOptions` to cap server-requested retry delays. Passed through to the underlying stream function. ([#1123](https://github.com/badlogic/hodeuscli-mono/issues/1123))
 
 ## [0.50.7] - 2026-01-31
 
@@ -246,7 +246,7 @@
 
 ### Added
 
-- `thinkingBudgets` option on `Agent` and `AgentOptions` to customize token budgets per thinking level ([#529](https://github.com/badlogic/pi-mono/pull/529) by [@melihmucuk](https://github.com/melihmucuk))
+- `thinkingBudgets` option on `Agent` and `AgentOptions` to customize token budgets per thinking level ([#529](https://github.com/badlogic/hodeuscli-mono/pull/529) by [@melihmucuk](https://github.com/melihmucuk))
 
 ## [0.37.8] - 2026-01-07
 
@@ -296,7 +296,7 @@
 
 ### Breaking Changes
 
-- **Queue API replaced with steer/followUp**: The `queueMessage()` method has been split into two methods with different delivery semantics ([#403](https://github.com/badlogic/pi-mono/issues/403)):
+- **Queue API replaced with steer/followUp**: The `queueMessage()` method has been split into two methods with different delivery semantics ([#403](https://github.com/badlogic/hodeuscli-mono/issues/403)):
   - `steer(msg)`: Interrupts the agent mid-run. Delivered after current tool execution, skips remaining tools.
   - `followUp(msg)`: Waits until the agent finishes. Delivered only when there are no more tool calls or steering messages.
 - **Queue mode renamed**: `queueMode` option renamed to `steeringMode`. Added new `followUpMode` option. Both control whether messages are delivered one-at-a-time or all at once.
@@ -329,15 +329,15 @@
 
 - **`UserMessageWithAttachments` and `Attachment` types removed**: Attachment handling is now the responsibility of the `convertToLlm` function.
 
-- **Agent loop moved from `@mariozechner/pi-ai`**: The `agentLoop`, `agentLoopContinue`, and related types have moved to this package. Import from `@mariozechner/pi-agent-core` instead.
+- **Agent loop moved from `@mariozechner/hodeuscli-ai`**: The `agentLoop`, `agentLoopContinue`, and related types have moved to this package. Import from `@mariozechner/hodeuscli-agent-core` instead.
 
 ### Added
 
-- `streamFn` option on `Agent` for custom stream implementations. Default uses `streamSimple` from pi-ai.
+- `streamFn` option on `Agent` for custom stream implementations. Default uses `streamSimple` from hodeuscli-ai.
 
 - `streamProxy()` utility function for browser apps that need to proxy LLM calls through a backend server. Replaces the removed `AppTransport`.
 
-- `getApiKey` option for dynamic API key resolution (useful for expiring OAuth tokens like GitHub Copilot).
+- `getAhodeuscliKey` option for dynamic API key resolution (useful for exhodeuscliring OAuth tokens like GitHub CoCopilot).
 
 - `agentLoop()` and `agentLoopContinue()` low-level functions for running the agent loop without the `Agent` class wrapper.
 

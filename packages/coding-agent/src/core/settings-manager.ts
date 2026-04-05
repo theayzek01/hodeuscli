@@ -95,6 +95,7 @@ export interface Settings {
 	showHardwareCursor?: boolean; // Show terminal cursor while still positioning it for IME
 	markdown?: MarkdownSettings;
 	sessionDir?: string; // Custom session storage directory (same format as --session-dir CLI flag)
+	language?: "en" | "tr"; // User language preference (default: "en")
 }
 
 /** Deep merge settings: project/overrides take precedence, nested objects merge recursively */
@@ -581,6 +582,16 @@ export class SettingsManager {
 	setFollowUpMode(mode: "all" | "one-at-a-time"): void {
 		this.globalSettings.followUpMode = mode;
 		this.markModified("followUpMode");
+		this.save();
+	}
+
+	getLanguage(): "en" | "tr" {
+		return this.settings.language ?? "en";
+	}
+
+	setLanguage(language: "en" | "tr"): void {
+		this.globalSettings.language = language;
+		this.markModified("language");
 		this.save();
 	}
 

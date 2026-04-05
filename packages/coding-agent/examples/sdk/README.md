@@ -1,6 +1,6 @@
 # SDK Examples
 
-Programmatic usage of pi-coding-agent via `createAgentSession()` and `createAgentSessionRuntime()`.
+Programmatic usage of hodeuscli via `createAgentSession()` and `createAgentSessionRuntime()`.
 
 The runtime example shows how to build a recreate function that closes over process-global fixed inputs and recreates cwd-bound services and sessions as the active session cwd changes.
 
@@ -16,7 +16,7 @@ The runtime example shows how to build a recreate function that closes over proc
 | `06-extensions.ts` | Logging, blocking, result modification |
 | `07-context-files.ts` | AGENTS.md context files |
 | `08-slash-commands.ts` | File-based slash commands |
-| `09-api-keys-and-oauth.ts` | API key resolution, OAuth config |
+| `09-ahodeuscli-keys-and-oauth.ts` | API key resolution, OAuth config |
 | `10-settings.ts` | Override compaction, retry, terminal settings |
 | `11-sessions.ts` | In-memory, persistent, continue, list sessions |
 | `12-full-control.ts` | Replace everything, no discovery |
@@ -32,7 +32,7 @@ npx tsx examples/sdk/01-minimal.ts
 ## Quick Reference
 
 ```typescript
-import { getModel } from "@mariozechner/pi-ai";
+import { getModel } from "@mariozechner/hodeuscli-ai";
 import {
   AuthStorage,
   createAgentSession,
@@ -43,7 +43,7 @@ import {
   codingTools,
   readOnlyTools,
   readTool, bashTool, editTool, writeTool,
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 // Auth and models setup
 const authStorage = AuthStorage.create();
@@ -53,7 +53,7 @@ const modelRegistry = ModelRegistry.create(authStorage);
 const { session } = await createAgentSession({ authStorage, modelRegistry });
 
 // Custom model
-const model = getModel("anthropic", "claude-opus-4-5");
+const model = getModel("Anthropic", "claude-opus-4-5");
 const { session } = await createAgentSession({ model, thinkingLevel: "high", authStorage, modelRegistry });
 
 // Modify prompt
@@ -75,7 +75,7 @@ const { session } = await createAgentSession({
 
 // Full control
 const customAuth = AuthStorage.create("/my/app/auth.json");
-customAuth.setRuntimeApiKey("anthropic", process.env.MY_KEY!);
+customAuth.setRuntimeAhodeuscliKey("Anthropic", process.env.MY_KEY!);
 const customRegistry = ModelRegistry.create(customAuth);
 
 const resourceLoader = new DefaultResourceLoader({
@@ -114,7 +114,7 @@ await session.prompt("Hello");
 | `authStorage` | `AuthStorage.create()` | Credential storage |
 | `modelRegistry` | `ModelRegistry.create(authStorage)` | Model registry |
 | `cwd` | `process.cwd()` | Working directory |
-| `agentDir` | `~/.pi/agent` | Config directory |
+| `agentDir` | `~/.hodeuscli/agent` | Config directory |
 | `model` | From settings/first available | Model to use |
 | `thinkingLevel` | From settings/"off" | off, low, medium, high |
 | `tools` | `codingTools` | Built-in tools |

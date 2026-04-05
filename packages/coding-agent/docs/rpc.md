@@ -2,16 +2,16 @@
 
 RPC mode enables headless operation of the coding agent via a JSON protocol over stdin/stdout. This is useful for embedding the agent in other applications, IDEs, or custom UIs.
 
-**Note for Node.js/TypeScript users**: If you're building a Node.js application, consider using `AgentSession` directly from `@mariozechner/pi-coding-agent` instead of spawning a subprocess. See [`src/core/agent-session.ts`](../src/core/agent-session.ts) for the API. For a subprocess-based TypeScript client, see [`src/modes/rpc/rpc-client.ts`](../src/modes/rpc/rpc-client.ts).
+**Note for Node.js/TypeScript users**: If you're building a Node.js application, consider using `AgentSession` directly from `@mariozechner/hodeuscli` instead of spawning a subprocess. See [`src/core/agent-session.ts`](../src/core/agent-session.ts) for the API. For a subprocess-based TypeScript client, see [`src/modes/rpc/rpc-client.ts`](../src/modes/rpc/rpc-client.ts).
 
 ## Starting RPC Mode
 
 ```bash
-pi --mode rpc [options]
+hodeuscli --mode rpc [options]
 ```
 
 Common options:
-- `--provider <name>`: Set the LLM provider (anthropic, openai, google, etc.)
+- `--provider <name>`: Set the LLM provider (Anthropic, openai, google, etc.)
 - `--model <pattern>`: Model pattern or ID (supports `provider/id` and optional `:<thinking>`)
 - `--no-session`: Disable session persistence
 - `--session-dir <path>`: Custom session storage directory
@@ -30,7 +30,7 @@ RPC mode uses strict JSONL semantics with LF (`\n`) as the only record delimiter
 
 This matters for clients:
 - Split records on `\n` only
-- Accept optional `\r\n` input by stripping a trailing `\r`
+- Accept optional `\r\n` input by striphodeuscling a trailing `\r`
 - Do not use generic line readers that treat Unicode separators as newlines
 
 In particular, Node `readline` is not protocol-compliant for RPC mode because it also splits on `U+2028` and `U+2029`, which are valid inside JSON strings.
@@ -63,7 +63,7 @@ With images:
 
 If the agent is streaming and no `streamingBehavior` is specified, the command returns an error.
 
-**Extension commands**: If the message is an extension command (e.g., `/mycommand`), it executes immediately even during streaming. Extension commands manage their own LLM interaction via `pi.sendMessage()`.
+**Extension commands**: If the message is an extension command (e.g., `/mycommand`), it executes immediately even during streaming. Extension commands manage their own LLM interaction via `hodeuscli.sendMessage()`.
 
 **Input expansion**: Skill commands (`/skill:name`) and prompt templates (`/template`) are expanded before sending/queueing.
 
@@ -216,7 +216,7 @@ Messages are `AgentMessage` objects (see [Message Types](#message-types)).
 Switch to a specific model.
 
 ```json
-{"type": "set_model", "provider": "anthropic", "modelId": "claude-sonnet-4-20250514"}
+{"type": "set_model", "provider": "Anthropic", "modelId": "claude-sonnet-4-20250514"}
 ```
 
 Response contains the full [Model](#model) object:
@@ -453,7 +453,7 @@ If output was truncated, includes `fullOutputPath`:
     "exitCode": 0,
     "cancelled": false,
     "truncated": true,
-    "fullOutputPath": "/tmp/pi-bash-abc123.log"
+    "fullOutputPath": "/tmp/hodeuscli-bash-abc123.log"
   }
 }
 ```
@@ -684,9 +684,9 @@ Response:
   "success": true,
   "data": {
     "commands": [
-      {"name": "session-name", "description": "Set or clear session name", "source": "extension", "path": "/home/user/.pi/agent/extensions/session.ts"},
-      {"name": "fix-tests", "description": "Fix failing tests", "source": "prompt", "location": "project", "path": "/home/user/myproject/.pi/agent/prompts/fix-tests.md"},
-      {"name": "skill:brave-search", "description": "Web search via Brave API", "source": "skill", "location": "user", "path": "/home/user/.pi/agent/skills/brave-search/SKILL.md"}
+      {"name": "session-name", "description": "Set or clear session name", "source": "extension", "path": "/home/user/.hodeuscli/agent/extensions/session.ts"},
+      {"name": "fix-tests", "description": "Fix failing tests", "source": "prompt", "location": "project", "path": "/home/user/myproject/.hodeuscli/agent/prompts/fix-tests.md"},
+      {"name": "skill:brave-search", "description": "Web search via Brave API", "source": "skill", "location": "user", "path": "/home/user/.hodeuscli/agent/skills/brave-search/SKILL.md"}
     ]
   }
 }
@@ -696,12 +696,12 @@ Each command has:
 - `name`: Command name (invoke with `/name`)
 - `description`: Human-readable description (optional for extension commands)
 - `source`: What kind of command:
-  - `"extension"`: Registered via `pi.registerCommand()` in an extension
+  - `"extension"`: Registered via `hodeuscli.registerCommand()` in an extension
   - `"prompt"`: Loaded from a prompt template `.md` file
   - `"skill"`: Loaded from a skill directory (name is prefixed with `skill:`)
 - `location`: Where it was loaded from (optional, not present for extensions):
-  - `"user"`: User-level (`~/.pi/agent/`)
-  - `"project"`: Project-level (`./.pi/agent/`)
+  - `"user"`: User-level (`~/.hodeuscli/agent/`)
+  - `"project"`: Project-level (`./.hodeuscli/agent/`)
   - `"path"`: Explicit path via CLI or settings
 - `path`: Absolute file path to the command source (optional)
 
@@ -960,7 +960,7 @@ There are two categories of extension UI methods:
 - **Dialog methods** (`select`, `confirm`, `input`, `editor`): emit an `extension_ui_request` on stdout and block until the client sends back an `extension_ui_response` on stdin with the matching `id`.
 - **Fire-and-forget methods** (`notify`, `setStatus`, `setWidget`, `setTitle`, `set_editor_text`): emit an `extension_ui_request` on stdout but do not expect a response. The client can display the information or ignore it.
 
-If a dialog method includes a `timeout` field, the agent-side will auto-resolve with a default value when the timeout expires. The client does not need to track timeouts.
+If a dialog method includes a `timeout` field, the agent-side will auto-resolve with a default value when the timeout exhodeusclires. The client does not need to track timeouts.
 
 Some `ExtensionUIContext` methods are not supported or degraded in RPC mode because they require direct TUI access:
 - `custom()` returns `undefined`
@@ -1102,7 +1102,7 @@ Set the terminal window/tab title. Fire-and-forget.
   "type": "extension_ui_request",
   "id": "uuid-8",
   "method": "setTitle",
-  "title": "pi - my project"
+  "title": "hodeuscli - my project"
 }
 ```
 
@@ -1181,9 +1181,9 @@ Source files:
 {
   "id": "claude-sonnet-4-20250514",
   "name": "Claude Sonnet 4",
-  "api": "anthropic-messages",
-  "provider": "anthropic",
-  "baseUrl": "https://api.anthropic.com",
+  "ahodeuscli": "Anthropic-messages",
+  "provider": "Anthropic",
+  "baseUrl": "https://ahodeuscli.Anthropic.com",
   "reasoning": true,
   "input": ["text", "image"],
   "contextWindow": 200000,
@@ -1220,8 +1220,8 @@ The `content` field can be a string or an array of `TextContent`/`ImageContent` 
     {"type": "thinking", "thinking": "User is greeting me..."},
     {"type": "toolCall", "id": "call_123", "name": "bash", "arguments": {"command": "ls"}}
   ],
-  "api": "anthropic-messages",
-  "provider": "anthropic",
+  "ahodeuscli": "Anthropic-messages",
+  "provider": "Anthropic",
   "model": "claude-sonnet-4-20250514",
   "usage": {
     "input": 100,
@@ -1289,7 +1289,7 @@ import subprocess
 import json
 
 proc = subprocess.Popen(
-    ["pi", "--mode", "rpc", "--no-session"],
+    ["hodeuscli", "--mode", "rpc", "--no-session"],
     stdin=subprocess.PIPE,
     stdout=subprocess.PIPE,
     text=True
@@ -1328,7 +1328,7 @@ For a complete example of handling the extension UI protocol, see [`examples/rpc
 const { spawn } = require("child_process");
 const { StringDecoder } = require("string_decoder");
 
-const agent = spawn("pi", ["--mode", "rpc", "--no-session"]);
+const agent = spawn("hodeuscli", ["--mode", "rpc", "--no-session"]);
 
 function attachJsonlReader(stream, onLine) {
     const decoder = new StringDecoder("utf8");

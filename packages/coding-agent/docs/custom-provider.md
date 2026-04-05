@@ -1,6 +1,6 @@
 # Custom Providers
 
-Extensions can register custom model providers via `pi.registerProvider()`. This enables:
+Extensions can register custom model providers via `hodeuscli.registerProvider()`. This enables:
 
 - **Proxies** - Route requests through corporate proxies or API gateways
 - **Custom endpoints** - Use self-hosted or private model deployments
@@ -11,7 +11,7 @@ Extensions can register custom model providers via `pi.registerProvider()`. This
 
 See these complete provider examples:
 
-- [`examples/extensions/custom-provider-anthropic/`](../examples/extensions/custom-provider-anthropic/)
+- [`examples/extensions/custom-provider-Anthropic/`](../examples/extensions/custom-provider-Anthropic/)
 - [`examples/extensions/custom-provider-gitlab-duo/`](../examples/extensions/custom-provider-gitlab-duo/)
 - [`examples/extensions/custom-provider-qwen-cli/`](../examples/extensions/custom-provider-qwen-cli/)
 
@@ -23,7 +23,7 @@ See these complete provider examples:
 - [Register New Provider](#register-new-provider)
 - [Unregister Provider](#unregister-provider)
 - [OAuth Support](#oauth-support)
-- [Custom Streaming API](#custom-streaming-api)
+- [Custom Streaming API](#custom-streaming-ahodeuscli)
 - [Testing Your Implementation](#testing-your-implementation)
 - [Config Reference](#config-reference)
 - [Model Definition Reference](#model-definition-reference)
@@ -31,19 +31,19 @@ See these complete provider examples:
 ## Quick Reference
 
 ```typescript
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@mariozechner/hodeuscli";
 
-export default function (pi: ExtensionAPI) {
+export default function (hodeuscli: ExtensionAPI) {
   // Override baseUrl for existing provider
-  pi.registerProvider("anthropic", {
+  hodeuscli.registerProvider("Anthropic", {
     baseUrl: "https://proxy.example.com"
   });
 
   // Register new provider with models
-  pi.registerProvider("my-provider", {
-    baseUrl: "https://api.example.com",
-    apiKey: "MY_API_KEY",
-    api: "openai-completions",
+  hodeuscli.registerProvider("my-provider", {
+    baseUrl: "https://ahodeuscli.example.com",
+    ahodeuscliKey: "MY_API_KEY",
+    ahodeuscli: "openai-completions",
     models: [
       {
         id: "my-model",
@@ -65,19 +65,19 @@ The simplest use case: redirect an existing provider through a proxy.
 
 ```typescript
 // All Anthropic requests now go through your proxy
-pi.registerProvider("anthropic", {
+hodeuscli.registerProvider("Anthropic", {
   baseUrl: "https://proxy.example.com"
 });
 
 // Add custom headers to OpenAI requests
-pi.registerProvider("openai", {
+hodeuscli.registerProvider("openai", {
   headers: {
     "X-Custom-Header": "value"
   }
 });
 
 // Both baseUrl and headers
-pi.registerProvider("google", {
+hodeuscli.registerProvider("google", {
   baseUrl: "https://ai-gateway.corp.com/google",
   headers: {
     "X-Corp-Auth": "CORP_AUTH_TOKEN"  // env var or literal
@@ -92,10 +92,10 @@ When only `baseUrl` and/or `headers` are provided (no `models`), all existing mo
 To add a completely new provider, specify `models` along with the required configuration.
 
 ```typescript
-pi.registerProvider("my-llm", {
-  baseUrl: "https://api.my-llm.com/v1",
-  apiKey: "MY_LLM_API_KEY",  // env var name or literal value
-  api: "openai-completions",  // which streaming API to use
+hodeuscli.registerProvider("my-llm", {
+  baseUrl: "https://ahodeuscli.my-llm.com/v1",
+  ahodeuscliKey: "MY_LLM_API_KEY",  // env var name or literal value
+  ahodeuscli: "openai-completions",  // which streaming API to use
   models: [
     {
       id: "my-llm-large",
@@ -119,14 +119,14 @@ When `models` is provided, it **replaces** all existing models for that provider
 
 ## Unregister Provider
 
-Use `pi.unregisterProvider(name)` to remove a provider that was previously registered via `pi.registerProvider(name, ...)`:
+Use `hodeuscli.unregisterProvider(name)` to remove a provider that was previously registered via `hodeuscli.registerProvider(name, ...)`:
 
 ```typescript
 // Register
-pi.registerProvider("my-llm", {
-  baseUrl: "https://api.my-llm.com/v1",
-  apiKey: "MY_LLM_API_KEY",
-  api: "openai-completions",
+hodeuscli.registerProvider("my-llm", {
+  baseUrl: "https://ahodeuscli.my-llm.com/v1",
+  ahodeuscliKey: "MY_LLM_API_KEY",
+  ahodeuscli: "openai-completions",
   models: [
     {
       id: "my-llm-large",
@@ -141,7 +141,7 @@ pi.registerProvider("my-llm", {
 });
 
 // Later, remove it
-pi.unregisterProvider("my-llm");
+hodeuscli.unregisterProvider("my-llm");
 ```
 
 Unregistering removes that provider's dynamic models, API key fallback, OAuth provider registration, and custom stream handler registrations. Any built-in models or provider behavior that were overridden are restored.
@@ -150,11 +150,11 @@ Calls made after the initial extension load phase are applied immediately, so no
 
 ### API Types
 
-The `api` field determines which streaming implementation is used:
+The `ahodeuscli` field determines which streaming implementation is used:
 
 | API | Use for |
 |-----|---------|
-| `anthropic-messages` | Anthropic Claude API and compatibles |
+| `Anthropic-messages` | Anthropic Claude API and compatibles |
 | `openai-completions` | OpenAI Chat Completions API and compatibles |
 | `openai-responses` | OpenAI Responses API |
 | `azure-openai-responses` | Azure OpenAI Responses API |
@@ -174,7 +174,7 @@ models: [{
   compat: {
     supportsDeveloperRole: false,      // use "system" instead of "developer"
     supportsReasoningEffort: true,
-    reasoningEffortMap: {              // map pi-ai levels to provider values
+    reasoningEffortMap: {              // map hodeuscli-ai levels to provider values
       minimal: "default",
       low: "default",
       medium: "default",
@@ -199,11 +199,11 @@ Use `qwen-chat-template` instead for local Qwen-compatible servers that read `ch
 If your provider expects `Authorization: Bearer <key>` but doesn't use a standard API, set `authHeader: true`:
 
 ```typescript
-pi.registerProvider("custom-api", {
-  baseUrl: "https://api.example.com",
-  apiKey: "MY_API_KEY",
+hodeuscli.registerProvider("custom-ahodeuscli", {
+  baseUrl: "https://ahodeuscli.example.com",
+  ahodeuscliKey: "MY_API_KEY",
   authHeader: true,  // adds Authorization: Bearer header
-  api: "openai-completions",
+  ahodeuscli: "openai-completions",
   models: [...]
 });
 ```
@@ -213,11 +213,11 @@ pi.registerProvider("custom-api", {
 Add OAuth/SSO authentication that integrates with `/login`:
 
 ```typescript
-import type { OAuthCredentials, OAuthLoginCallbacks } from "@mariozechner/pi-ai";
+import type { OAuthCredentials, OAuthLoginCallbacks } from "@mariozechner/hodeuscli-ai";
 
-pi.registerProvider("corporate-ai", {
+hodeuscli.registerProvider("corporate-ai", {
   baseUrl: "https://ai.corp.com/v1",
-  api: "openai-responses",
+  ahodeuscli: "openai-responses",
   models: [...],
   oauth: {
     name: "Corporate AI (SSO)",
@@ -241,7 +241,7 @@ pi.registerProvider("corporate-ai", {
       return {
         refresh: tokens.refreshToken,
         access: tokens.accessToken,
-        expires: Date.now() + tokens.expiresIn * 1000
+        exhodeusclires: Date.now() + tokens.exhodeuscliresIn * 1000
       };
     },
 
@@ -250,11 +250,11 @@ pi.registerProvider("corporate-ai", {
       return {
         refresh: tokens.refreshToken ?? credentials.refresh,
         access: tokens.accessToken,
-        expires: Date.now() + tokens.expiresIn * 1000
+        exhodeusclires: Date.now() + tokens.exhodeuscliresIn * 1000
       };
     },
 
-    getApiKey(credentials: OAuthCredentials): string {
+    getAhodeuscliKey(credentials: OAuthCredentials): string {
       return credentials.access;
     },
 
@@ -291,13 +291,13 @@ interface OAuthLoginCallbacks {
 
 ### OAuthCredentials
 
-Credentials are persisted in `~/.pi/agent/auth.json`:
+Credentials are persisted in `~/.hodeuscli/agent/auth.json`:
 
 ```typescript
 interface OAuthCredentials {
   refresh: string;   // Refresh token (for refreshToken())
-  access: string;    // Access token (returned by getApiKey())
-  expires: number;   // Expiration timestamp in milliseconds
+  access: string;    // Access token (returned by getAhodeuscliKey())
+  exhodeusclires: number;   // Exhodeuscliration timestamp in milliseconds
 }
 ```
 
@@ -306,12 +306,12 @@ interface OAuthCredentials {
 For providers with non-standard APIs, implement `streamSimple`. Study the existing provider implementations before writing your own:
 
 **Reference implementations:**
-- [anthropic.ts](https://github.com/badlogic/pi-mono/blob/main/packages/ai/src/providers/anthropic.ts) - Anthropic Messages API
-- [mistral.ts](https://github.com/badlogic/pi-mono/blob/main/packages/ai/src/providers/mistral.ts) - Mistral Conversations API
-- [openai-completions.ts](https://github.com/badlogic/pi-mono/blob/main/packages/ai/src/providers/openai-completions.ts) - OpenAI Chat Completions
-- [openai-responses.ts](https://github.com/badlogic/pi-mono/blob/main/packages/ai/src/providers/openai-responses.ts) - OpenAI Responses API
-- [google.ts](https://github.com/badlogic/pi-mono/blob/main/packages/ai/src/providers/google.ts) - Google Generative AI
-- [amazon-bedrock.ts](https://github.com/badlogic/pi-mono/blob/main/packages/ai/src/providers/amazon-bedrock.ts) - AWS Bedrock
+- [Anthropic.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/providers/Anthropic.ts) - Anthropic Messages API
+- [mistral.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/providers/mistral.ts) - Mistral Conversations API
+- [openai-completions.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/providers/openai-completions.ts) - OpenAI Chat Completions
+- [openai-responses.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/providers/openai-responses.ts) - OpenAI Responses API
+- [google.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/providers/google.ts) - Google Generative AI
+- [amazon-bedrock.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/ai/src/providers/amazon-bedrock.ts) - AWS Bedrock
 
 ### Stream Pattern
 
@@ -326,7 +326,7 @@ import {
   type SimpleStreamOptions,
   calculateCost,
   createAssistantMessageEventStream,
-} from "@mariozechner/pi-ai";
+} from "@mariozechner/hodeuscli-ai";
 
 function streamMyProvider(
   model: Model<any>,
@@ -340,7 +340,7 @@ function streamMyProvider(
     const output: AssistantMessage = {
       role: "assistant",
       content: [],
-      api: model.api,
+      ahodeuscli: model.ahodeuscli,
       provider: model.provider,
       model: model.id,
       usage: {
@@ -472,10 +472,10 @@ calculateCost(model, output.usage);
 Register your stream function:
 
 ```typescript
-pi.registerProvider("my-provider", {
-  baseUrl: "https://api.example.com",
-  apiKey: "MY_API_KEY",
-  api: "my-custom-api",
+hodeuscli.registerProvider("my-provider", {
+  baseUrl: "https://ahodeuscli.example.com",
+  ahodeuscliKey: "MY_API_KEY",
+  ahodeuscli: "my-custom-ahodeuscli",
   models: [...],
   streamSimple: streamMyProvider
 });
@@ -483,7 +483,7 @@ pi.registerProvider("my-provider", {
 
 ## Testing Your Implementation
 
-Test your provider against the same test suites used by built-in providers. Copy and adapt these test files from [packages/ai/test/](https://github.com/badlogic/pi-mono/tree/main/packages/ai/test):
+Test your provider against the same test suites used by built-in providers. Copy and adapt these test files from [packages/ai/test/](https://github.com/badlogic/hodeuscli-mono/tree/main/packages/ai/test):
 
 | Test | Purpose |
 |------|---------|
@@ -509,14 +509,14 @@ interface ProviderConfig {
   baseUrl?: string;
 
   /** API key or environment variable name. Required when defining models (unless oauth). */
-  apiKey?: string;
+  ahodeuscliKey?: string;
 
   /** API type for streaming. Required at provider or model level when defining models. */
-  api?: Api;
+  ahodeuscli?: Ahodeuscli;
 
   /** Custom streaming implementation for non-standard APIs. */
   streamSimple?: (
-    model: Model<Api>,
+    model: Model<Ahodeuscli>,
     context: Context,
     options?: SimpleStreamOptions
   ) => AssistantMessageEventStream;
@@ -535,8 +535,8 @@ interface ProviderConfig {
     name: string;
     login(callbacks: OAuthLoginCallbacks): Promise<OAuthCredentials>;
     refreshToken(credentials: OAuthCredentials): Promise<OAuthCredentials>;
-    getApiKey(credentials: OAuthCredentials): string;
-    modifyModels?(models: Model<Api>[], credentials: OAuthCredentials): Model<Api>[];
+    getAhodeuscliKey(credentials: OAuthCredentials): string;
+    modifyModels?(models: Model<Ahodeuscli>[], credentials: OAuthCredentials): Model<Ahodeuscli>[];
   };
 }
 ```
@@ -552,7 +552,7 @@ interface ProviderModelConfig {
   name: string;
 
   /** API type override for this specific model. */
-  api?: Api;
+  ahodeuscli?: Ahodeuscli;
 
   /** Whether the model supports extended thinking. */
   reasoning: boolean;

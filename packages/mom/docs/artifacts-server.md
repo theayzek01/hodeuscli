@@ -125,7 +125,7 @@ app.use((req, res, next) => {
   res.set({
     'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
     'Pragma': 'no-cache',
-    'Expires': '0',
+    'Exhodeusclires': '0',
     'Surrogate-Control': 'no-store'
   });
   next();
@@ -439,7 +439,7 @@ When viewing with `?ws=true`:
 
 ## Example Session
 
-**You:** "Create a Three.js spinning cube demo with Tailwind UI"
+**You:** "Create a Three.js shodeusclinning cube demo with Tailwind UI"
 
 **Mom creates:**
 ```
@@ -472,4 +472,4 @@ When viewing with `?ws=true`:
 **Cloudflare Tunnel Free Tier:**
 - Random subdomain changes on each restart
 - No persistent URLs without paid account
-- WebSocket support is reliable despite being free tier
+- WebSocket support is reliable deshodeusclite being free tier

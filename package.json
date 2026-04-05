@@ -1,5 +1,11 @@
 {
-	"name": "pi-monorepo",
+	"name": "hodeuscli-monorepo",
+	"description": "High-fidelity coding agent for CLI power users.",
+	"homepage": "https://github.com/games-coder/hodeuscli",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/games-coder/hodeuscli.git"
+	},
 	"private": true,
 	"type": "module",
 	"workspaces": [

@@ -1,18 +1,18 @@
-> pi can create extensions. Ask it to build one for your use case.
+> hodeuscli can create extensions. Ask it to build one for your use case.
 
 # Extensions
 
-Extensions are TypeScript modules that extend pi's behavior. They can subscribe to lifecycle events, register custom tools callable by the LLM, add commands, and more.
+Extensions are TypeScript modules that extend hodeuscli's behavior. They can subscribe to lifecycle events, register custom tools callable by the LLM, add commands, and more.
 
-> **Placement for /reload:** Put extensions in `~/.pi/agent/extensions/` (global) or `.pi/extensions/` (project-local) for auto-discovery. Use `pi -e ./path.ts` only for quick tests. Extensions in auto-discovered locations can be hot-reloaded with `/reload`.
+> **Placement for /reload:** Put extensions in `~/.hodeuscli/agent/extensions/` (global) or `.hodeuscli/extensions/` (project-local) for auto-discovery. Use `hodeuscli -e ./path.ts` only for quick tests. Extensions in auto-discovered locations can be hot-reloaded with `/reload`.
 
 **Key capabilities:**
-- **Custom tools** - Register tools the LLM can call via `pi.registerTool()`
+- **Custom tools** - Register tools the LLM can call via `hodeuscli.registerTool()`
 - **Event interception** - Block or modify tool calls, inject context, customize compaction
 - **User interaction** - Prompt users via `ctx.ui` (select, confirm, input, notify)
 - **Custom UI components** - Full TUI components with keyboard input via `ctx.ui.custom()` for complex interactions
-- **Custom commands** - Register commands like `/mycommand` via `pi.registerCommand()`
-- **Session persistence** - Store state that survives restarts via `pi.appendEntry()`
+- **Custom commands** - Register commands like `/mycommand` via `hodeuscli.registerCommand()`
+- **Session persistence** - Store state that survives restarts via `hodeuscli.appendEntry()`
 - **Custom rendering** - Control how tool calls/results and messages appear in TUI
 
 **Example use cases:**
@@ -43,7 +43,7 @@ See [examples/extensions/](../examples/extensions/) for working implementations.
   - [Tool Events](#tool-events)
 - [ExtensionContext](#extensioncontext)
 - [ExtensionCommandContext](#extensioncommandcontext)
-- [ExtensionAPI Methods](#extensionapi-methods)
+- [ExtensionAPI Methods](#extensionahodeuscli-methods)
 - [State Management](#state-management)
 - [Custom Tools](#custom-tools)
 - [Custom UI](#custom-ui)
@@ -53,19 +53,19 @@ See [examples/extensions/](../examples/extensions/) for working implementations.
 
 ## Quick Start
 
-Create `~/.pi/agent/extensions/my-extension.ts`:
+Create `~/.hodeuscli/agent/extensions/my-extension.ts`:
 
 ```typescript
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@mariozechner/hodeuscli";
 import { Type } from "@sinclair/typebox";
 
-export default function (pi: ExtensionAPI) {
+export default function (hodeuscli: ExtensionAPI) {
   // React to events
-  pi.on("session_start", async (_event, ctx) => {
+  hodeuscli.on("session_start", async (_event, ctx) => {
     ctx.ui.notify("Extension loaded!", "info");
   });
 
-  pi.on("tool_call", async (event, ctx) => {
+  hodeuscli.on("tool_call", async (event, ctx) => {
     if (event.toolName === "bash" && event.input.command?.includes("rm -rf")) {
       const ok = await ctx.ui.confirm("Dangerous!", "Allow rm -rf?");
       if (!ok) return { block: true, reason: "Blocked by user" };
@@ -73,7 +73,7 @@ export default function (pi: ExtensionAPI) {
   });
 
   // Register a custom tool
-  pi.registerTool({
+  hodeuscli.registerTool({
     name: "greet",
     label: "Greet",
     description: "Greet someone by name",
@@ -89,7 +89,7 @@ export default function (pi: ExtensionAPI) {
   });
 
   // Register a command
-  pi.registerCommand("hello", {
+  hodeuscli.registerCommand("hello", {
     description: "Say hello",
     handler: async (args, ctx) => {
       ctx.ui.notify(`Hello ${args || "world"}!`, "info");
@@ -101,7 +101,7 @@ export default function (pi: ExtensionAPI) {
 Test with `--extension` (or `-e`) flag:
 
 ```bash
-pi -e ./my-extension.ts
+hodeuscli -e ./my-extension.ts
 ```
 
 ## Extension Locations
@@ -112,10 +112,10 @@ Extensions are auto-discovered from:
 
 | Location | Scope |
 |----------|-------|
-| `~/.pi/agent/extensions/*.ts` | Global (all projects) |
-| `~/.pi/agent/extensions/*/index.ts` | Global (subdirectory) |
-| `.pi/extensions/*.ts` | Project-local |
-| `.pi/extensions/*/index.ts` | Project-local (subdirectory) |
+| `~/.hodeuscli/agent/extensions/*.ts` | Global (all projects) |
+| `~/.hodeuscli/agent/extensions/*/index.ts` | Global (subdirectory) |
+| `.hodeuscli/extensions/*.ts` | Project-local |
+| `.hodeuscli/extensions/*/index.ts` | Project-local (subdirectory) |
 
 Additional paths via `settings.json`:
 
@@ -132,16 +132,16 @@ Additional paths via `settings.json`:
 }
 ```
 
-To share extensions via npm or git as pi packages, see [packages.md](packages.md).
+To share extensions via npm or git as hodeuscli packages, see [packages.md](packages.md).
 
 ## Available Imports
 
 | Package | Purpose |
 |---------|---------|
-| `@mariozechner/pi-coding-agent` | Extension types (`ExtensionAPI`, `ExtensionContext`, events) |
+| `@mariozechner/hodeuscli` | Extension types (`ExtensionAPI`, `ExtensionContext`, events) |
 | `@sinclair/typebox` | Schema definitions for tool parameters |
-| `@mariozechner/pi-ai` | AI utilities (`StringEnum` for Google-compatible enums) |
-| `@mariozechner/pi-tui` | TUI components for custom rendering |
+| `@mariozechner/hodeuscli-ai` | AI utilities (`StringEnum` for Google-compatible enums) |
+| `@mariozechner/hodeuscli-tui` | TUI components for custom rendering |
 
 npm dependencies work too. Add a `package.json` next to your extension (or in a parent directory), run `npm install`, and imports from `node_modules/` are resolved automatically.
 
@@ -152,11 +152,11 @@ Node.js built-ins (`node:fs`, `node:path`, etc.) are also available.
 An extension exports a default function that receives `ExtensionAPI`:
 
 ```typescript
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@mariozechner/hodeuscli";
 
-export default function (pi: ExtensionAPI) {
+export default function (hodeuscli: ExtensionAPI) {
   // Subscribe to events
-  pi.on("event_name", async (event, ctx) => {
+  hodeuscli.on("event_name", async (event, ctx) => {
     // ctx.ui for user interaction
     const ok = await ctx.ui.confirm("Title", "Are you sure?");
     ctx.ui.notify("Done!", "success");
@@ -165,28 +165,28 @@ export default function (pi: ExtensionAPI) {
   });
 
   // Register tools, commands, shortcuts, flags
-  pi.registerTool({ ... });
-  pi.registerCommand("name", { ... });
-  pi.registerShortcut("ctrl+x", { ... });
-  pi.registerFlag("my-flag", { ... });
+  hodeuscli.registerTool({ ... });
+  hodeuscli.registerCommand("name", { ... });
+  hodeuscli.registerShortcut("ctrl+x", { ... });
+  hodeuscli.registerFlag("my-flag", { ... });
 }
 ```
 
-Extensions are loaded via [jiti](https://github.com/unjs/jiti), so TypeScript works without compilation.
+Extensions are loaded via [jiti](https://github.com/unjs/jiti), so TypeScript works without comhodeusclilation.
 
 ### Extension Styles
 
 **Single file** - simplest, for small extensions:
 
 ```
-~/.pi/agent/extensions/
+~/.hodeuscli/agent/extensions/
 └── my-extension.ts
 ```
 
 **Directory with index.ts** - for multi-file extensions:
 
 ```
-~/.pi/agent/extensions/
+~/.hodeuscli/agent/extensions/
 └── my-extension/
     ├── index.ts        # Entry point (exports default function)
     ├── tools.ts        # Helper module
@@ -196,7 +196,7 @@ Extensions are loaded via [jiti](https://github.com/unjs/jiti), so TypeScript wo
 **Package with dependencies** - for extensions that need npm packages:
 
 ```
-~/.pi/agent/extensions/
+~/.hodeuscli/agent/extensions/
 └── my-extension/
     ├── package.json    # Declares dependencies and entry points
     ├── package-lock.json
@@ -213,7 +213,7 @@ Extensions are loaded via [jiti](https://github.com/unjs/jiti), so TypeScript wo
     "zod": "^3.0.0",
     "chalk": "^5.0.0"
   },
-  "pi": {
+  "hodeuscli": {
     "extensions": ["./src/index.ts"]
   }
 }
@@ -226,7 +226,7 @@ Run `npm install` in the extension directory, then imports from `node_modules/` 
 ### Lifecycle Overview
 
 ```
-pi starts
+hodeuscli starts
   │
   ├─► session_start { reason: "startup" }
   └─► resources_discover { reason: "startup" }
@@ -295,7 +295,7 @@ Fired after `session_start` so extensions can contribute additional skill, promp
 The startup path uses `reason: "startup"`. Reload uses `reason: "reload"`.
 
 ```typescript
-pi.on("resources_discover", async (event, _ctx) => {
+hodeuscli.on("resources_discover", async (event, _ctx) => {
   // event.cwd - current working directory
   // event.reason - "startup" | "reload"
   return {
@@ -315,7 +315,7 @@ See [session.md](session.md) for session storage internals and the SessionManage
 Fired when a session is started, loaded, or reloaded.
 
 ```typescript
-pi.on("session_start", async (event, ctx) => {
+hodeuscli.on("session_start", async (event, ctx) => {
   // event.reason - "startup" | "reload" | "new" | "resume" | "fork"
   // event.previousSessionFile - present for "new", "resume", and "fork"
   ctx.ui.notify(`Session: ${ctx.sessionManager.getSessionFile() ?? "ephemeral"}`, "info");
@@ -327,7 +327,7 @@ pi.on("session_start", async (event, ctx) => {
 Fired before starting a new session (`/new`) or switching sessions (`/resume`).
 
 ```typescript
-pi.on("session_before_switch", async (event, ctx) => {
+hodeuscli.on("session_before_switch", async (event, ctx) => {
   // event.reason - "new" or "resume"
   // event.targetSessionFile - session we're switching to (only for "resume")
 
@@ -338,7 +338,7 @@ pi.on("session_before_switch", async (event, ctx) => {
 });
 ```
 
-After a successful switch or new-session action, pi emits `session_shutdown` for the old extension instance, reloads and rebinds extensions for the new session, then emits `session_start` with `reason: "new" | "resume"` and `previousSessionFile`.
+After a successful switch or new-session action, hodeuscli emits `session_shutdown` for the old extension instance, reloads and rebinds extensions for the new session, then emits `session_start` with `reason: "new" | "resume"` and `previousSessionFile`.
 Do cleanup work in `session_shutdown`, then reestablish any in-memory state in `session_start`.
 
 #### session_before_fork
@@ -346,7 +346,7 @@ Do cleanup work in `session_shutdown`, then reestablish any in-memory state in `
 Fired when forking via `/fork`.
 
 ```typescript
-pi.on("session_before_fork", async (event, ctx) => {
+hodeuscli.on("session_before_fork", async (event, ctx) => {
   // event.entryId - ID of the entry being forked from
   return { cancel: true }; // Cancel fork
   // OR
@@ -354,7 +354,7 @@ pi.on("session_before_fork", async (event, ctx) => {
 });
 ```
 
-After a successful fork, pi emits `session_shutdown` for the old extension instance, reloads and rebinds extensions for the new session, then emits `session_start` with `reason: "fork"` and `previousSessionFile`.
+After a successful fork, hodeuscli emits `session_shutdown` for the old extension instance, reloads and rebinds extensions for the new session, then emits `session_start` with `reason: "fork"` and `previousSessionFile`.
 Do cleanup work in `session_shutdown`, then reestablish any in-memory state in `session_start`.
 
 #### session_before_compact / session_compact
@@ -362,7 +362,7 @@ Do cleanup work in `session_shutdown`, then reestablish any in-memory state in `
 Fired on compaction. See [compaction.md](compaction.md) for details.
 
 ```typescript
-pi.on("session_before_compact", async (event, ctx) => {
+hodeuscli.on("session_before_compact", async (event, ctx) => {
   const { preparation, branchEntries, customInstructions, signal } = event;
 
   // Cancel:
@@ -378,7 +378,7 @@ pi.on("session_before_compact", async (event, ctx) => {
   };
 });
 
-pi.on("session_compact", async (event, ctx) => {
+hodeuscli.on("session_compact", async (event, ctx) => {
   // event.compactionEntry - the saved compaction
   // event.fromExtension - whether extension provided it
 });
@@ -389,14 +389,14 @@ pi.on("session_compact", async (event, ctx) => {
 Fired on `/tree` navigation. See [tree.md](tree.md) for tree navigation concepts.
 
 ```typescript
-pi.on("session_before_tree", async (event, ctx) => {
+hodeuscli.on("session_before_tree", async (event, ctx) => {
   const { preparation, signal } = event;
   return { cancel: true };
   // OR provide custom summary:
   return { summary: { summary: "...", details: {} } };
 });
 
-pi.on("session_tree", async (event, ctx) => {
+hodeuscli.on("session_tree", async (event, ctx) => {
   // event.newLeafId, oldLeafId, summaryEntry, fromExtension
 });
 ```
@@ -406,7 +406,7 @@ pi.on("session_tree", async (event, ctx) => {
 Fired on exit (Ctrl+C, Ctrl+D, SIGTERM).
 
 ```typescript
-pi.on("session_shutdown", async (_event, ctx) => {
+hodeuscli.on("session_shutdown", async (_event, ctx) => {
   // Cleanup, save state, etc.
 });
 ```
@@ -418,7 +418,7 @@ pi.on("session_shutdown", async (_event, ctx) => {
 Fired after user submits prompt, before agent loop. Can inject a message and/or modify the system prompt.
 
 ```typescript
-pi.on("before_agent_start", async (event, ctx) => {
+hodeuscli.on("before_agent_start", async (event, ctx) => {
   // event.prompt - user's prompt text
   // event.images - attached images (if any)
   // event.systemPrompt - current system prompt
@@ -441,9 +441,9 @@ pi.on("before_agent_start", async (event, ctx) => {
 Fired once per user prompt.
 
 ```typescript
-pi.on("agent_start", async (_event, ctx) => {});
+hodeuscli.on("agent_start", async (_event, ctx) => {});
 
-pi.on("agent_end", async (event, ctx) => {
+hodeuscli.on("agent_end", async (event, ctx) => {
   // event.messages - messages from this prompt
 });
 ```
@@ -453,11 +453,11 @@ pi.on("agent_end", async (event, ctx) => {
 Fired for each turn (one LLM response + tool calls).
 
 ```typescript
-pi.on("turn_start", async (event, ctx) => {
+hodeuscli.on("turn_start", async (event, ctx) => {
   // event.turnIndex, event.timestamp
 });
 
-pi.on("turn_end", async (event, ctx) => {
+hodeuscli.on("turn_end", async (event, ctx) => {
   // event.turnIndex, event.message, event.toolResults
 });
 ```
@@ -470,16 +470,16 @@ Fired for message lifecycle updates.
 - `message_update` fires for assistant streaming updates.
 
 ```typescript
-pi.on("message_start", async (event, ctx) => {
+hodeuscli.on("message_start", async (event, ctx) => {
   // event.message
 });
 
-pi.on("message_update", async (event, ctx) => {
+hodeuscli.on("message_update", async (event, ctx) => {
   // event.message
   // event.assistantMessageEvent (token-by-token stream event)
 });
 
-pi.on("message_end", async (event, ctx) => {
+hodeuscli.on("message_end", async (event, ctx) => {
   // event.message
 });
 ```
@@ -494,15 +494,15 @@ In parallel tool mode:
 - `tool_execution_end` is emitted in assistant source order, matching final tool result message order
 
 ```typescript
-pi.on("tool_execution_start", async (event, ctx) => {
+hodeuscli.on("tool_execution_start", async (event, ctx) => {
   // event.toolCallId, event.toolName, event.args
 });
 
-pi.on("tool_execution_update", async (event, ctx) => {
+hodeuscli.on("tool_execution_update", async (event, ctx) => {
   // event.toolCallId, event.toolName, event.args, event.partialResult
 });
 
-pi.on("tool_execution_end", async (event, ctx) => {
+hodeuscli.on("tool_execution_end", async (event, ctx) => {
   // event.toolCallId, event.toolName, event.result, event.isError
 });
 ```
@@ -512,7 +512,7 @@ pi.on("tool_execution_end", async (event, ctx) => {
 Fired before each LLM call. Modify messages non-destructively. See [session.md](session.md) for message types.
 
 ```typescript
-pi.on("context", async (event, ctx) => {
+hodeuscli.on("context", async (event, ctx) => {
   // event.messages - deep copy, safe to modify
   const filtered = event.messages.filter(m => !shouldPrune(m));
   return { messages: filtered };
@@ -524,7 +524,7 @@ pi.on("context", async (event, ctx) => {
 Fired after the provider-specific payload is built, right before the request is sent. Handlers run in extension load order. Returning `undefined` keeps the payload unchanged. Returning any other value replaces the payload for later handlers and for the actual request.
 
 ```typescript
-pi.on("before_provider_request", (event, ctx) => {
+hodeuscli.on("before_provider_request", (event, ctx) => {
   console.log(JSON.stringify(event.payload, null, 2));
 
   // Optional: replace payload
@@ -541,7 +541,7 @@ This is mainly useful for debugging provider serialization and cache behavior.
 Fired when the model changes via `/model` command, model cycling (`Ctrl+P`), or session restore.
 
 ```typescript
-pi.on("model_select", async (event, ctx) => {
+hodeuscli.on("model_select", async (event, ctx) => {
   // event.model - newly selected model
   // event.previousModel - previous model (undefined if first selection)
   // event.source - "set" | "cycle" | "restore"
@@ -563,7 +563,7 @@ Use this to update UI elements (status bars, footers) or perform model-specific 
 
 Fired after `tool_execution_start`, before the tool executes. **Can block.** Use `isToolCallEventType` to narrow and get typed inputs.
 
-Before `tool_call` runs, pi waits for previously emitted Agent events to finish draining through `AgentSession`. This means `ctx.sessionManager` is up to date through the current assistant tool-calling message.
+Before `tool_call` runs, hodeuscli waits for previously emitted Agent events to finish draining through `AgentSession`. This means `ctx.sessionManager` is up to date through the current assistant tool-calling message.
 
 In the default parallel tool execution mode, sibling tool calls from the same assistant message are preflighted sequentially, then executed concurrently. `tool_call` is not guaranteed to see sibling tool results from that same assistant message in `ctx.sessionManager`.
 
@@ -576,9 +576,9 @@ Behavior guarantees:
 - Return values from `tool_call` only control blocking via `{ block: true, reason?: string }`
 
 ```typescript
-import { isToolCallEventType } from "@mariozechner/pi-coding-agent";
+import { isToolCallEventType } from "@mariozechner/hodeuscli";
 
-pi.on("tool_call", async (event, ctx) => {
+hodeuscli.on("tool_call", async (event, ctx) => {
   // event.toolName - "bash", "read", "write", "edit", etc.
   // event.toolCallId
   // event.input - tool parameters (mutable)
@@ -600,7 +600,7 @@ pi.on("tool_call", async (event, ctx) => {
 });
 ```
 
-#### Typing custom tool input
+#### Tyhodeuscling custom tool input
 
 Custom tools should export their input type:
 
@@ -612,10 +612,10 @@ export type MyToolInput = Static<typeof myToolSchema>;
 Use `isToolCallEventType` with explicit type parameters:
 
 ```typescript
-import { isToolCallEventType } from "@mariozechner/pi-coding-agent";
+import { isToolCallEventType } from "@mariozechner/hodeuscli";
 import type { MyToolInput } from "my-extension";
 
-pi.on("tool_call", (event) => {
+hodeuscli.on("tool_call", (event) => {
   if (isToolCallEventType<"my_tool", MyToolInput>("my_tool", event)) {
     event.input.action;  // typed
   }
@@ -634,9 +634,9 @@ Fired after tool execution finishes and before `tool_execution_end` plus the fin
 Use `ctx.signal` for nested async work inside the handler. This lets Esc cancel model calls, `fetch()`, and other abort-aware operations started by the extension.
 
 ```typescript
-import { isBashToolResult } from "@mariozechner/pi-coding-agent";
+import { isBashToolResult } from "@mariozechner/hodeuscli";
 
-pi.on("tool_result", async (event, ctx) => {
+hodeuscli.on("tool_result", async (event, ctx) => {
   // event.toolName, event.toolCallId, event.input
   // event.content, event.details, event.isError
 
@@ -662,9 +662,9 @@ pi.on("tool_result", async (event, ctx) => {
 Fired when user executes `!` or `!!` commands. **Can intercept.**
 
 ```typescript
-import { createLocalBashOperations } from "@mariozechner/pi-coding-agent";
+import { createLocalBashOperations } from "@mariozechner/hodeuscli";
 
-pi.on("user_bash", (event, ctx) => {
+hodeuscli.on("user_bash", (event, ctx) => {
   // event.command - the bash command
   // event.excludeFromContext - true if !! prefix
   // event.cwd - working directory
@@ -672,7 +672,7 @@ pi.on("user_bash", (event, ctx) => {
   // Option 1: Provide custom operations (e.g., SSH)
   return { operations: remoteBashOps };
 
-  // Option 2: Wrap pi's built-in local bash backend
+  // Option 2: Wrap hodeuscli's built-in local bash backend
   const local = createLocalBashOperations();
   return {
     operations: {
@@ -701,7 +701,7 @@ Fired when user input is received, after extension commands are checked but befo
 5. Agent processing begins (`before_agent_start`, etc.)
 
 ```typescript
-pi.on("input", async (event, ctx) => {
+hodeuscli.on("input", async (event, ctx) => {
   // event.text - raw input (before skill/template expansion)
   // event.images - attached images, if any
   // event.source - "interactive" (typed), "rpc" (API), or "extension" (via sendUserMessage)
@@ -711,7 +711,7 @@ pi.on("input", async (event, ctx) => {
     return { action: "transform", text: `Respond briefly: ${event.text.slice(7)}` };
 
   // Handle: respond without LLM (extension shows its own feedback)
-  if (event.text === "ping") {
+  if (event.text === "hodeuscling") {
     ctx.ui.notify("pong", "info");
     return { action: "handled" };
   }
@@ -776,12 +776,12 @@ Use this for abort-aware nested work started by extension handlers, for example:
 - model calls that accept `signal`
 - file or process helpers that accept `AbortSignal`
 
-`ctx.signal` is typically defined during active turn events such as `tool_call`, `tool_result`, `message_update`, and `turn_end`.
-It is usually `undefined` in idle or non-turn contexts such as session events, extension commands, and shortcuts fired while pi is idle.
+`ctx.signal` is tyhodeusclically defined during active turn events such as `tool_call`, `tool_result`, `message_update`, and `turn_end`.
+It is usually `undefined` in idle or non-turn contexts such as session events, extension commands, and shortcuts fired while hodeuscli is idle.
 
 ```typescript
-pi.on("tool_result", async (event, ctx) => {
-  const response = await fetch("https://example.com/api", {
+hodeuscli.on("tool_result", async (event, ctx) => {
+  const response = await fetch("https://example.com/ahodeuscli", {
     method: "POST",
     body: JSON.stringify(event),
     signal: ctx.signal,
@@ -798,7 +798,7 @@ Control flow helpers.
 
 ### ctx.shutdown()
 
-Request a graceful shutdown of pi.
+Request a graceful shutdown of hodeuscli.
 
 - **Interactive mode:** Deferred until the agent becomes idle (after processing all queued steering and follow-up messages).
 - **RPC mode:** Deferred until the next idle state (after completing the current command response, when waiting for the next command).
@@ -807,7 +807,7 @@ Request a graceful shutdown of pi.
 Emits `session_shutdown` event to all extensions before exiting. Available in all contexts (event handlers, tools, commands, shortcuts).
 
 ```typescript
-pi.on("tool_call", (event, ctx) => {
+hodeuscli.on("tool_call", (event, ctx) => {
   if (isFatal(event.input)) {
     ctx.shutdown();
   }
@@ -846,7 +846,7 @@ ctx.compact({
 Returns the current effective system prompt. This includes any modifications made by `before_agent_start` handlers for the current turn.
 
 ```typescript
-pi.on("before_agent_start", (event, ctx) => {
+hodeuscli.on("before_agent_start", (event, ctx) => {
   const prompt = ctx.getSystemPrompt();
   console.log(`System prompt length: ${prompt.length}`);
 });
@@ -861,7 +861,7 @@ Command handlers receive `ExtensionCommandContext`, which extends `ExtensionCont
 Wait for the agent to finish streaming:
 
 ```typescript
-pi.registerCommand("my-cmd", {
+hodeuscli.registerCommand("my-cmd", {
   handler: async (args, ctx) => {
     await ctx.waitForIdle();
     // Agent is now idle, safe to modify session
@@ -934,9 +934,9 @@ if (result.cancelled) {
 To discover available sessions, use the static `SessionManager.list()` or `SessionManager.listAll()` methods:
 
 ```typescript
-import { SessionManager } from "@mariozechner/pi-coding-agent";
+import { SessionManager } from "@mariozechner/hodeuscli";
 
-pi.registerCommand("switch", {
+hodeuscli.registerCommand("switch", {
   description: "Switch to another session",
   handler: async (args, ctx) => {
     const sessions = await SessionManager.list(ctx.cwd);
@@ -957,7 +957,7 @@ pi.registerCommand("switch", {
 Run the same reload flow as `/reload`.
 
 ```typescript
-pi.registerCommand("reload-runtime", {
+hodeuscli.registerCommand("reload-runtime", {
   description: "Reload extensions, skills, prompts, and themes",
   handler: async (_args, ctx) => {
     await ctx.reload();
@@ -981,11 +981,11 @@ Tools run with `ExtensionContext`, so they cannot call `ctx.reload()` directly. 
 Example tool the LLM can call to trigger reload:
 
 ```typescript
-import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
+import type { ExtensionAPI } from "@mariozechner/hodeuscli";
 import { Type } from "@sinclair/typebox";
 
-export default function (pi: ExtensionAPI) {
-  pi.registerCommand("reload-runtime", {
+export default function (hodeuscli: ExtensionAPI) {
+  hodeuscli.registerCommand("reload-runtime", {
     description: "Reload extensions, skills, prompts, and themes",
     handler: async (_args, ctx) => {
       await ctx.reload();
@@ -993,13 +993,13 @@ export default function (pi: ExtensionAPI) {
     },
   });
 
-  pi.registerTool({
+  hodeuscli.registerTool({
     name: "reload_runtime",
     label: "Reload Runtime",
     description: "Reload extensions, skills, prompts, and themes",
     parameters: Type.Object({}),
     async execute() {
-      pi.sendUserMessage("/reload-runtime", { deliverAs: "followUp" });
+      hodeuscli.sendUserMessage("/reload-runtime", { deliverAs: "followUp" });
       return {
         content: [{ type: "text", text: "Queued /reload-runtime as a follow-up command." }],
       };
@@ -1010,17 +1010,17 @@ export default function (pi: ExtensionAPI) {
 
 ## ExtensionAPI Methods
 
-### pi.on(event, handler)
+### hodeuscli.on(event, handler)
 
 Subscribe to events. See [Events](#events) for event types and return values.
 
-### pi.registerTool(definition)
+### hodeuscli.registerTool(definition)
 
 Register a custom tool callable by the LLM. See [Custom Tools](#custom-tools) for full details.
 
-`pi.registerTool()` works both during extension load and after startup. You can call it inside `session_start`, command handlers, or other event handlers. New tools are refreshed immediately in the same session, so they appear in `pi.getAllTools()` and are callable by the LLM without `/reload`.
+`hodeuscli.registerTool()` works both during extension load and after startup. You can call it inside `session_start`, command handlers, or other event handlers. New tools are refreshed immediately in the same session, so they appear in `hodeuscli.getAllTools()` and are callable by the LLM without `/reload`.
 
-Use `pi.setActiveTools()` to enable or disable tools (including dynamically added tools) at runtime.
+Use `hodeuscli.setActiveTools()` to enable or disable tools (including dynamically added tools) at runtime.
 
 Use `promptSnippet` to opt a custom tool into a one-line entry in `Available tools`, and `promptGuidelines` to append tool-specific bullets to the default `Guidelines` section when the tool is active.
 
@@ -1028,9 +1028,9 @@ See [dynamic-tools.ts](../examples/extensions/dynamic-tools.ts) for a full examp
 
 ```typescript
 import { Type } from "@sinclair/typebox";
-import { StringEnum } from "@mariozechner/pi-ai";
+import { StringEnum } from "@mariozechner/hodeuscli-ai";
 
-pi.registerTool({
+hodeuscli.registerTool({
   name: "my_tool",
   label: "My Tool",
   description: "What this tool does",
@@ -1063,12 +1063,12 @@ pi.registerTool({
 });
 ```
 
-### pi.sendMessage(message, options?)
+### hodeuscli.sendMessage(message, options?)
 
 Inject a custom message into the session.
 
 ```typescript
-pi.sendMessage({
+hodeuscli.sendMessage({
   customType: "my-extension",
   content: "Message text",
   display: true,
@@ -1086,23 +1086,23 @@ pi.sendMessage({
   - `"nextTurn"` - Queued for next user prompt. Does not interrupt or trigger anything.
 - `triggerTurn: true` - If agent is idle, trigger an LLM response immediately. Only applies to `"steer"` and `"followUp"` modes (ignored for `"nextTurn"`).
 
-### pi.sendUserMessage(content, options?)
+### hodeuscli.sendUserMessage(content, options?)
 
 Send a user message to the agent. Unlike `sendMessage()` which sends custom messages, this sends an actual user message that appears as if typed by the user. Always triggers a turn.
 
 ```typescript
 // Simple text message
-pi.sendUserMessage("What is 2+2?");
+hodeuscli.sendUserMessage("What is 2+2?");
 
 // With content array (text + images)
-pi.sendUserMessage([
+hodeuscli.sendUserMessage([
   { type: "text", text: "Describe this image:" },
   { type: "image", source: { type: "base64", mediaType: "image/png", data: "..." } },
 ]);
 
 // During streaming - must specify delivery mode
-pi.sendUserMessage("Focus on error handling", { deliverAs: "steer" });
-pi.sendUserMessage("And then summarize", { deliverAs: "followUp" });
+hodeuscli.sendUserMessage("Focus on error handling", { deliverAs: "steer" });
+hodeuscli.sendUserMessage("And then summarize", { deliverAs: "followUp" });
 ```
 
 **Options:**
@@ -1114,15 +1114,15 @@ When not streaming, the message is sent immediately and triggers a new turn. Whe
 
 See [send-user-message.ts](../examples/extensions/send-user-message.ts) for a complete example.
 
-### pi.appendEntry(customType, data?)
+### hodeuscli.appendEntry(customType, data?)
 
 Persist extension state (does NOT participate in LLM context).
 
 ```typescript
-pi.appendEntry("my-state", { count: 42 });
+hodeuscli.appendEntry("my-state", { count: 42 });
 
 // Restore on reload
-pi.on("session_start", async (_event, ctx) => {
+hodeuscli.on("session_start", async (_event, ctx) => {
   for (const entry of ctx.sessionManager.getEntries()) {
     if (entry.type === "custom" && entry.customType === "my-state") {
       // Reconstruct from entry.data
@@ -1131,35 +1131,35 @@ pi.on("session_start", async (_event, ctx) => {
 });
 ```
 
-### pi.setSessionName(name)
+### hodeuscli.setSessionName(name)
 
 Set the session display name (shown in session selector instead of first message).
 
 ```typescript
-pi.setSessionName("Refactor auth module");
+hodeuscli.setSessionName("Refactor auth module");
 ```
 
-### pi.getSessionName()
+### hodeuscli.getSessionName()
 
 Get the current session name, if set.
 
 ```typescript
-const name = pi.getSessionName();
+const name = hodeuscli.getSessionName();
 if (name) {
   console.log(`Session: ${name}`);
 }
 ```
 
-### pi.setLabel(entryId, label)
+### hodeuscli.setLabel(entryId, label)
 
 Set or clear a label on an entry. Labels are user-defined markers for bookmarking and navigation (shown in `/tree` selector).
 
 ```typescript
 // Set a label
-pi.setLabel(entryId, "checkpoint-before-refactor");
+hodeuscli.setLabel(entryId, "checkpoint-before-refactor");
 
 // Clear a label
-pi.setLabel(entryId, undefined);
+hodeuscli.setLabel(entryId, undefined);
 
 // Read labels via sessionManager
 const label = ctx.sessionManager.getLabel(entryId);
@@ -1167,14 +1167,14 @@ const label = ctx.sessionManager.getLabel(entryId);
 
 Labels persist in the session and survive restarts. Use them to mark important points (turns, checkpoints) in the conversation tree.
 
-### pi.registerCommand(name, options)
+### hodeuscli.registerCommand(name, options)
 
 Register a command.
 
-If multiple extensions register the same command name, pi keeps them all and assigns numeric invocation suffixes in load order, for example `/review:1` and `/review:2`.
+If multiple extensions register the same command name, hodeuscli keeps them all and assigns numeric invocation suffixes in load order, for example `/review:1` and `/review:2`.
 
 ```typescript
-pi.registerCommand("stats", {
+hodeuscli.registerCommand("stats", {
   description: "Show session statistics",
   handler: async (args, ctx) => {
     const count = ctx.sessionManager.getEntries().length;
@@ -1186,9 +1186,9 @@ pi.registerCommand("stats", {
 Optional: add argument auto-completion for `/command ...`:
 
 ```typescript
-import type { AutocompleteItem } from "@mariozechner/pi-tui";
+import type { AutocompleteItem } from "@mariozechner/hodeuscli-tui";
 
-pi.registerCommand("deploy", {
+hodeuscli.registerCommand("deploy", {
   description: "Deploy to an environment",
   getArgumentCompletions: (prefix: string): AutocompleteItem[] | null => {
     const envs = ["dev", "staging", "prod"];
@@ -1202,13 +1202,13 @@ pi.registerCommand("deploy", {
 });
 ```
 
-### pi.getCommands()
+### hodeuscli.getCommands()
 
 Get the slash commands available for invocation via `prompt` in the current session. Includes extension commands, prompt templates, and skill commands.
 The list matches the RPC `get_commands` ordering: extensions first, then templates, then skills.
 
 ```typescript
-const commands = pi.getCommands();
+const commands = hodeuscli.getCommands();
 const bySource = commands.filter((command) => command.source === "extension");
 const userScoped = commands.filter((command) => command.sourceInfo.scope === "user");
 ```
@@ -1235,16 +1235,16 @@ Use `sourceInfo` as the canonical provenance field. Do not infer ownership from 
 Built-in interactive commands (like `/model` and `/settings`) are not included here. They are handled only in interactive
 mode and would not execute if sent via `prompt`.
 
-### pi.registerMessageRenderer(customType, renderer)
+### hodeuscli.registerMessageRenderer(customType, renderer)
 
 Register a custom TUI renderer for messages with your `customType`. See [Custom UI](#custom-ui).
 
-### pi.registerShortcut(shortcut, options)
+### hodeuscli.registerShortcut(shortcut, options)
 
 Register a keyboard shortcut. See [keybindings.md](keybindings.md) for the shortcut format and built-in keybindings.
 
 ```typescript
-pi.registerShortcut("ctrl+shift+p", {
+hodeuscli.registerShortcut("ctrl+shift+p", {
   description: "Toggle plan mode",
   handler: async (ctx) => {
     ctx.ui.notify("Toggled!");
@@ -1252,39 +1252,39 @@ pi.registerShortcut("ctrl+shift+p", {
 });
 ```
 
-### pi.registerFlag(name, options)
+### hodeuscli.registerFlag(name, options)
 
 Register a CLI flag.
 
 ```typescript
-pi.registerFlag("plan", {
+hodeuscli.registerFlag("plan", {
   description: "Start in plan mode",
   type: "boolean",
   default: false,
 });
 
 // Check value
-if (pi.getFlag("--plan")) {
+if (hodeuscli.getFlag("--plan")) {
   // Plan mode enabled
 }
 ```
 
-### pi.exec(command, args, options?)
+### hodeuscli.exec(command, args, options?)
 
 Execute a shell command.
 
 ```typescript
-const result = await pi.exec("git", ["status"], { signal, timeout: 5000 });
+const result = await hodeuscli.exec("git", ["status"], { signal, timeout: 5000 });
 // result.stdout, result.stderr, result.code, result.killed
 ```
 
-### pi.getActiveTools() / pi.getAllTools() / pi.setActiveTools(names)
+### hodeuscli.getActiveTools() / hodeuscli.getAllTools() / hodeuscli.setActiveTools(names)
 
 Manage active tools. This works for both built-in tools and dynamically registered tools.
 
 ```typescript
-const active = pi.getActiveTools();
-const all = pi.getAllTools();
+const active = hodeuscli.getActiveTools();
+const all = hodeuscli.getAllTools();
 // [{
 //   name: "read",
 //   description: "Read file contents...",
@@ -1294,49 +1294,49 @@ const all = pi.getAllTools();
 const names = all.map(t => t.name);
 const builtinTools = all.filter((t) => t.sourceInfo.source === "builtin");
 const extensionTools = all.filter((t) => t.sourceInfo.source !== "builtin" && t.sourceInfo.source !== "sdk");
-pi.setActiveTools(["read", "bash"]); // Switch to read-only
+hodeuscli.setActiveTools(["read", "bash"]); // Switch to read-only
 ```
 
-`pi.getAllTools()` returns `name`, `description`, `parameters`, and `sourceInfo`.
+`hodeuscli.getAllTools()` returns `name`, `description`, `parameters`, and `sourceInfo`.
 
-Typical `sourceInfo.source` values:
+Tyhodeusclical `sourceInfo.source` values:
 - `builtin` for built-in tools
 - `sdk` for tools passed via `createAgentSession({ customTools })`
 - extension source metadata for tools registered by extensions
 
-### pi.setModel(model)
+### hodeuscli.setModel(model)
 
 Set the current model. Returns `false` if no API key is available for the model. See [models.md](models.md) for configuring custom models.
 
 ```typescript
-const model = ctx.modelRegistry.find("anthropic", "claude-sonnet-4-5");
+const model = ctx.modelRegistry.find("Anthropic", "claude-sonnet-4-5");
 if (model) {
-  const success = await pi.setModel(model);
+  const success = await hodeuscli.setModel(model);
   if (!success) {
     ctx.ui.notify("No API key for this model", "error");
   }
 }
 ```
 
-### pi.getThinkingLevel() / pi.setThinkingLevel(level)
+### hodeuscli.getThinkingLevel() / hodeuscli.setThinkingLevel(level)
 
 Get or set the thinking level. Level is clamped to model capabilities (non-reasoning models always use "off").
 
 ```typescript
-const current = pi.getThinkingLevel();  // "off" | "minimal" | "low" | "medium" | "high" | "xhigh"
-pi.setThinkingLevel("high");
+const current = hodeuscli.getThinkingLevel();  // "off" | "minimal" | "low" | "medium" | "high" | "xhigh"
+hodeuscli.setThinkingLevel("high");
 ```
 
-### pi.events
+### hodeuscli.events
 
 Shared event bus for communication between extensions:
 
 ```typescript
-pi.events.on("my:event", (data) => { ... });
-pi.events.emit("my:event", { ... });
+hodeuscli.events.on("my:event", (data) => { ... });
+hodeuscli.events.emit("my:event", { ... });
 ```
 
-### pi.registerProvider(name, config)
+### hodeuscli.registerProvider(name, config)
 
 Register or override a model provider dynamically. Useful for proxies, custom endpoints, or team-wide model configurations.
 
@@ -1344,10 +1344,10 @@ Calls made during the extension factory function are queued and applied once the
 
 ```typescript
 // Register a new provider with custom models
-pi.registerProvider("my-proxy", {
+hodeuscli.registerProvider("my-proxy", {
   baseUrl: "https://proxy.example.com",
-  apiKey: "PROXY_API_KEY",  // env var name or literal
-  api: "anthropic-messages",
+  ahodeuscliKey: "PROXY_API_KEY",  // env var name or literal
+  ahodeuscli: "Anthropic-messages",
   models: [
     {
       id: "claude-sonnet-4-20250514",
@@ -1362,14 +1362,14 @@ pi.registerProvider("my-proxy", {
 });
 
 // Override baseUrl for an existing provider (keeps all models)
-pi.registerProvider("anthropic", {
+hodeuscli.registerProvider("Anthropic", {
   baseUrl: "https://proxy.example.com"
 });
 
 // Register provider with OAuth support for /login
-pi.registerProvider("corporate-ai", {
+hodeuscli.registerProvider("corporate-ai", {
   baseUrl: "https://ai.corp.com",
-  api: "openai-responses",
+  ahodeuscli: "openai-responses",
   models: [...],
   oauth: {
     name: "Corporate AI (SSO)",
@@ -1377,13 +1377,13 @@ pi.registerProvider("corporate-ai", {
       // Custom OAuth flow
       callbacks.onAuth({ url: "https://sso.corp.com/..." });
       const code = await callbacks.onPrompt({ message: "Enter code:" });
-      return { refresh: code, access: code, expires: Date.now() + 3600000 };
+      return { refresh: code, access: code, exhodeusclires: Date.now() + 3600000 };
     },
     async refreshToken(credentials) {
       // Refresh logic
       return credentials;
     },
-    getApiKey(credentials) {
+    getAhodeuscliKey(credentials) {
       return credentials.access;
     }
   }
@@ -1392,27 +1392,27 @@ pi.registerProvider("corporate-ai", {
 
 **Config options:**
 - `baseUrl` - API endpoint URL. Required when defining models.
-- `apiKey` - API key or environment variable name. Required when defining models (unless `oauth` provided).
-- `api` - API type: `"anthropic-messages"`, `"openai-completions"`, `"openai-responses"`, etc.
+- `ahodeuscliKey` - API key or environment variable name. Required when defining models (unless `oauth` provided).
+- `ahodeuscli` - API type: `"Anthropic-messages"`, `"openai-completions"`, `"openai-responses"`, etc.
 - `headers` - Custom headers to include in requests.
 - `authHeader` - If true, adds `Authorization: Bearer` header automatically.
 - `models` - Array of model definitions. If provided, replaces all existing models for this provider.
 - `oauth` - OAuth provider config for `/login` support. When provided, the provider appears in the login menu.
 - `streamSimple` - Custom streaming implementation for non-standard APIs.
 
-See [custom-provider.md](custom-provider.md) for advanced topics: custom streaming APIs, OAuth details, model definition reference.
+See [custom-provider.md](custom-provider.md) for advanced tohodeusclics: custom streaming APIs, OAuth details, model definition reference.
 
-### pi.unregisterProvider(name)
+### hodeuscli.unregisterProvider(name)
 
 Remove a previously registered provider and its models. Built-in models that were overridden by the provider are restored. Has no effect if the provider was not registered.
 
 Like `registerProvider`, this takes effect immediately when called after the initial load phase, so a `/reload` is not required.
 
 ```typescript
-pi.registerCommand("my-setup-teardown", {
+hodeuscli.registerCommand("my-setup-teardown", {
   description: "Remove the custom proxy provider",
   handler: async (_args, _ctx) => {
-    pi.unregisterProvider("my-proxy");
+    hodeuscli.unregisterProvider("my-proxy");
   },
 });
 ```
@@ -1422,11 +1422,11 @@ pi.registerCommand("my-setup-teardown", {
 Extensions with state should store it in tool result `details` for proper branching support:
 
 ```typescript
-export default function (pi: ExtensionAPI) {
+export default function (hodeuscli: ExtensionAPI) {
   let items: string[] = [];
 
   // Reconstruct state from session
-  pi.on("session_start", async (_event, ctx) => {
+  hodeuscli.on("session_start", async (_event, ctx) => {
     items = [];
     for (const entry of ctx.sessionManager.getBranch()) {
       if (entry.type === "message" && entry.message.role === "toolResult") {
@@ -1437,7 +1437,7 @@ export default function (pi: ExtensionAPI) {
     }
   });
 
-  pi.registerTool({
+  hodeuscli.registerTool({
     name: "my_tool",
     // ...
     async execute(toolCallId, params, signal, onUpdate, ctx) {
@@ -1453,11 +1453,11 @@ export default function (pi: ExtensionAPI) {
 
 ## Custom Tools
 
-Register tools the LLM can call via `pi.registerTool()`. Tools appear in the system prompt and can have custom rendering.
+Register tools the LLM can call via `hodeuscli.registerTool()`. Tools appear in the system prompt and can have custom rendering.
 
 Use `promptSnippet` for a short one-line entry in the `Available tools` section in the default system prompt. If omitted, custom tools are left out of that section.
 
-Use `promptGuidelines` to add tool-specific bullets to the default system prompt `Guidelines` section. These bullets are included only while the tool is active (for example, after `pi.setActiveTools([...])`).
+Use `promptGuidelines` to add tool-specific bullets to the default system prompt `Guidelines` section. These bullets are included only while the tool is active (for example, after `hodeuscli.setActiveTools([...])`).
 
 Note: Some models are idiots and include the @ prefix in tool path arguments. Built-in tools strip a leading @ before resolving paths. If your custom tool accepts a path, normalize a leading @ as well.
 
@@ -1470,7 +1470,7 @@ Pass the real target file path to `withFileMutationQueue()`, not the raw user ar
 Queue the entire mutation window on that target path. That includes read-modify-write logic, not just the final write.
 
 ```typescript
-import { withFileMutationQueue } from "@mariozechner/pi-coding-agent";
+import { withFileMutationQueue } from "@mariozechner/hodeuscli";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
@@ -1495,10 +1495,10 @@ async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
 
 ```typescript
 import { Type } from "@sinclair/typebox";
-import { StringEnum } from "@mariozechner/pi-ai";
-import { Text } from "@mariozechner/pi-tui";
+import { StringEnum } from "@mariozechner/hodeuscli-ai";
+import { Text } from "@mariozechner/hodeuscli-tui";
 
-pi.registerTool({
+hodeuscli.registerTool({
   name: "my_tool",
   label: "My Tool",
   description: "What this tool does (shown to LLM)",
@@ -1531,8 +1531,8 @@ pi.registerTool({
       details: { progress: 50 },
     });
 
-    // Run commands via pi.exec (captured from extension closure)
-    const result = await pi.exec("some-command", [], { signal });
+    // Run commands via hodeuscli.exec (captured from extension closure)
+    const result = await hodeuscli.exec("some-command", [], { signal });
 
     // Return result
     return {
@@ -1559,14 +1559,14 @@ async execute(toolCallId, params) {
 }
 ```
 
-**Important:** Use `StringEnum` from `@mariozechner/pi-ai` for string enums. `Type.Union`/`Type.Literal` doesn't work with Google's API.
+**Important:** Use `StringEnum` from `@mariozechner/hodeuscli-ai` for string enums. `Type.Union`/`Type.Literal` doesn't work with Google's API.
 
-**Argument preparation:** `prepareArguments(args)` is optional. If defined, it runs before schema validation and before `execute()`. Use it to mimic an older accepted input shape when pi resumes an older session whose stored tool call arguments no longer match the current schema. Return the object you want validated against `parameters`. Keep the public schema strict. Do not add deprecated compatibility fields to `parameters` just to keep old resumed sessions working.
+**Argument preparation:** `prepareArguments(args)` is optional. If defined, it runs before schema validation and before `execute()`. Use it to mimic an older accepted input shape when hodeuscli resumes an older session whose stored tool call arguments no longer match the current schema. Return the object you want validated against `parameters`. Keep the public schema strict. Do not add deprecated compatibility fields to `parameters` just to keep old resumed sessions working.
 
 Example: an older session may contain an `edit` tool call with top-level `oldText` and `newText`, while the current schema only accepts `edits: [{ oldText, newText }]`.
 
 ```typescript
-pi.registerTool({
+hodeuscli.registerTool({
   name: "edit",
   label: "Edit",
   description: "Edit a single file using exact text replacement",
@@ -1614,13 +1614,13 @@ Extensions can override built-in tools (`read`, `bash`, `edit`, `write`, `grep`,
 
 ```bash
 # Extension's read tool replaces built-in read
-pi -e ./tool-override.ts
+hodeuscli -e ./tool-override.ts
 ```
 
 Alternatively, use `--no-tools` to start without any built-in tools:
 ```bash
 # No built-in tools, only extension tools
-pi --no-tools -e ./my-extension.ts
+hodeuscli --no-tools -e ./my-extension.ts
 ```
 
 See [examples/extensions/tool-override.ts](../examples/extensions/tool-override.ts) for a complete example that overrides `read` with logging and access control.
@@ -1632,20 +1632,20 @@ See [examples/extensions/tool-override.ts](../examples/extensions/tool-override.
 **Your implementation must match the exact result shape**, including the `details` type. The UI and session logic depend on these shapes for rendering and state tracking.
 
 Built-in tool implementations:
-- [read.ts](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/src/core/tools/read.ts) - `ReadToolDetails`
-- [bash.ts](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/src/core/tools/bash.ts) - `BashToolDetails`
-- [edit.ts](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/src/core/tools/edit.ts)
-- [write.ts](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/src/core/tools/write.ts)
-- [grep.ts](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/src/core/tools/grep.ts) - `GrepToolDetails`
-- [find.ts](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/src/core/tools/find.ts) - `FindToolDetails`
-- [ls.ts](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/src/core/tools/ls.ts) - `LsToolDetails`
+- [read.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/coding-agent/src/core/tools/read.ts) - `ReadToolDetails`
+- [bash.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/coding-agent/src/core/tools/bash.ts) - `BashToolDetails`
+- [edit.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/coding-agent/src/core/tools/edit.ts)
+- [write.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/coding-agent/src/core/tools/write.ts)
+- [grep.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/coding-agent/src/core/tools/grep.ts) - `GrepToolDetails`
+- [find.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/coding-agent/src/core/tools/find.ts) - `FindToolDetails`
+- [ls.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/coding-agent/src/core/tools/ls.ts) - `LsToolDetails`
 
 ### Remote Execution
 
 Built-in tools support pluggable operations for delegating to remote systems (SSH, containers, etc.):
 
 ```typescript
-import { createReadTool, createBashTool, type ReadOperations } from "@mariozechner/pi-coding-agent";
+import { createReadTool, createBashTool, type ReadOperations } from "@mariozechner/hodeuscli";
 
 // Create tool with custom operations
 const remoteRead = createReadTool(cwd, {
@@ -1656,7 +1656,7 @@ const remoteRead = createReadTool(cwd, {
 });
 
 // Register, checking flag at execution time
-pi.registerTool({
+hodeuscli.registerTool({
   ...remoteRead,
   async execute(id, params, signal, onUpdate, _ctx) {
     const ssh = getSshConfig();
@@ -1671,12 +1671,12 @@ pi.registerTool({
 
 **Operations interfaces:** `ReadOperations`, `WriteOperations`, `EditOperations`, `BashOperations`, `LsOperations`, `GrepOperations`, `FindOperations`
 
-For `user_bash`, extensions can reuse pi's local shell backend via `createLocalBashOperations()` instead of reimplementing local process spawning, shell resolution, and process-tree termination.
+For `user_bash`, extensions can reuse hodeuscli's local shell backend via `createLocalBashOperations()` instead of reimplementing local process spawning, shell resolution, and process-tree termination.
 
 The bash tool also supports a spawn hook to adjust the command, cwd, or env before execution:
 
 ```typescript
-import { createBashTool } from "@mariozechner/pi-coding-agent";
+import { createBashTool } from "@mariozechner/hodeuscli";
 
 const bashTool = createBashTool(cwd, {
   spawnHook: ({ command, cwd, env }) => ({
@@ -1706,7 +1706,7 @@ import {
   formatSize,        // Human-readable size (e.g., "50KB", "1.5MB")
   DEFAULT_MAX_BYTES, // 50KB
   DEFAULT_MAX_LINES, // 2000
-} from "@mariozechner/pi-coding-agent";
+} from "@mariozechner/hodeuscli";
 
 async execute(toolCallId, params, signal, onUpdate, ctx) {
   const output = await runCommand();
@@ -1739,21 +1739,21 @@ async execute(toolCallId, params, signal, onUpdate, ctx) {
 - Always inform the LLM when output is truncated and where to find the full version
 - Document the truncation limits in your tool's description
 
-See [examples/extensions/truncated-tool.ts](../examples/extensions/truncated-tool.ts) for a complete example wrapping `rg` (ripgrep) with proper truncation.
+See [examples/extensions/truncated-tool.ts](../examples/extensions/truncated-tool.ts) for a complete example wraphodeuscling `rg` (ripgrep) with proper truncation.
 
 ### Multiple Tools
 
 One extension can register multiple tools with shared state:
 
 ```typescript
-export default function (pi: ExtensionAPI) {
+export default function (hodeuscli: ExtensionAPI) {
   let connection = null;
 
-  pi.registerTool({ name: "db_connect", ... });
-  pi.registerTool({ name: "db_query", ... });
-  pi.registerTool({ name: "db_close", ... });
+  hodeuscli.registerTool({ name: "db_connect", ... });
+  hodeuscli.registerTool({ name: "db_query", ... });
+  hodeuscli.registerTool({ name: "db_close", ... });
 
-  pi.on("session_shutdown", async () => {
+  hodeuscli.on("session_shutdown", async () => {
     connection?.close();
   });
 }
@@ -1761,7 +1761,7 @@ export default function (pi: ExtensionAPI) {
 
 ### Custom Rendering
 
-Tools can provide `renderCall` and `renderResult` for custom TUI display. See [tui.md](tui.md) for the full component API and [tool-execution.ts](https://github.com/badlogic/pi-mono/blob/main/packages/coding-agent/src/modes/interactive/components/tool-execution.ts) for how tool rows are composed.
+Tools can provide `renderCall` and `renderResult` for custom TUI display. See [tui.md](tui.md) for the full component API and [tool-execution.ts](https://github.com/badlogic/hodeuscli-mono/blob/main/packages/coding-agent/src/modes/interactive/components/tool-execution.ts) for how tool rows are composed.
 
 Tool output is wrapped in a `Box` that handles padding and background. A defined `renderCall` or `renderResult` must return a `Component`. If a slot renderer is not defined, `tool-execution.ts` uses fallback rendering for that slot.
 
@@ -1779,7 +1779,7 @@ Use `context.state` for cross-slot shared state. Keep slot-local caches on the r
 Renders the tool call or header:
 
 ```typescript
-import { Text } from "@mariozechner/pi-tui";
+import { Text } from "@mariozechner/hodeuscli-tui";
 
 renderCall(args, theme, context) {
   const text = (context.lastComponent as Text | undefined) ?? new Text("", 0, 0);
@@ -1824,7 +1824,7 @@ If a slot intentionally has no visible content, return an empty `Component` such
 Use `keyHint()` to display keybinding hints that respect the active keybinding configuration:
 
 ```typescript
-import { keyHint } from "@mariozechner/pi-coding-agent";
+import { keyHint } from "@mariozechner/hodeuscli";
 
 renderResult(result, { expanded }, theme, context) {
   let text = theme.fg("success", "✓ Done");
@@ -1974,7 +1974,7 @@ ctx.ui.setFooter((tui, theme) => ({
 ctx.ui.setFooter(undefined);  // Restore built-in footer
 
 // Terminal title
-ctx.ui.setTitle("pi - my-project");
+ctx.ui.setTitle("hodeuscli - my-project");
 
 // Editor text
 ctx.ui.setEditorText("Prefill text");
@@ -2008,7 +2008,7 @@ ctx.ui.theme.fg("accent", "styled text");  // Access current theme
 For complex UI, use `ctx.ui.custom()`. This temporarily replaces the editor with your component until `done()` is called:
 
 ```typescript
-import { Text, Component } from "@mariozechner/pi-tui";
+import { Text, Component } from "@mariozechner/hodeuscli-tui";
 
 const result = await ctx.ui.custom<boolean>((tui, theme, keybindings, done) => {
   const text = new Text("Press Enter to confirm, Escape to cancel", 1, 1);
@@ -2066,8 +2066,8 @@ See [tui.md](tui.md) for the full `OverlayOptions` API and [overlay-qa-tests.ts]
 Replace the main input editor with a custom implementation (vim mode, emacs mode, etc.):
 
 ```typescript
-import { CustomEditor, type ExtensionAPI } from "@mariozechner/pi-coding-agent";
-import { matchesKey } from "@mariozechner/pi-tui";
+import { CustomEditor, type ExtensionAPI } from "@mariozechner/hodeuscli";
+import { matchesKey } from "@mariozechner/hodeuscli-tui";
 
 class VimEditor extends CustomEditor {
   private mode: "normal" | "insert" = "insert";
@@ -2085,8 +2085,8 @@ class VimEditor extends CustomEditor {
   }
 }
 
-export default function (pi: ExtensionAPI) {
-  pi.on("session_start", (_event, ctx) => {
+export default function (hodeuscli: ExtensionAPI) {
+  hodeuscli.on("session_start", (_event, ctx) => {
     ctx.ui.setEditorComponent((_tui, theme, keybindings) =>
       new VimEditor(theme, keybindings)
     );
@@ -2107,9 +2107,9 @@ See [tui.md](tui.md) Pattern 7 for a complete example with mode indicator.
 Register a custom renderer for messages with your `customType`:
 
 ```typescript
-import { Text } from "@mariozechner/pi-tui";
+import { Text } from "@mariozechner/hodeuscli-tui";
 
-pi.registerMessageRenderer("my-extension", (message, options, theme) => {
+hodeuscli.registerMessageRenderer("my-extension", (message, options, theme) => {
   const { expanded } = options;
   let text = theme.fg("accent", `[${message.customType}] `);
   text += message.content;
@@ -2122,10 +2122,10 @@ pi.registerMessageRenderer("my-extension", (message, options, theme) => {
 });
 ```
 
-Messages are sent via `pi.sendMessage()`:
+Messages are sent via `hodeuscli.sendMessage()`:
 
 ```typescript
-pi.sendMessage({
+hodeuscli.sendMessage({
   customType: "my-extension",  // Matches registerMessageRenderer
   content: "Status update",
   display: true,               // Show in TUI
@@ -2156,7 +2156,7 @@ theme.strikethrough(text)
 For syntax highlighting in custom tool renderers:
 
 ```typescript
-import { highlightCode, getLanguageFromPath } from "@mariozechner/pi-coding-agent";
+import { highlightCode, getLanguageFromPath } from "@mariozechner/hodeuscli";
 
 // Highlight code with explicit language
 const highlighted = highlightCode("const x = 1;", "typescript", theme);
@@ -2198,7 +2198,7 @@ All examples in [examples/extensions/](../examples/extensions/).
 | `truncated-tool.ts` | Output truncation example | `registerTool`, `truncateHead` |
 | `tool-override.ts` | Override built-in read tool | `registerTool` (same name as built-in) |
 | **Commands** |||
-| `pirate.ts` | Modify system prompt per-turn | `registerCommand`, `before_agent_start` |
+| `hodeusclirate.ts` | Modify system prompt per-turn | `registerCommand`, `before_agent_start` |
 | `summarize.ts` | Conversation summary command | `registerCommand`, `ui.custom` |
 | `handoff.ts` | Cross-provider model handoff | `registerCommand`, `ui.editor`, `ui.custom` |
 | `qna.ts` | Q&A with custom UI | `registerCommand`, `ui.custom`, `setEditorText` |
@@ -2247,11 +2247,11 @@ All examples in [examples/extensions/](../examples/extensions/).
 | `space-invaders.ts` | Space Invaders game | `registerCommand`, `ui.custom` |
 | `doom-overlay/` | Doom in overlay | `ui.custom` with overlay |
 | **Providers** |||
-| `custom-provider-anthropic/` | Custom Anthropic proxy | `registerProvider` |
+| `custom-provider-Anthropic/` | Custom Anthropic proxy | `registerProvider` |
 | `custom-provider-gitlab-duo/` | GitLab Duo integration | `registerProvider` with OAuth |
 | **Messages & Communication** |||
 | `message-renderer.ts` | Custom message rendering | `registerMessageRenderer`, `sendMessage` |
-| `event-bus.ts` | Inter-extension events | `pi.events` |
+| `event-bus.ts` | Inter-extension events | `hodeuscli.events` |
 | **Session Metadata** |||
 | `session-name.ts` | Name sessions for selector | `setSessionName`, `getSessionName` |
 | `bookmark.ts` | Bookmark entries for /tree | `setLabel` |

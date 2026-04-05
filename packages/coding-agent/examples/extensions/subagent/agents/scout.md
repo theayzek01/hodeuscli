@@ -44,7 +44,7 @@ function keyFunction() {
 ```
 
 ## Architecture
-Brief explanation of how the pieces connect.
+Brief explanation of how the hodeusclieces connect.
 
 ## Start Here
 Which file to look at first and why.

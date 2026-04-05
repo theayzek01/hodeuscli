@@ -50,6 +50,7 @@ export interface SettingsConfig {
 	autocompleteMaxVisible: number;
 	quietStartup: boolean;
 	clearOnShrink: boolean;
+	language: "en" | "tr";
 }
 
 export interface SettingsCallbacks {
@@ -73,6 +74,7 @@ export interface SettingsCallbacks {
 	onAutocompleteMaxVisibleChange: (maxVisible: number) => void;
 	onQuietStartupChange: (enabled: boolean) => void;
 	onClearOnShrinkChange: (enabled: boolean) => void;
+	onLanguageChange: (language: "en" | "tr") => void;
 	onCancel: () => void;
 }
 
@@ -271,6 +273,13 @@ export class SettingsSelectorComponent extends Container {
 						},
 					),
 			},
+			{
+				id: "language",
+				label: "Language",
+				description: "Set the interface language (English or Turkish)",
+				currentValue: config.language,
+				values: ["en", "tr"],
+			},
 		];
 
 		// Only show image toggle if terminal supports it
@@ -415,6 +424,9 @@ export class SettingsSelectorComponent extends Container {
 						break;
 					case "clear-on-shrink":
 						callbacks.onClearOnShrinkChange(newValue === "true");
+						break;
+					case "language":
+						callbacks.onLanguageChange(newValue as "en" | "tr");
 						break;
 				}
 			},

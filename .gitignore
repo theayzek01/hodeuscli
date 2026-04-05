@@ -1,37 +1,41 @@
-node_modules/
-dist/
+# Authentication and secrets
+auth.json
+credentials.json
+.env*
+.pi/
+.npmrc
+
+# Logs and debug info
 *.log
-.DS_Store
-*.tsbuildinfo
-# packages/*/node_modules/
-packages/*/dist/
-packages/*/dist-chrome/
-packages/*/dist-firefox/
+pi-crash.log
+tui-debug.log
 *.cpuprofile
 
-# Environment
-.env
-
-# Editor files
-.vscode/
-.zed/
-.idea/
-*.swp
-*.swo
-*~
-
-# Package specific
-.npm/
-coverage/
-.nyc_output/
+# User specific data
 .pi_config/
-tui-debug.log
 compaction-results/
 .opencode/
 syntax.jsonl
 out.jsonl
 pi-*.html
 out.html
-packages/coding-agent/binaries/
 todo.md
 plans/
+
+# Monorepo specifics
+node_modules/
+dist/
+*.tsbuildinfo
+packages/*/dist/
+packages/*/dist-chrome/
+packages/*/dist-firefox/
+packages/coding-agent/binaries/
+
+# Editor and system
+.DS_Store
+.vscode/
+.zed/
+.idea/
+*.swp
+*.swo
+*~
