@@ -1,6 +1,6 @@
 {
 	"name": "@games-coder/hodeuscli-coding-agent",
-	"version": "0.65.1",
+	"version": "0.65.2",
 	"description": "Premium coding agent CLI with read, bash, edit, write tools and session management",
 	"type": "module",
 	"hodeuscliConfig": {
@@ -40,9 +40,9 @@
 	},
 	"dependencies": {
 		"@mariozechner/jiti": "^2.6.2",
-		"@games-coder/hodeuscli-agent-core": "^0.65.1",
-		"@games-coder/hodeuscli-ai": "^0.65.1",
-		"@games-coder/hodeuscli-tui": "^0.65.1",
+		"@games-coder/hodeuscli-agent-core": "^0.65.2",
+		"@games-coder/hodeuscli-ai": "^0.65.2",
+		"@games-coder/hodeuscli-tui": "^0.65.2",
 		"@silvia-odwyer/photon-node": "^0.3.4",
 		"ajv": "^8.17.1",
 		"chalk": "^5.5.0",

@@ -1,6 +1,6 @@
 {
 	"name": "@games-coder/hodeuscli-tui",
-	"version": "0.65.1",
+	"version": "0.65.2",
 	"description": "Premium Terminal UI library with high-perf differential rendering",
 	"type": "module",
 	"main": "dist/index.js",

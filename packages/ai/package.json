@@ -1,6 +1,6 @@
 {
 	"name": "@games-coder/hodeuscli-ai",
-	"version": "0.65.1",
+	"version": "0.65.2",
 	"description": "Unified Hodeuscli LLM API with automatic model discovery and provider configuration",
 	"type": "module",
 	"main": "./dist/index.js",
