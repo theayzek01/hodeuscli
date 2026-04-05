@@ -115,6 +115,14 @@ function tryMatchModel(modelPattern: string, availableModels: Model<Api>[]): Mod
 		return exactMatch;
 	}
 
+	// Try adding 'ollama/' prefix for bare IDs
+	if (!modelPattern.includes("/")) {
+		const ollamaMatch = findExactModelReferenceMatch(`ollama/${modelPattern}`, availableModels);
+		if (ollamaMatch) {
+			return ollamaMatch;
+		}
+	}
+
 	// No exact match - fall back to partial matching
 	const matches = availableModels.filter(
 		(m) =>

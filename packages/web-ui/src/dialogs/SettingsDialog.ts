@@ -1,4 +1,4 @@
-﻿import { i18n } from "../vendor/mini-lit/dist/index.js";
+import { i18n } from "../vendor/mini-lit/dist/index.js";
 import { Dialog, DialogContent, DialogHeader } from "../vendor/mini-lit/dist/Dialog.js";
 import { Input } from "../vendor/mini-lit/dist/Input.js";
 import { Label } from "../vendor/mini-lit/dist/Label.js";
@@ -34,6 +34,85 @@ export class ApiKeysTab extends SettingsTab {
 					${i18n("Configure API keys for LLM providers. Keys are stored locally in your browser.")}
 				</p>
 				${providers.map((provider) => html`<provider-key-input .provider=${provider}></provider-key-input>`)}
+			</div>
+		`;
+	}
+}
+
+// General Tab
+@customElement("general-tab")
+export class GeneralTab extends SettingsTab {
+	@state() private conversationMode: "planning" | "fast" = "planning";
+
+	override async connectedCallback() {
+		super.connectedCallback();
+		try {
+			const storage = getAppStorage();
+			const mode = await storage.settings.get<string>("conversation.mode");
+			if (mode === "planning" || mode === "fast") {
+				this.conversationMode = mode;
+			}
+		} catch (error) {
+			console.error("Failed to load conversation mode:", error);
+		}
+	}
+
+	private async saveConversationMode(mode: "planning" | "fast") {
+		this.conversationMode = mode;
+		try {
+			const storage = getAppStorage();
+			await storage.settings.set("conversation.mode", mode);
+		} catch (error) {
+			console.error("Failed to save conversation mode:", error);
+		}
+	}
+
+	getTabName(): string {
+		return i18n("General");
+	}
+
+	private renderModeCard(id: "planning" | "fast", title: string, description: string) {
+		const isSelected = this.conversationMode === id;
+		return html`
+			<div 
+				class="relative flex flex-col p-4 rounded-lg border-2 cursor-pointer transition-all ${
+					isSelected 
+						? "border-primary bg-primary/5" 
+						: "border-border hover:border-border/80 hover:bg-muted/50"
+				}"
+				@click=${() => this.saveConversationMode(id)}
+			>
+				<div class="flex items-center justify-between mb-1">
+					<span class="text-sm font-semibold text-foreground">${i18n(title as any)}</span>
+					${isSelected 
+						? html`<div class="w-2 h-2 rounded-full bg-primary"></div>` 
+						: html`<div class="w-2 h-2 rounded-full border border-muted-foreground/30"></div>`}
+				</div>
+				<p class="text-xs text-muted-foreground leading-relaxed">
+					${i18n(description as any)}
+				</p>
+			</div>
+		`;
+	}
+
+	render(): TemplateResult {
+		return html`
+			<div class="flex flex-col gap-6">
+				<div class="space-y-4">
+					<h3 class="text-sm font-medium text-foreground">${i18n("Conversation mode")}</h3>
+					<div class="flex flex-col gap-3">
+						${this.renderModeCard(
+							"planning",
+							"Planning",
+							"Agent can plan before executing tasks. Use for deep research, complex tasks, or collaborative work",
+						)}
+						${this.renderModeCard(
+							"fast",
+							"Fast",
+							"Agent will execute tasks directly. Use for simple tasks that can be completed faster",
+						)}
+					</div>
+				</div>
 			</div>
 		`;
 	}

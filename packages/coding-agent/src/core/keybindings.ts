@@ -37,8 +37,9 @@ export interface AppKeybindings {
 	"app.session.togglePath": true;
 	"app.session.toggleSort": true;
 	"app.session.rename": true;
-	"app.session.delete": true;
 	"app.session.deleteNoninvasive": true;
+	"app.session.delete": true;
+	"app.tasks.toggle": true;
 }
 
 export type AppKeybinding = keyof AppKeybindings;
@@ -108,7 +109,7 @@ export const KEYBINDINGS = {
 		description: "Edit tree label",
 	},
 	"app.tree.toggleLabelTimestamp": {
-		defaultKeys: "shift+t",
+		defaultKeys: "alt+t",
 		description: "Toggle tree label timestamps",
 	},
 	"app.session.togglePath": {
@@ -130,6 +131,10 @@ export const KEYBINDINGS = {
 	"app.session.deleteNoninvasive": {
 		defaultKeys: "ctrl+backspace",
 		description: "Delete session when query is empty",
+	},
+	"app.tasks.toggle": {
+		defaultKeys: "shift+k",
+		description: "Toggle task panel",
 	},
 } as const satisfies KeybindingDefinitions;
 

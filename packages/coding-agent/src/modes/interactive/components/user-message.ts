@@ -12,6 +12,20 @@ export class UserMessageComponent extends Container {
 	constructor(text: string, markdownTheme: MarkdownTheme = getMarkdownTheme()) {
 		super();
 		this.addChild(new Spacer(1));
+		
+		// Detect language for icon
+		let icon = "💬";
+		const lowerText = text.toLowerCase();
+		if (lowerText.includes("```python") || lowerText.includes("def ") || lowerText.includes("import ")) icon = "🐍";
+		else if (lowerText.includes("```html") || lowerText.includes("<!doctype") || lowerText.includes("<html")) icon = "🌐";
+		else if (lowerText.includes("```css") || (lowerText.includes("{") && lowerText.includes(":") && lowerText.includes(";"))) icon = "🎨";
+		else if (lowerText.includes("```javascript") || lowerText.includes("```typescript") || lowerText.includes("const ") || lowerText.includes("function ")) icon = "📦";
+		else if (lowerText.includes("```bash") || lowerText.includes("```sh") || lowerText.includes("npm ") || lowerText.includes("git ")) icon = "🐚";
+		else if (lowerText.includes("```") || lowerText.includes("- [ ]") || lowerText.includes("- [x]")) icon = "📝";
+
+		const headerText = theme.fg("accent", ` USER `);
+		this.addChild(new Markdown(headerText, 1, 1, markdownTheme));
+
 		this.addChild(
 			new Markdown(text, 1, 1, markdownTheme, {
 				bgColor: (text: string) => theme.bg("userMessageBg", text),

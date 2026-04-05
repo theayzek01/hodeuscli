@@ -48,7 +48,28 @@ const dic: Translations = {
 		"bash.complete": "Complete",
 		"bash.cancelled": "Cancelled",
 		"bash.success": "Success",
-		"bash.waiting": "Waiting..."
+		"bash.waiting": "Waiting...",
+		
+		"status.thinking": "Thinking...",
+		"status.working": "Working...",
+		"status.compacting": "Compacting context...",
+		"status.compacted": "Context compacted",
+		"status.retrying": "Retrying ({{attempt}})...",
+		"status.aborted": "Operation aborted",
+		"status.error": "Error: {{error}}",
+		"status.model_not_found": "Model not found: {{model}}",
+		"status.search_web": "Searching the web...",
+		"status.share_cancelled": "Share cancelled",
+		"status.gist_creating": "Creating gist...",
+		
+		"notification.new_version": "New version available: {{version}}. Run 'npm install -g @mariozechner/pi-coding-agent' to update.",
+		"notification.updates_available": "{{count}} package updates available. View in settings.",
+		
+		"help.title": "Help & Commands",
+		"help.description": "Hodeuscli commands and shortcuts:",
+		"help.commands": "Commands",
+		"help.hotkeys": "Hotkeys",
+		"help.back": "Press Esc to go back"
 	},
 	tr: {
 		"banner.interrupt": "durdurmak için",
@@ -90,7 +111,28 @@ const dic: Translations = {
 		"bash.complete": "Tamamlandı",
 		"bash.cancelled": "İptal Edildi",
 		"bash.success": "Başarılı",
-		"bash.waiting": "Bekleniyor..."
+		"bash.waiting": "Bekleniyor...",
+		
+		"status.thinking": "Düşünüyor...",
+		"status.working": "Çalışıyor...",
+		"status.compacting": "Bağlam sıkıştırılıyor...",
+		"status.compacted": "Bağlam sıkıştırıldı",
+		"status.retrying": "Yeniden deneniyor ({{attempt}})...",
+		"status.aborted": "İşlem iptal edildi",
+		"status.error": "Hata: {{error}}",
+		"status.model_not_found": "Model bulunamadı: {{model}}",
+		"status.search_web": "Web'de aranıyor...",
+		"status.share_cancelled": "Paylaşım iptal edildi",
+		"status.gist_creating": "Gist oluşturuluyor...",
+		
+		"notification.new_version": "Yeni versiyon mevcut: {{version}}. Güncellemek için 'npm install -g @mariozechner/pi-coding-agent' komutunu çalıştırın.",
+		"notification.updates_available": "{{count}} paket güncellemesi mevcut. Ayarlardan görüntüleyin.",
+		
+		"help.title": "Yardım ve Komutlar",
+		"help.description": "Hodeuscli komutları ve kısayolları:",
+		"help.commands": "Komutlar",
+		"help.hotkeys": "Kısayol Tuşları",
+		"help.back": "Geri dönmek için Esc'ye basın"
 	}
 };
 

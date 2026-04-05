@@ -36,6 +36,7 @@ import {
 	TUI,
 	visibleWidth,
 } from "@games-coder/hodeuscli-tui";
+import { TaskView, type TaskItem } from "./components/task-view.js";
 import { spawn, spawnSync } from "child_process";
 import {
 	APP_NAME,
@@ -159,6 +160,8 @@ export class InteractiveMode {
 	private editorContainer: Container;
 	private footer: FooterComponent;
 	private footerDataProvider: FooterDataProvider;
+	private taskView: TaskView;
+	private taskOverlay: OverlayHandle | undefined;
 	// Stored so the same manager can be injected into custom editors, selectors, and extension UI.
 	private keybindings: KeybindingsManager;
 	private version: string;
@@ -284,6 +287,7 @@ export class InteractiveMode {
 		this.editorContainer = new Container();
 		this.editorContainer.addChild(this.editor as Component);
 		this.footerDataProvider = new FooterDataProvider(this.sessionManager.getCwd());
+		this.taskView = new TaskView();
 		this.footer = new FooterComponent(this.session, this.footerDataProvider);
 		this.footer.setAutoCompactEnabled(this.session.autoCompactionEnabled);
 
@@ -584,6 +588,67 @@ export class InteractiveMode {
 		} else {
 			this.ui.terminal.setTitle(`π - ${cwdBasename}`);
 		}
+	}
+
+	private updateTaskStatusFooter(): void {
+		const tasks = this.readTasksFromFile();
+		if (tasks.length === 0) {
+			this.footerDataProvider.setExtensionStatus("tasks", undefined);
+			return;
+		}
+		const completed = tasks.filter(t => t.completed).length;
+		this.footerDataProvider.setExtensionStatus("tasks", theme.fg("accent", `Görevler: ${completed}/${tasks.length}`));
+		this.taskView.setTasks(tasks);
+	}
+
+	private readTasksFromFile(): TaskItem[] {
+		const taskPath = path.join(this.sessionManager.getCwd(), "task.md");
+		if (!fs.existsSync(taskPath)) return [];
+		try {
+			const content = fs.readFileSync(taskPath, "utf-8");
+			const lines = content.split("\n");
+			const tasks: TaskItem[] = [];
+			for (const line of lines) {
+				const match = line.match(/^\s*-\s*\[([ xX])\]\s*(.*)$/);
+				if (match) {
+					tasks.push({
+						completed: match[1].toLowerCase() === "x",
+						text: match[2].trim()
+					});
+				}
+			}
+			return tasks;
+		} catch {
+			return [];
+		}
+	}
+
+	private writeTasksToFile(tasks: TaskItem[]): void {
+		const taskPath = path.join(this.sessionManager.getCwd(), "task.md");
+		try {
+			const content = tasks.map(t => `- [${t.completed ? "x" : " "}] ${t.text}`).join("\n") + "\n";
+			fs.writeFileSync(taskPath, content, "utf-8");
+		} catch (error) {
+			this.showError(`Görevler kaydedilemedi: ${error instanceof Error ? error.message : String(error)}`);
+		}
+	}
+
+	private toggleTaskView(): void {
+		if (this.taskOverlay) {
+			this.ui.hideOverlay();
+			this.taskOverlay = undefined;
+			this.taskView.setExpanded(false);
+		} else {
+			this.updateTaskStatusFooter();
+			this.taskView.setExpanded(true);
+			this.taskOverlay = this.ui.showOverlay(this.taskView, {
+				anchor: "right-center",
+				width: 40,
+				maxHeight: "80%",
+				offsetX: -1,
+			});
+		}
+		this.ui.requestRender();
 	}
 
 	/**
@@ -2054,6 +2119,14 @@ export class InteractiveMode {
 		this.defaultEditor.onAction("app.thinking.cycle", () => this.cycleThinkingLevel());
 		this.defaultEditor.onAction("app.model.cycleForward", () => this.cycleModel("forward"));
 		this.defaultEditor.onAction("app.model.cycleBackward", () => this.cycleModel("backward"));
+		// Global input listener for task toggle (Shift+K)
+		this.ui.addInputListener((data) => {
+			if (data === "K") {
+				this.toggleTaskView();
+				return { consume: true };
+			}
+			return undefined;
+		});
 
 		// Global debug handler on TUI (works regardless of focus)
 		this.ui.onDebug = () => this.handleDebugCommand();
@@ -2110,6 +2183,10 @@ export class InteractiveMode {
 			if (!text) return;
 
 			// Handle commands
+			if (text.startsWith("/help") || text.startsWith("/yardim")) {
+				this.handleHelpCommand();
+				return;
+			}
 			if (text === "/account") {
 				this.handleAccountCommand();
 				this.editor.setText("");
@@ -2426,6 +2503,7 @@ export class InteractiveMode {
 					}
 					this.streamingComponent = undefined;
 					this.streamingMessage = undefined;
+					this.updateTaskStatusFooter();
 					this.footer.invalidate();
 				}
 				this.ui.requestRender();
@@ -2453,7 +2531,6 @@ export class InteractiveMode {
 				this.ui.requestRender();
 				break;
 			}
-
 			case "tool_execution_update": {
 				const component = this.pendingTools.get(event.toolCallId);
 				if (component) {
@@ -2462,14 +2539,14 @@ export class InteractiveMode {
 				}
 				break;
 			}
-
 			case "tool_execution_end": {
 				const component = this.pendingTools.get(event.toolCallId);
 				if (component) {
 					component.updateResult({ ...event.result, isError: event.isError });
 					this.pendingTools.delete(event.toolCallId);
-					this.ui.requestRender();
 				}
+				this.updateTaskStatusFooter();
+				this.ui.requestRender();
 				break;
 			}
 
@@ -4093,6 +4170,46 @@ export class InteractiveMode {
 			dismissLoader(previousEditor as Component);
 			this.showError(`Reload failed: ${error instanceof Error ? error.message : String(error)}`);
 		}
+	}
+
+	private handleHelpCommand(): void {
+		const hotkeys = this.getHelpText();
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.chatContainer.addChild(new Text(theme.bold(theme.fg("accent", "π YARDIM / KOMUTLAR")), 1, 0));
+		this.chatContainer.addChild(new Spacer(1));
+		this.chatContainer.addChild(new Markdown(hotkeys, 1, 1, this.getMarkdownThemeWithSettings()));
+		this.chatContainer.addChild(new DynamicBorder());
+		this.ui.requestRender();
+	}
+
+	private getHelpText(): string {
+		return `
+**Temel Komutlar**
+| Komut | Açıklama |
+|-------|----------|
+| \`/help\` / \`/yardim\` | Bu yardım menüsünü gösterir |
+| \`/clear\` | Oturumu temizler ve yeni bir sayfa açar |
+| \`/status\` | Mevcut oturum istatistiklerini gösterir |
+| \`/login\` | Bir modele giriş yapmanızı sağlar |
+| \`/logout\` | Çıkış yapar |
+| \`/name <isim>\` | Oturuma özel bir isim verir |
+
+**Kısayollar**
+| Tuş | Eylem |
+|-----|-------|
+| \`Shift+K\` | **Görev Paneli'ni açar/kapatır** |
+| \`Ctrl+Enter\` | Mesajı gönderir |
+| \`Ctrl+C\` | Yazılanı temizler / İşlemi durdurur |
+| \`Ctrl+L\` | Ekranı temizler |
+| \`Tab\` | Dosya yolu tamamlama |
+| \`Up/Down\` | Komut geçmişinde gezinme |
+
+**Yetenekler**
+- **! <komut>**: Terminal komutu çalıştırır.
+- **!! <komut>**: Terminal komutu çalıştırır (bağlama eklemez).
+- **Web Search**: Google üzerinden canlı arama yapar (mavi indikatör ile gösterilir).
+`;
 	}
 
 	private async handleExportCommand(text: string): Promise<void> {

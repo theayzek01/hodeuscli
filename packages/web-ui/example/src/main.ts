@@ -6,8 +6,12 @@ import {
 	ApiKeyPromptDialog,
 	AppStorage,
 	ChatPanel,
+	ApiKeyPromptDialog,
+	AppStorage,
+	ChatPanel,
 	CustomProvidersStore,
 	createJavaScriptReplTool,
+	GeneralTab,
 	IndexedDBStorageBackend,
 	// PersistentStorageDialog, // TODO: Fix - currently broken
 	ProviderKeysStore,
@@ -360,7 +364,7 @@ const renderApp = () => {
 						variant: "ghost",
 						size: "sm",
 						children: icon(Settings, "sm"),
-						onClick: () => SettingsDialog.open([new ProvidersModelsTab(), new ProxyTab()]),
+						onClick: () => SettingsDialog.open([new GeneralTab(), new ProvidersModelsTab(), new ProxyTab()]),
 						title: "Settings",
 					})}
 				</div>

@@ -81,6 +81,8 @@ export {
 	writeTool,
 	writeToolDefinition,
 } from "./write.js";
+export { webSearchTool, webSearchToolDefinition } from "./web-search.js";
+export { queryKnowledgeTool, queryKnowledgeToolDefinition } from "./query-knowledge.js";
 
 import type { AgentTool } from "@games-coder/hodeuscli-agent-core";
 import type { ToolDefinition } from "../extensions/types.js";
@@ -95,14 +97,10 @@ import { createEditTool, createEditToolDefinition, editTool, editToolDefinition 
 import { createFindTool, createFindToolDefinition, findTool, findToolDefinition } from "./find.js";
 import { createGrepTool, createGrepToolDefinition, grepTool, grepToolDefinition } from "./grep.js";
 import { createLsTool, createLsToolDefinition, lsTool, lsToolDefinition } from "./ls.js";
-import {
-	createReadTool,
-	createReadToolDefinition,
-	type ReadToolOptions,
-	readTool,
-	readToolDefinition,
-} from "./read.js";
+import { createReadTool, createReadToolDefinition, type ReadToolOptions, readTool, readToolDefinition } from "./read.js";
 import { createWriteTool, createWriteToolDefinition, writeTool, writeToolDefinition } from "./write.js";
+import { webSearchTool, webSearchToolDefinition } from "./web-search.js";
+import { queryKnowledgeTool, queryKnowledgeToolDefinition } from "./query-knowledge.js";
 
 export type Tool = AgentTool<any>;
 export type ToolDef = ToolDefinition<any, any>;
@@ -118,6 +116,8 @@ export const allTools: Record<string, Tool> = {
 	grep: grepTool,
 	find: findTool,
 	ls: lsTool,
+	web_search: webSearchTool,
+	query_knowledge: queryKnowledgeTool,
 };
 
 export const allToolDefinitions: Record<string, ToolDef> = {
@@ -128,6 +128,8 @@ export const allToolDefinitions: Record<string, ToolDef> = {
 	grep: grepToolDefinition,
 	find: findToolDefinition,
 	ls: lsToolDefinition,
+	web_search: webSearchToolDefinition,
+	query_knowledge: queryKnowledgeToolDefinition,
 };
 
 export type ToolName = keyof typeof allTools;
@@ -189,5 +191,7 @@ export function createAllTools(cwd: string, options?: ToolsOptions): Record<Tool
 		grep: createGrepTool(cwd),
 		find: createFindTool(cwd),
 		ls: createLsTool(cwd),
+		web_search: webSearchTool,
+		query_knowledge: queryKnowledgeTool,
 	};
 }

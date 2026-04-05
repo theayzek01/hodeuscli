@@ -222,7 +222,10 @@ export class ToolExecutionComponent extends Container {
 		this.hideComponent = false;
 
 		// --- Header ---
-		const titleText = this.isPartial ? t("tool.running") : t("tool.ran");
+		const isWebSearch = this.toolName.includes("search") || this.toolName.includes("web");
+		const titleText = this.isPartial ? (isWebSearch ? "Web'de aranıyor..." : t("tool.running")) : t("tool.ran");
+		const headerColorKey = isWebSearch ? "syntaxKeyword" : "bashMode"; // Use blue for web search
+		const headerBorderColor = (str: string) => theme.fg(headerColorKey, str);
 		this.contentBox.addChild({
 			render: (width: number) => {
 				const spinner = this.isPartial ? ` ${getSpinnerFrame(this.startTime)}` : "";
@@ -237,7 +240,8 @@ export class ToolExecutionComponent extends Container {
 
 				const titleLength = stripAnsi(title).length;
 				const line = "─".repeat(Math.max(0, width - titleLength - 2));
-				return [borderColor(`┌─${theme.bold(theme.fg("accent", title))}${line}┐`)];
+				const titleColor = isWebSearch ? "syntaxKeyword" : "accent";
+				return [headerBorderColor(`┌─${theme.bold(theme.fg(titleColor as any, title))}${line}┐`)];
 			},
 			invalidate: () => {},
 		});
@@ -293,7 +297,7 @@ export class ToolExecutionComponent extends Container {
 					const visibleLength = stripAnsi(line).length;
 					const paddingChars = Math.max(0, width - visibleLength - 4);
 					const padding = " ".repeat(paddingChars);
-					return borderColor(`│ `) + line + padding + borderColor(` │`);
+					return headerBorderColor(`│ `) + line + padding + headerBorderColor(` │`);
 				});
 			},
 			invalidate: () => innerContainer.invalidate(),
@@ -319,11 +323,11 @@ export class ToolExecutionComponent extends Container {
 				const remaining = Math.max(0, width - leftAnsiClean.length - rightAnsiClean.length);
 				const line = "─".repeat(remaining);
 
-				let combined = borderColor(`└─${theme.bold(theme.fg("dim", ` ${footerText} `))}─${line}`) + (rightSide === "┘" ? borderColor("┘") : theme.fg("error", smartHint) + borderColor("┘"));
+				let combined = headerBorderColor(`└─${theme.bold(theme.fg("dim", ` ${footerText} `))}─${line}`) + (rightSide === "┘" ? headerBorderColor("┘") : theme.fg("error", smartHint) + headerBorderColor("┘"));
 				if (stripAnsi(combined).length > width) {
 					let safeFooter = stripAnsi(footerText);
 					if (safeFooter.length > width - 4) safeFooter = safeFooter.substring(0, width - 7) + "...";
-					combined = borderColor(`└─${theme.bold(theme.fg("dim", ` ${safeFooter} `))}`) + borderColor("─".repeat(Math.max(0, width - safeFooter.length - 5))) + borderColor("┘");
+					combined = headerBorderColor(`└─${theme.bold(theme.fg("dim", ` ${safeFooter} `))}`) + headerBorderColor("─".repeat(Math.max(0, width - safeFooter.length - 5))) + headerBorderColor("┘");
 				}
 
 				return [combined];

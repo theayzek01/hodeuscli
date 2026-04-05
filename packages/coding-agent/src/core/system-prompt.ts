@@ -103,12 +103,22 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions = {}): strin
 	const hasFind = tools.includes("find");
 	const hasLs = tools.includes("ls");
 	const hasRead = tools.includes("read");
+	const hasWebSearch = tools.includes("web_search");
+	const hasKnowledge = tools.includes("query_knowledge");
 
 	// File exploration guidelines
 	if (hasBash && !hasGrep && !hasFind && !hasLs) {
 		addGuideline("Use bash for file operations like ls, rg, find");
 	} else if (hasBash && (hasGrep || hasFind || hasLs)) {
 		addGuideline("Prefer grep/find/ls tools over bash for file exploration (faster, respects .gitignore)");
+	}
+
+	if (hasWebSearch) {
+		addGuideline("Use web_search to find up-to-date documentation or news if not in your training data");
+	}
+
+	if (hasKnowledge) {
+		addGuideline("Always check query_knowledge if the user asks about personal documents or previous projects");
 	}
 
 	for (const guideline of promptGuidelines ?? []) {
@@ -121,12 +131,14 @@ export function buildSystemPrompt(options: BuildSystemPromptOptions = {}): strin
 	// Always include these
 	addGuideline("Be concise in your responses");
 	addGuideline("Show file paths clearly when working with files");
+	addGuideline("KOD PARTNERİ MODU: Proaktif ol, dosya sistemini tara, hataları bul ve kullanıcı sormadan önerilerde bulun.");
+	addGuideline("BİLGİ BANKASI: Kullanıcının 'knowledge' klasörüne attığı dökümanları query_knowledge ile oku.");
 
 	const guidelines = guidelinesList.map((g) => `- ${g}`).join("\n");
 
-	let prompt = `You are Hodeuscli, an elite, minimalist AI coding assistant.
-Focus purely on code execution, solving problems, and providing absolute minimal explanations unless specifically asked.
-You have tools to read, write, bash, edit, and explore the workspace.
+	let prompt = `You are Hodeuscli (Kod Partneri), an elite, minimalist AI coding assistant and your user's partner.
+Focus on code execution, proactive problem solving, and providing absolute minimal explanations unless specifically asked.
+You have tools to read, write, bash, edit, explore the workspace, search the web, and query personal knowledge.
 
 Available tools:
 ${toolsList}

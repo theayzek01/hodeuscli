@@ -23,6 +23,9 @@
 
 Hodeuscli is the world's most advanced, luxury-grade terminal coding assistant, designed for performance and aesthetic excellence. Powered by **Hodeus Studio**, it features a high-fidelity **Antigravity TUI** with millisecond-precision timers, real-time status spinners, and a sophisticated bilingual interface.
 
+### 🌟 Key Features
+Check out the **[FEATURES.md](FEATURES.md)** for a detailed list of all capabilities, including Web Search, Local File Access, RAG (Memory), and Smart Paste Management.
+
 ### 📦 Packages
 
 | Package | Description |
@@ -47,7 +50,10 @@ npm run check        # Lint, format, and type check
 
 ## 🇹🇷 Türkçe Versiyon
 
-Hodeuscli, performans ve estetik mükemmellik için tasarlanmış, dünyanın en gelişmiş, lüks sınıf terminal kodlama asistanıdır. **Hodeus Studio** tarafından desteklenen bu sistem, milisaniye hassasiyetinde zamanlayıcılar, gerçek zamanlı durum göstergeleri ve sofistike bir kullanıcı arayüzü sunan yüksek sadakatli **Antigravity TUI** deneyimine sahiptir.
+Hodeuscli, performans ve estetik mükemmeliyet için tasarlanmış, dünyanın en gelişmiş, lüks sınıf terminal kodlama asistanıdır. **Hodeus Studio** tarafından desteklenen bu sistem, milisaniye hassasiyetinde zamanlayıcılar, gerçek zamanlı durum göstergeleri ve sofistike bir kullanıcı arayüzü sunan yüksek sadakatli **Antigravity TUI** deneyimine sahiptir.
+
+### 🌟 Temel Özellikler
+Tüm yeteneklerin (Web Tarama, Yerel Dosya Erişimi, RAG Bellek, Akıllı Yapıştırma Yönetimi vb.) detaylı listesi için **[FEATURES.md](FEATURES.md)** dosyasına göz atın.
 
 ### 📦 Paketler
 

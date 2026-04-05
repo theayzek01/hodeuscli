@@ -7,9 +7,10 @@ set "OLLAMA_EXE=ollama.exe"
 :: Check first argument
 if "%~1"=="launch" (
     if "%~2"=="hodeuscli" (
-        :: Launch Hodeuscli
-        hodeuscli %~3 %~4 %~5 %~6 %~7 %~8 %~9
-        exit /b %errorlevel%
+        set "full_cmd=%*"
+        set "hodeus_args=!full_cmd:*launch hodeuscli=!"
+        hodeuscli !hodeus_args!
+        exit /b !errorlevel!
     )
 )
 

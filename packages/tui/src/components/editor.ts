@@ -9,11 +9,11 @@ import { SelectList, type SelectListLayoutOptions, type SelectListTheme } from "
 
 const baseSegmenter = getSegmenter();
 
-/** Regex matching paste markers like `[paste #1 +123 lines]` or `[paste #2 1234 chars]`. */
-const PASTE_MARKER_REGEX = /\[paste #(\d+)( (\+\d+ lines|\d+ chars))?\]/g;
+/** Regex matching paste markers like `[paste #1 python +123 lines]` or `[paste #2 1234 chars]`. */
+const PASTE_MARKER_REGEX = /\[paste #(\d+)( [^\]]*)?\]/g;
 
 /** Non-global version for single-segment testing. */
-const PASTE_MARKER_SINGLE = /^\[paste #(\d+)( (\+\d+ lines|\d+ chars))?\]$/;
+const PASTE_MARKER_SINGLE = /^\[paste #(\d+)( [^\]]*)?\]$/;
 
 /** Check if a segment is a paste marker (i.e. was merged by segmentWithMarkers). */
 function isPasteMarker(segment: string): boolean {
@@ -96,9 +96,15 @@ export interface TextChunk {
  * @param maxWidth - Maximum visible width per chunk
  * @param preSegmented - Optional pre-segmented graphemes (e.g. with paste-marker awareness).
  *                       When omitted the default Intl.Segmenter is used.
+ * @param widthProvider - Optional function to provide custom width for a segment.
  * @returns Array of chunks with text and position information
  */
-export function wordWrapLine(line: string, maxWidth: number, preSegmented?: Intl.SegmentData[]): TextChunk[] {
+export function wordWrapLine(
+	line: string,
+	maxWidth: number,
+	preSegmented?: Intl.SegmentData[],
+	widthProvider?: (segment: string) => number,
+): TextChunk[] {
 	if (!line || maxWidth <= 0) {
 		return [{ text: "", startIndex: 0, endIndex: 0 }];
 	}
@@ -122,7 +128,7 @@ export function wordWrapLine(line: string, maxWidth: number, preSegmented?: Intl
 	for (let i = 0; i < segments.length; i++) {
 		const seg = segments[i]!;
 		const grapheme = seg.segment;
-		const gWidth = visibleWidth(grapheme);
+		const gWidth = widthProvider ? widthProvider(grapheme) : visibleWidth(grapheme);
 		const charIndex = seg.index;
 		const isWs = !isPasteMarker(grapheme) && isWhitespaceChar(grapheme);
 
@@ -153,7 +159,7 @@ export function wordWrapLine(line: string, maxWidth: number, preSegmented?: Intl
 
 			// The segment remains logically atomic for cursor
 			// movement / editing — the split is purely visual for word-wrap layout.
-			const subChunks = wordWrapLine(grapheme, maxWidth);
+			const subChunks = wordWrapLine(grapheme, maxWidth, undefined, widthProvider);
 			for (let j = 0; j < subChunks.length - 1; j++) {
 				const sc = subChunks[j]!;
 				chunks.push({ text: sc.text, startIndex: charIndex + sc.startIndex, endIndex: charIndex + sc.endIndex });
@@ -250,7 +256,7 @@ export class Editor implements Component, Focusable {
 	private autocompleteRequestId: number = 0;
 
 	// Paste tracking for large pastes
-	private pastes: Map<number, string> = new Map();
+	private pastes: Map<number, { content: string; language: string | null }> = new Map();
 	private pasteCounter: number = 0;
 
 	// Bracketed paste mode buffering
@@ -293,9 +299,48 @@ export class Editor implements Component, Focusable {
 		return new Set(this.pastes.keys());
 	}
 
+	private detectLanguage(text: string): string | null {
+		const lines = text.split("\n");
+		const firstLines = lines.slice(0, 10).join("\n");
+
+		if (firstLines.includes("import ") || firstLines.includes("def ") || firstLines.includes("if __name__ ==")) return "py";
+		if (firstLines.includes("<!DOCTYPE html>") || firstLines.includes("<html") || firstLines.includes("<div")) return "html";
+		if (firstLines.includes("import {") || firstLines.includes("export ") || firstLines.includes("const ") || firstLines.includes("function ")) {
+			return firstLines.includes("interface ") || firstLines.includes("type ") ? "ts" : "js";
+		}
+		if (firstLines.includes("{") && (firstLines.includes("margin:") || firstLines.includes("padding:") || firstLines.includes("color:"))) return "css";
+		if (firstLines.trim().startsWith("{") || firstLines.trim().startsWith("[")) {
+			try {
+				JSON.parse(text);
+				return "json";
+			} catch { /* ignore */ }
+		}
+		return null;
+	}
+
 	/** Segment text with paste-marker awareness, only merging markers with valid IDs. */
 	private segment(text: string): Iterable<Intl.SegmentData> {
 		return segmentWithMarkers(text, this.validPasteIds());
+	}
+
+	private getGraphemeWidth(grapheme: string): number {
+		if (isPasteMarker(grapheme)) {
+			const m = grapheme.match(PASTE_MARKER_SINGLE);
+			if (m) {
+				const id = Number.parseInt(m[1]!, 10);
+				const paste = this.pastes.get(id);
+				if (paste) {
+					// icon (2) + " " (1) + label (lang.length + 2) + " " (1) + match
+					// or icon (2) + "  " (2) + match
+					const lang = paste.language;
+					const iconWidth = 2;
+					const labelWidth = lang ? lang.length + 2 : 0;
+					const spacing = 2;
+					return iconWidth + spacing + labelWidth + visibleWidth(grapheme);
+				}
+			}
+		}
+		return visibleWidth(grapheme);
 	}
 
 	getPaddingX(): number {
@@ -461,7 +506,33 @@ export class Editor implements Component, Focusable {
 
 		for (const layoutLine of visibleLines) {
 			let displayText = layoutLine.text;
-			let lineVisibleWidth = visibleWidth(layoutLine.text);
+
+			// Replace paste markers with styled versions for display
+			displayText = displayText.replace(PASTE_MARKER_REGEX, (match, idStr, meta) => {
+				const id = Number.parseInt(idStr, 10);
+				const paste = this.pastes.get(id);
+				if (!paste) return match;
+
+				const lang = paste.language;
+				let icon = "󰈚";
+				let color = "\x1b[38;5;244m"; // Gray default
+
+				if (lang === "py") { icon = ""; color = "\x1b[38;5;220m"; }
+				else if (lang === "html") { icon = ""; color = "\x1b[38;5;208m"; }
+				else if (lang === "js") { icon = ""; color = "\x1b[38;5;39m"; }
+				else if (lang === "ts") { icon = ""; color = "\x1b[38;5;33m"; }
+				else if (lang === "css") { icon = ""; color = "\x1b[38;5;213m"; }
+				else if (lang === "json") { icon = ""; color = "\x1b[38;5;121m"; }
+
+				const label = lang ? `[${lang}]` : "";
+				return `${color}${icon} ${label} ${match}\x1b[0m`;
+			});
+
+			// Calculate line width using the same logic as layout
+			let lineVisibleWidth = 0;
+			for (const seg of this.segment(layoutLine.text)) {
+				lineVisibleWidth += this.getGraphemeWidth(seg.segment);
+			}
 			let cursorInPadding = false;
 
 			// Add cursor if this line has it
@@ -829,9 +900,13 @@ export class Editor implements Component, Focusable {
 		for (let i = 0; i < this.state.lines.length; i++) {
 			const line = this.state.lines[i] || "";
 			const isCurrentLine = i === this.state.cursorLine;
-			const lineVisibleWidth = visibleWidth(line);
+			const segments = [...this.segment(line)];
+			let lineWidth = 0;
+			for (const seg of segments) {
+				lineWidth += this.getGraphemeWidth(seg.segment);
+			}
 
-			if (lineVisibleWidth <= contentWidth) {
+			if (lineWidth <= contentWidth) {
 				// Line fits in one layout line
 				if (isCurrentLine) {
 					layoutLines.push({
@@ -847,7 +922,7 @@ export class Editor implements Component, Focusable {
 				}
 			} else {
 				// Line needs wrapping - use word-aware wrapping
-				const chunks = wordWrapLine(line, contentWidth, [...this.segment(line)]);
+				const chunks = wordWrapLine(line, contentWidth, segments, (g) => this.getGraphemeWidth(g));
 
 				for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
 					const chunk = chunks[chunkIndex];
@@ -904,11 +979,32 @@ export class Editor implements Component, Focusable {
 		return this.state.lines.join("\n");
 	}
 
+	private handlePaste(text: string): void {
+		const lines = text.split("\n");
+		const pasteThreshold = 10;
+		const charThreshold = 1000;
+
+		if (lines.length >= pasteThreshold || text.length >= charThreshold) {
+			const id = ++this.pasteCounter;
+			const language = this.detectLanguage(text);
+			this.pastes.set(id, { content: text, language });
+
+			const meta = lines.length >= pasteThreshold ? `+${lines.length} lines` : `${text.length} chars`;
+			const langPart = language ? ` ${language}` : "";
+			this.insertCharacter(`[paste #${id}${langPart} ${meta}]`);
+			return;
+		}
+
+		this.insertCharacter(text);
+	}
+
 	private expandPasteMarkers(text: string): string {
 		let result = text;
-		for (const [pasteId, pasteContent] of this.pastes) {
-			const markerRegex = new RegExp(`\\[paste #${pasteId}( (\\+\\d+ lines|\\d+ chars))?\\]`, "g");
-			result = result.replace(markerRegex, () => pasteContent);
+		for (const [id, paste] of this.pastes) {
+			// Find markers for this ID, matching the language and meta info
+			const escapedId = id.toString();
+			const markerRegex = new RegExp(`\\[paste #${escapedId}( [^\\]]*)?\\]`, "g");
+			result = result.replace(markerRegex, () => paste.content);
 		}
 		return result;
 	}
@@ -1074,61 +1170,6 @@ export class Editor implements Component, Focusable {
 		}
 	}
 
-	private handlePaste(pastedText: string): void {
-		this.cancelAutocomplete();
-		this.historyIndex = -1; // Exit history browsing mode
-		this.lastAction = null;
-
-		this.pushUndoSnapshot();
-
-		// Clean the pasted text: normalize line endings, expand tabs
-		const cleanText = this.normalizeText(pastedText);
-
-		// Filter out non-printable characters except newlines
-		let filteredText = cleanText
-			.split("")
-			.filter((char) => char === "\n" || char.charCodeAt(0) >= 32)
-			.join("");
-
-		// If pasting a file path (starts with /, ~, or .) and the character before
-		// the cursor is a word character, prepend a space for better readability
-		if (/^[/~.]/.test(filteredText)) {
-			const currentLine = this.state.lines[this.state.cursorLine] || "";
-			const charBeforeCursor = this.state.cursorCol > 0 ? currentLine[this.state.cursorCol - 1] : "";
-			if (charBeforeCursor && /\w/.test(charBeforeCursor)) {
-				filteredText = ` ${filteredText}`;
-			}
-		}
-
-		// Split into lines to check for large paste
-		const pastedLines = filteredText.split("\n");
-
-		// Check if this is a large paste (> 10 lines or > 1000 characters)
-		const totalChars = filteredText.length;
-		if (pastedLines.length > 10 || totalChars > 1000) {
-			// Store the paste and insert a marker
-			this.pasteCounter++;
-			const pasteId = this.pasteCounter;
-			this.pastes.set(pasteId, filteredText);
-
-			// Insert marker like "[paste #1 +123 lines]" or "[paste #1 1234 chars]"
-			const marker =
-				pastedLines.length > 10
-					? `[paste #${pasteId} +${pastedLines.length} lines]`
-					: `[paste #${pasteId} ${totalChars} chars]`;
-			this.insertTextAtCursorInternal(marker);
-			return;
-		}
-
-		if (pastedLines.length === 1) {
-			// Single line - insert atomically (do not trigger autocomplete during paste)
-			this.insertTextAtCursorInternal(filteredText);
-			return;
-		}
-
-		// Multi-line paste - use direct state manipulation
-		this.insertTextAtCursorInternal(filteredText);
-	}
 
 	private addNewLine(): void {
 		this.cancelAutocomplete();
